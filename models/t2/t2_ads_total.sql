@@ -1,0 +1,1 @@
+SELECT * FROM  {{ ref('t1_facebook_ads_cost')}}
