@@ -1,7 +1,22 @@
-select ads.*,
-sum(ladi.doanhThuLadi) as doanhThuLadi
+with ladi_agg as (
+  select 
+    date_insert,
+    id_staff,
+    manager,
+    brand,
+    channel,
+    sum(doanhThuLadi) as doanhThuLadi
+  from {{ref("t2_ladipage_facebook_total")}}
+  group by date_insert, id_staff, manager, brand, channel
+)
+
+select 
+  ads.*,
+  ladi_agg.doanhThuLadi
 from {{ref("t3_ads_total_with_tkqc")}} as ads
-left join {{ref("t2_ladipage_facebook_total")}} as ladi
-on ads.date_start = ladi.date_insert and ads.ma_nhan_vien = ladi.id_staff 
-and ads.manager = ladi.manager and ads.brand = ladi.brand and ads.channel = ladi.channel
-group by ads.date_start,ads.idtkqc,ads.nametkqc,ads.ma_nhan_vien,ads.staff,ads.manager, ads.brand,ads.channel,ads.chiPhiAds,ads.doanhThuAds
+left join ladi_agg
+on ads.date_start = ladi_agg.date_insert 
+and ads.ma_nhan_vien = ladi_agg.id_staff 
+and ads.manager = ladi_agg.manager 
+and ads.brand = ladi_agg.brand 
+and ads.channel = ladi_agg.channel
