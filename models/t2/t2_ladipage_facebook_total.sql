@@ -3,7 +3,7 @@ SELECT
   'Facebook' AS channel,
   od.brand,
   JSON_VALUE(od.marketer, "$.name") AS staff,
-  sum(od.total_price_after_sub_discount) AS doanhThuLadi,
+  od.total_price_after_sub_discount AS doanhThuLadi,
   CASE 
     WHEN JSON_VALUE(od.marketer, "$.name") = 'Nguyễn Nhung' THEN 'LYB0000165'
     WHEN JSON_VALUE(od.marketer, "$.name") = 'Ngô Thị Ngọc Ánh' THEN 'LYB000100'
@@ -65,4 +65,3 @@ SELECT
   END AS manager,
 FROM {{ref('t1_pancake_pos_order_total')}} AS od
 WHERE od.marketer IS NOT NULL
-group by DATE(od.inserted_at),JSON_VALUE(od.marketer, "$.name"),id_staff,manager,od.brand
