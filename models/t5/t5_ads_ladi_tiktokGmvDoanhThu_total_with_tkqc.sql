@@ -2,7 +2,7 @@ SELECT
     ads.*,
     CASE 
         WHEN gmv.doanhThuAds IS NOT NULL 
-        THEN ads.doanhThuAds + COALESCE(gmv.doanhThuAds, 0)
+        THEN ads.doanhThuAds + COALESCE(cast(gmv.doanhThuAds as int64), 0)
         ELSE ads.doanhThuAds
     END AS doanhThuAds
 FROM {{ref("t4_ads_ladipageFacebook_total_with_tkqc")}} AS ads 
