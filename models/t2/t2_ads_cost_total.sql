@@ -11,7 +11,7 @@ SELECT date(date_start) as date_start,account_id,spend,COALESCE(
       ) AS INT64
     ),
     0
-  )) AS doanhThuAds, FROM  {{ ref('t1_facebook_ads_total')}}
+  ) AS doanhThuAds FROM  {{ ref('t1_facebook_ads_total')}}
 union all
 select date(stat_time_day) as date_start ,account_id,spend,int64(total_onsite_shopping_value) as doanhThuAds as  From {{ref("t1_tiktok_ads_total")}}
 union all
