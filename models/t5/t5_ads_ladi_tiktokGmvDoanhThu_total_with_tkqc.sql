@@ -1,5 +1,14 @@
 SELECT 
-    ads.*,
+    ads.date_start,
+    ads.idtkqc,
+    ads.nametkqc,
+    ads.ma_nhan_vien,
+    ads.staff,
+    ads.manager,
+    ads.brand,
+    ads.channel,
+    ads.chiPhiAds,
+    ads.doanhThuLadi,
     CASE 
         WHEN gmv.doanhThuAds IS NOT NULL 
         THEN ads.doanhThuAds + COALESCE(cast(gmv.doanhThuAds as int64), 0)
