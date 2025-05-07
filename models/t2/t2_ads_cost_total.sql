@@ -3,7 +3,7 @@ SELECT date(date_start) as date_start,account_id,spend,COALESCE(
       JSON_VALUE(
         (
           SELECT value
-          FROM UNNEST(fb.action_values) AS value
+          FROM UNNEST(action_values) AS value
           WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
           LIMIT 1
         ),
