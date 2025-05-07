@@ -63,6 +63,6 @@ SELECT
     WHEN JSON_VALUE(od.marketer, "$.name") in ('Wên Oky','Trường Nguyễn','Nguyễn Thị Thảo Nguyên') THEN 'Hửu Lộc'
     ELSE NULL
   END AS manager,
-FROM ((ref("t1_pancake_pos_order_total"))) AS od
+FROM {{ref('t1_pancake_pos_order_total')}} AS od
 WHERE od.marketer IS NOT NULL
 group by DATE(od.inserted_at),JSON_VALUE(od.marketer, "$.name"),id_staff,manager,od.brand
