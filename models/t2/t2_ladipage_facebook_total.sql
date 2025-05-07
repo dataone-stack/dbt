@@ -41,7 +41,6 @@ SELECT
   CASE 
     WHEN JSON_VALUE(od.marketer, "$.name") in ('Nguyễn Nhung','Uri Yang','Minhtien Pham','Digital Duy','Phan Phúc','Tâm Ngô') THEN 'Nguyễn Thị Tuyết Nhung'
     WHEN JSON_VALUE(od.marketer, "$.name") in ('Ngô Thị Ngọc Ánh','Quốc Bình','Văn Hiếu','Võ Duy Khang') THEN 'Ngô Thị Ngọc Ánh'
-    WHEN JSON_VALUE(od.marketer, "$.name") in ('Ngô Thị Ngọc Ánh','Quốc Bình','Văn Hiếu','Võ Duy Khang') THEN 'Ngô Thị Ngọc Ánh'
     WHEN JSON_VALUE(od.marketer, "$.name") IN (
       'Lê Trình Thanh Phước',
       'Đoàn Văn Thành Long',
