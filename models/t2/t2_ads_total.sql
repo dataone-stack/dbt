@@ -17,4 +17,4 @@ select date(stat_time_day) as date_start ,account_id,spend,cast(total_onsite_sho
 union all
 select date(stat_time_day) as date_start ,account_id,spend, 0 as doanhThuAds From {{ref("t1_tiktokGMV_ads_total")}}
 union all
-select date(date) as date_start ,idtkqc as account_id,expense as spend, broad_gmv as doanhThuAds From {{ref("t1_shopee_ads_total")}}
+select date(date) as date_start , cast(idtkqc as int64) as account_id,expense as spend, broad_gmv as doanhThuAds From {{ref("t1_shopee_ads_total")}}
