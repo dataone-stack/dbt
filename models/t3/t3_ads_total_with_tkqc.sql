@@ -44,11 +44,11 @@ ads_ladipageFacebook_total_with_tkqc AS (
 SELECT
     ads.*,
     gmv.doanhThuAds AS doanhThuGMVTiktok,
-    shopeeSearch.doanhThuAds as doanhThuShopeeSearch
+    shopeeSearch.doanhThuAds AS doanhThuShopeeSearch
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
 LEFT JOIN {{ ref('t1_tiktokGMV_ads_doanhThu_total') }} AS gmv 
     ON gmv.date_start = ads.date_start 
-    AND CAST(gmv.account_id AS STRING) = ads.idtkqc;
-LEFT JOIN {{ref("t1_shopee_search_ads_total")}} AS shopeeSearch 
+    AND CAST(gmv.account_id AS STRING) = ads.idtkqc
+LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch 
     ON shopeeSearch.date_start = ads.date_start 
-    AND cast(shopeeSearch.account_id as string) = ads.idtkqc
+    AND CAST(shopeeSearch.account_id AS STRING) = ads.idtkqc
