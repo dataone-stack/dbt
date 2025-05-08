@@ -1,14 +1,4 @@
-SELECT 
-    -- ads.date_start,
-    -- ads.idtkqc,
-    -- ads.nametkqc,
-    -- ads.ma_nhan_vien,
-    -- ads.staff,
-    -- ads.manager,
-    -- ads.brand,
-    -- ads.channel,
-    -- ads.chiPhiAds,
-    -- ads.doanhThuLadi,
+SELECT
     ads.*,
     gmv.doanhThuAds as doanhThuGMVTiktok
 FROM {{ref("t4_ads_ladipageFacebook_total_with_tkqc")}} AS ads 
