@@ -16,5 +16,5 @@ GROUP BY
         WHEN order_sources_name = 'Ladipage Facebook' THEN 'Facebook'
         WHEN order_sources_name = 'Ladipage Tiktok' THEN 'Tiktok'
         ELSE order_sources_name 
-    END
-ORDER BY date, brand, channel;
+    END 
+ORDER BY date, brand, channel
