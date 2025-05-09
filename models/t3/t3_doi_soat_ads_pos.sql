@@ -23,6 +23,6 @@ ORDER BY date, brand, channel
 
 select 
     pos.*,
-    COALESCE(adsa.doanhThuShopeeSearch, 0) + COALESCE(ads.doanhThuAds, 0) + COALESCE(ads.doanhThuLadi, 0) + COALESCE(ads.doanhThuGMVTiktok, 0) AS totalAds
+    COALESCE(ads.doanhThuShopeeSearch, 0) + COALESCE(ads.doanhThuAds, 0) + COALESCE(ads.doanhThuLadi, 0) + COALESCE(ads.doanhThuGMVTiktok, 0) AS totalAds
 from pos as pos full outer join {{ref("t3_ads_total_with_tkqc")}} as ads
 on pos.date = ads.date_start and pos.brand = ads.brand and pos.channel = ads.channel
