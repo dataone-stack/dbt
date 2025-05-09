@@ -1,3 +1,4 @@
+with pos as (
 SELECT 
     DATE(inserted_at) AS date,
     brand,
@@ -18,3 +19,10 @@ GROUP BY
         ELSE order_sources_name 
     END 
 ORDER BY date, brand, channel
+)
+
+select 
+    pos.*,
+    COALESCE(a.doanhThuShopeeSearch, 0) + COALESCE(a.doanhThuAds, 0) + COALESCE(a.doanhThuLadi, 0) + COALESCE(a.doanhThuGMVTiktok, 0) AS totalAds
+from pos as pos full outer join {{ref("t3_ads_total_with_tkqc")}} as ads
+on pos.date = ads.date_start and pos.brand = ads.brand and pos.channel = ads.channel
