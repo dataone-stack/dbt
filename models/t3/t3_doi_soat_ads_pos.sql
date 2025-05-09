@@ -11,4 +11,4 @@ FROM {{ref("t3_ads_total_with_tkqc")}} a
 INNER JOIN {{(ref("t1_pancake_pos_order_total"))}} p
     ON a.date_start = date(p.inserted_at)
     AND a.brand = p.brand
-    AND a.channel = p.channel
+    AND a.channel = p.order_sources_name
