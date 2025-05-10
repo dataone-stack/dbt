@@ -30,4 +30,4 @@ select
     sum(COALESCE(ads.doanhThuShopeeSearch, 0) + COALESCE(ads.doanhThuAds, 0) + COALESCE(ads.doanhThuLadi, 0) + COALESCE(ads.doanhThuGMVTiktok, 0)) AS totalAds
 from pos as pos full outer join {{ref("t3_ads_total_with_tkqc")}} as ads
 on pos.date = ads.date_start and pos.brand = ads.brand and pos.channel = ads.channel
-group by pos.date, pos.brand,pos.channel,pos.total_pos_revenue,ads.manager,ads.staff
+group by pos.date, pos.brand,pos.channel,pos.total_pos_revenue,ads.manager,ads.staff,ads.nametkqc
