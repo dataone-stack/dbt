@@ -8,6 +8,6 @@ SELECT
   sum(od.total_price_after_sub_discount) AS doanhThuLadi
 FROM {{ref('t1_pancake_pos_order_total')}} AS od
 left join {{ref("t1_marketer_facebook_total")}} as mar
-on od.json_value(od.marketer, "$.name") = mar.marketer_name
+on od.json_value?(od.marketer, "$.name") = mar.marketer_name
 WHERE od.marketer IS NOT NULl
 group by DATE(od.inserted_at),JSON_VALUE(od.marketer, "$.name"),id_staff,manager,od.brand
