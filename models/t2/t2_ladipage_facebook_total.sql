@@ -10,4 +10,4 @@ FROM {{ref('t1_pancake_pos_order_total')}} AS od
 left join {{ref("t1_marketer_facebook_total")}} as mar
 on JSON_VALUE(od.marketer, '$.name') = mar.marketer_name
 WHERE od.marketer IS NOT NULl
-group by DATE(od.inserted_at),JSON_VALUE(od.marketer, "$.name"),id_staff,manager,od.brand
+group by DATE(od.inserted_at),mar.staff,mar.ma_nhan_vien,mar.manager,od.brand
