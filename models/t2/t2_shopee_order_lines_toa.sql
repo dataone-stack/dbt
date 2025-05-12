@@ -25,7 +25,7 @@ sale_return_detail AS (
     SELECT 
         s.order_id,
         s.order_status,
-        s.create_time
+        s.create_time,
         s.model_sku,
         s.item_name,
         s.model_name,
