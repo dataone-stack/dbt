@@ -19,9 +19,9 @@ sale_detail AS (
         i.model_id,
         i.item_name,
         i.model_name,
-        i.model_original_price,
+        i.model_discounted_price,
         i.model_quantity_purchased,
-        i.model_original_price * i.model_quantity_purchased AS gia_san_pham
+        i.model_discounted_price * i.model_quantity_purchased AS gia_san_pham
     FROM {{ref("t1_shopee_shop_order_detail_total")}},
     UNNEST(item_list) AS i
 ),
@@ -33,7 +33,7 @@ sale_return_detail AS (
         s.model_sku,
         s.item_name,
         s.model_name,
-        s.model_original_price,
+        s.model_discounted_price,
         s.model_quantity_purchased,
         s.gia_san_pham,
         r.amount,
