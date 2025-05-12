@@ -1,41 +1,12 @@
-WITH return_detail AS (
-    SELECT 
-        order_id, 
-        i.variation_sku,
-        i.amount, 
-        i.item_price, 
-        i.amount * item_price AS so_tien_hoan_tra
-    FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
-    UNNEST(item) AS i
+with return_detail as(
+SELECT 
+order_id, 
+i.variation_sku, 
+i.amount * item_price as so_tien_hoan_tra
+  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
+  UNNEST(item) as i
 ),
-sale_detail AS (
-    SELECT
-        order_id,
-        order_status,
-        DATETIME_ADD(create_time, INTERVAL 7 HOUR) AS create_time,
-        i.model_sku,
-        i.model_name,
-        i.model_id,
-        i.item_name,
-    FROM {{ref("t1_shopee_shop_order_detail_total")}},
-    UNNEST(item_list) AS i
 
-),
-sale_return_detail AS (
-    SELECT 
-        s.order_id,
-        s.order_status,
-        s.create_time,
-        s.model_sku,
-        s.item_name,
-        s.model_name,
-        COALESCE(r.so_tien_hoan_tra, 0) AS so_tien_hoan_tra,
-    FROM sale_detail s
-    LEFT JOIN return_detail r 
-        ON s.order_id = r.order_id 
-        AND s.model_sku = r.variation_sku 
-
-),
 total_amount AS (
     SELECT 
         order_id,
@@ -46,60 +17,41 @@ total_amount AS (
     GROUP BY order_id
 
 ),
-calculated_fees AS (
-    SELECT
-        sr.*,
-        i.discounted_price,
-        i.quantity_purchased,
-        COALESCE(i.discounted_price * i.quantity_purchased, 0) AS tong_tien_san_pham,
-        COALESCE((i.discounted_price / ta.total_tong_tien_san_pham) * fee.actual_shipping_fee, 0) AS phi_van_chuyen_thuc_te,
-        CASE
-            WHEN ta.total_tong_tien_san_pham > 0
-            THEN (i.discounted_price / ta.total_tong_tien_san_pham) * fee.shopee_shipping_rebate
-            ELSE 0
-        END AS phi_van_chuyen_tro_gia_tu_shopee,
-        CASE
-            WHEN ta.total_tong_tien_san_pham > 0
-            THEN (i.discounted_price / ta.total_tong_tien_san_pham) * fee.commission_fee
-            ELSE 0
-        END AS phi_co_dinh,
-        CASE
-            WHEN ta.total_tong_tien_san_pham > 0
-            THEN (i.discounted_price / ta.total_tong_tien_san_pham) * fee.service_fee
-            ELSE 0
-        END AS phi_dich_vu,
-        CASE
-            WHEN ta.total_tong_tien_san_pham > 0
-            THEN (i.discounted_price / ta.total_tong_tien_san_pham) * fee.seller_transaction_fee
-            ELSE 0
-        END AS phi_thanh_toan,
-        i.discount_from_voucher_shopee AS shopee_voucher
 
-    FROM {{ref("t1_shopee_shop_fee_total")}} AS fee
-    LEFT JOIN sale_return_detail sr
-        ON fee.order_id= sr.order_id
-    LEFT JOIN UNNEST(fee.items) AS i
-        ON sr.model_sku = i.model_sku
-    LEFT JOIN total_amount ta
-        ON fee.order_id = ta.order_id
+sale_detail as(
+ select 
+    detail.order_id,
+    i.model_sku,
+    i.quantity_purchased,
+    i.discounted_price,
+    i.quantity_purchased * i.discounted_price as tong_tien_san_pham,
+    COALESCE(rd.so_tien_hoan_tra, 0) as so_tien_hoan_tra,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.service_fee ELSE 0 END, 0) as phi_dich_vu,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee ELSE 0 END, 0) as phi_thanh_toan,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.actual_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_thuc_te,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate ELSE 0 END, 0) as phi_van_chuyen_tro_gia_tu_shopee,
+    i.discount_from_voucher_shopee as shopee_voucher
+  from {{ref("t1_shopee_shop_fee_total")}} as detail,
+  unnest (items) as i
+  left join return_detail rd on detail.order_id = rd.order_id and i.model_sku = rd.variation_sku
+  left join total_amount ta on ta.order_id = detail.order_id
+),
 
+sale_order_detail as (
+  select
+    DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR) as create_time,
+    ord.order_status,
+    sd.*
+   
+  from sale_detail as sd
+  left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
+  on sd.order_id = ord.order_id
 )
 
-SELECT
-    *,
-    CASE
-        WHEN tong_tien_san_pham > 0
-        THEN tong_tien_san_pham - phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee
-        else 0
-    END AS doanh_thu_don_hang_sau_khi_tru_phi_van_chuyen,
-    CASE
-        WHEN tong_tien_san_pham > 0
-        THEN tong_tien_san_pham - phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_dich_vu - phi_thanh_toan
-        else 0
-    END AS doanh_thu_thuc_cty_nhan_duoc,
-    (tong_tien_san_pham - shopee_voucher ) as so_tien_khach_phai_tra
-
-FROM calculated_fees
-
-
+select 
+  * ,
+  round(COALESCE(tong_tien_san_pham - shopee_voucher)) as so_tien_khach_tra,
+  round(COALESCE(tong_tien_san_pham - phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu)) as doanh_thu_thuc_cty_nhan_duoc
+from sale_order_detail
 
