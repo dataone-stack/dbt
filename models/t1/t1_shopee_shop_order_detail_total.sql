@@ -1,0 +1,1 @@
+select * from `chaching_shopee_shop_dwh.shopee_order_detail_chaching_brand`
