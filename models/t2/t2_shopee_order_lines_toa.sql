@@ -105,4 +105,4 @@ SELECT
     END AS doanh_thu_thuc_cty_nhan_duoc,
     (gia_san_pham - shopee_voucher ) as so_tien_khach_phai_tra
 
-FROM calculated_fees;
+FROM calculated_fees
