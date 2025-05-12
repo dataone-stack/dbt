@@ -12,7 +12,7 @@ WITH return_detail AS (
 sale_detail AS (
     SELECT
         order_id,
-        
+        order_status,
         DATETIME(create_time, "Asia/Ho_Chi_Minh") AS create_time,
         i.model_sku,
         i.item_id,
@@ -28,6 +28,7 @@ sale_detail AS (
 sale_return_detail AS (
     SELECT 
         s.order_id,
+        s.order_status,
         s.create_time,
         s.model_sku,
         s.item_name,
@@ -51,41 +52,57 @@ total_amount AS (
         SUM(tong_tien_san_pham) AS total_tong_tien_san_pham
     FROM sale_return_detail
     GROUP BY order_id
+),
+calculated_fees AS (
+    SELECT
+        sr.*,
+        CASE
+            WHEN ta.total_tong_tien_san_pham > 0
+            THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.actual_shipping_fee
+            ELSE 0
+        END AS phi_van_chuyen_thuc_te,
+        CASE
+            WHEN ta.total_tong_tien_san_pham > 0
+            THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.shopee_shipping_rebate
+            ELSE 0
+        END AS phi_van_chuyen_tro_gia_tu_shopee,
+        CASE
+            WHEN ta.total_tong_tien_san_pham > 0
+            THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.commission_fee
+            ELSE 0
+        END AS phi_co_dinh,
+        CASE
+            WHEN ta.total_tong_tien_san_pham > 0
+            THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.service_fee
+            ELSE 0
+        END AS phi_dich_vu,
+        CASE
+            WHEN ta.total_tong_tien_san_pham > 0
+            THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.seller_transaction_fee
+            ELSE 0
+        END AS phi_thanh_toan,
+        i.discount_from_voucher_shopee AS shopee_voucher
+    FROM sale_return_detail sr
+    LEFT JOIN {{ref("t1_shopee_shop_fee_total")}} AS fee
+        ON sr.order_id = fee.order_id
+    LEFT JOIN UNNEST(fee.items) AS i
+        ON sr.model_sku = i.model_sku
+    LEFT JOIN total_amount ta
+        ON sr.order_id = ta.order_id
 )
 
 SELECT
-    sr.*,
+    *,
     CASE
-        WHEN ta.total_tong_tien_san_pham > 0
-        THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.actual_shipping_fee
-        ELSE 0
-    END AS phi_van_chuyen_thuc_te,
+        WHEN tong_tien_san_pham > 0
+        THEN tong_tien_san_pham - phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee
+        else 0
+    END AS doanh_thu_don_hang_sau_khi_tru_phi_van_chuyen,
     CASE
-        WHEN ta.total_tong_tien_san_pham > 0
-        THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.shopee_shipping_rebate
-        ELSE 0
-    END AS phi_van_chuyen_tro_gia_tu_shopee,
-    CASE
-        WHEN ta.total_tong_tien_san_pham > 0
-        THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.commission_fee
-        ELSE 0
-    END AS phi_co_dinh,
-    CASE
-        WHEN ta.total_tong_tien_san_pham > 0
-        THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.service_fee
-        ELSE 0
-    END AS phi_dich_vu,
-    CASE
-        WHEN ta.total_tong_tien_san_pham > 0
-        THEN (sr.tong_tien_san_pham / ta.total_tong_tien_san_pham) * fee.seller_transaction_fee
-        ELSE 0
-    END AS phi_thanh_toan,
-    i.discount_from_voucher_shopee AS shopee_voucher
-FROM sale_return_detail sr
-LEFT JOIN {{ref("t1_shopee_shop_fee_total")}} AS fee
-    ON sr.order_id = fee.order_id
-LEFT JOIN UNNEST(fee.items) AS i
-    ON sr.model_sku = i.model_sku
-LEFT JOIN total_amount ta
-    ON sr.order_id = ta.order_id
+        WHEN tong_tien_san_pham > 0
+        THEN tong_tien_san_pham - phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_dich_vu - phi_thanh_toan
+        else 0
+    END AS doanh_thu_thuc_cty_nhan_duoc,
+    (gia_san_pham - shopee_voucher ) as so_tien_khach_phai_tra
 
+FROM calculated_fees;
