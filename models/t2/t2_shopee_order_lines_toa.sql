@@ -13,7 +13,7 @@ sale_detail AS (
     SELECT
         order_id,
         order_status,
-        DATETIME(TIMESTAMP_ADD(create_time, INTERVAL 7 HOUR)) AS create_time,
+        DATETIME_ADD(create_time, INTERVAL 7 HOUR) AS create_time,
         i.model_sku,
         i.item_id,
         i.model_id,
