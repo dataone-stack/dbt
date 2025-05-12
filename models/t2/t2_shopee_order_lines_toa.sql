@@ -33,7 +33,7 @@ sale_return_detail AS (
         s.model_sku,
         s.item_name,
         s.model_name,
-        s.model_discounted_price,
+        s.model_original_price,
         s.model_quantity_purchased,
         s.gia_san_pham,
         r.amount,
