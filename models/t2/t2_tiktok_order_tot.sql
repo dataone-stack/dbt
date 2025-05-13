@@ -1,4 +1,6 @@
-SELECT order_id AS Order_ID,
+SELECT 
+  brand,
+  order_id AS Order_ID,
   order_status AS Order_Status,
   NULL AS Order_Substatus, -- không có trong JSON
   cancel_reason AS Cancelation_Return_Type,
