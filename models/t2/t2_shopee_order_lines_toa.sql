@@ -22,6 +22,8 @@ sale_detail as(
  select 
     detail.order_id,
     i.model_sku,
+    i.item_name,
+    i.model_name,
     i.quantity_purchased,
     i.discounted_price,
     COALESCE(rd.so_tien_hoan_tra, 0) as so_tien_hoan_tra,
@@ -49,9 +51,23 @@ sale_order_detail as (
   on sd.order_id = ord.order_id
 )
 
-select 
-  * ,
-  round(COALESCE(tong_tien_san_pham - shopee_voucher)) as so_tien_khach_tra,
-  round(COALESCE(tong_tien_san_pham - phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu)) as doanh_thu_thuc_cty_nhan_duoc
+select
+  create_time,
+  order_status,
+  order_id,
+  item_name,
+  model_name,
+  model_sku,
+  quantity_purchased,
+  discounted_price,
+  tong_tien_san_pham,
+  so_tien_hoan_tra,
+  phi_van_chuyen_thuc_te,
+  phi_van_chuyen_tro_gia_tu_shopee,
+  phi_co_dinh,
+  phi_dich_vu,
+  phi_thanh_toan,
+  round(COALESCE(tong_tien_san_pham -so_tien_hoan_tra- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu)) as doanh_thu_don_hang_uoc_tinh,
+  shopee_voucher,
+  round(COALESCE(tong_tien_san_pham - shopee_voucher - so_tien_hoan_tra,0)) as tong_tien_thanh_toan
 from sale_order_detail
-
