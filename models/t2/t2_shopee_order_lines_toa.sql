@@ -25,7 +25,7 @@ sale_detail as(
     i.quantity_purchased,
     i.discounted_price,
     COALESCE(rd.so_tien_hoan_tra, 0) as so_tien_hoan_tra,
-    (i.quantity_purchased * i.discounted_price) - so_tien_hoan_tra as tong_tien_san_pham,
+    (i.quantity_purchased * i.discounted_price) - COALESCE(rd.so_tien_hoan_tra, 0) as tong_tien_san_pham,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.service_fee ELSE 0 END, 0) as phi_dich_vu,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee ELSE 0 END, 0) as phi_thanh_toan,
