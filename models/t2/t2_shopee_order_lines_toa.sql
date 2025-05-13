@@ -33,7 +33,10 @@ sale_detail as(
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee ELSE 0 END, 0) as phi_thanh_toan,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.actual_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_thuc_te,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate ELSE 0 END, 0) as phi_van_chuyen_tro_gia_tu_shopee,
-    i.discount_from_voucher_shopee as shopee_voucher
+    i.discount_from_voucher_shopee as shopee_voucher,
+    i.discount_from_coin,
+    i.discount_from_voucher_seller,
+    i.shopee_discount
   from {{ref("t1_shopee_shop_fee_total")}} as detail,
   unnest (items) as i
   left join return_detail rd on detail.order_id = rd.order_id and i.model_sku = rd.variation_sku
@@ -69,5 +72,8 @@ select
   phi_thanh_toan,
   round(tong_tien_san_pham - phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
   shopee_voucher,
-  round(tong_tien_san_pham - shopee_voucher ) as tong_tien_thanh_toan
+  discount_from_coin,
+  discount_from_voucher_seller,
+  shopee_discount
+  round(tong_tien_san_pham - shopee_voucher-discount_from_coin-discount_from_voucher_seller-shopee_discount ) as tong_tien_thanh_toan
 from sale_order_detail
