@@ -67,7 +67,7 @@ select
   phi_co_dinh,
   phi_dich_vu,
   phi_thanh_toan,
-  round(COALESCE(tong_tien_san_pham -so_tien_hoan_tra- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu)) as doanh_thu_don_hang_uoc_tinh,
+  round(tong_tien_san_pham -so_tien_hoan_tra- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
   shopee_voucher,
-  round(COALESCE(tong_tien_san_pham - shopee_voucher - so_tien_hoan_tra,0)) as tong_tien_thanh_toan
+  round(tong_tien_san_pham - shopee_voucher - so_tien_hoan_tra) as tong_tien_thanh_toan
 from sale_order_detail
