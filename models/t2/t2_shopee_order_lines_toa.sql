@@ -74,6 +74,6 @@ select
   shopee_voucher,
   discount_from_coin,
   discount_from_voucher_seller,
-  shopee_discount
+  shopee_discount,
   round(tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - shopee_discount ) as tong_tien_thanh_toan
 from sale_order_detail
