@@ -24,7 +24,7 @@ SELECT
   JSON_EXTRACT_SCALAR(payment, '$.tax') AS Taxes,
   JSON_EXTRACT_SCALAR(payment, '$.total_amount') AS Order_Amount,
   NULL AS Order_Refund_Amount, -- không có
-  create_time AS Created_Time,
+  DATETIME_ADD(create_time, INTERVAL 7 HOUR) AS Create_Time,
   paid_time AS Paid_Time,
   rts_time AS RTS_Time,
   collection_time AS Shipped_Time,
