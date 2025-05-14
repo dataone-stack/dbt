@@ -48,11 +48,12 @@ sale_order_detail as (
   select
     DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR) as create_time,
     ord.order_status,
-    sd.*
-   
+    sd.*,
+    COALESCE((sd.tong_tien_san_pham/ta.total_tong_tien_san_pham)*ord.total_amount,0) as total_amount
   from sale_detail as sd
   left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
   on sd.order_id = ord.order_id
+  left join total_amount ta on ta.order_id = detail.order_id
 )
 
 select
@@ -65,6 +66,7 @@ select
   quantity_purchased,
   discounted_price,
   tong_tien_san_pham,
+  total_amount,
   so_tien_hoan_tra,
   phi_van_chuyen_thuc_te,
   phi_van_chuyen_tro_gia_tu_shopee,
@@ -78,4 +80,4 @@ select
   shopee_discount,
   khuyen_mai_cho_the_tin_dung,
   round(tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - shopee_discount - khuyen_mai_cho_the_tin_dung ) as tong_tien_thanh_toan
-from sale_order_detail
+from sale_order_detail,
