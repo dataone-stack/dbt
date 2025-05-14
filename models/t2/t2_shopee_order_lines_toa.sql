@@ -52,6 +52,8 @@ sale_order_detail as (
     ord.order_status,
     ord.payment_method as hinh_thuc_thanh_toan,
     ord.shipping_carrier as ten_don_vi_van_chuyen,
+    ord.ship_by_date as ngay_ship,
+    ord.buyer_cancel_reason as ly_do_huy_don,
     sd.*,
     COALESCE((sd.tong_tien_san_pham/ta.total_tong_tien_san_pham)*ord.total_amount,0) as total_amount
   from sale_detail as sd
@@ -65,6 +67,8 @@ select
   ten_nguoi_mua,
   hinh_thuc_thanh_toan,
   ten_don_vi_van_chuyen,
+  ngay_ship,
+  ly_do_huy_don,
   order_status,
   order_id,
   item_name,
