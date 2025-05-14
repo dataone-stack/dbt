@@ -10,7 +10,7 @@ i.amount * item_price as so_tien_hoan_tra
 total_amount AS (
     SELECT 
         order_id,
-        SUM(i.discounted_price*i.quantity_purchased) AS total_tong_tien_san_pham
+        SUM(i.discounted_price) AS total_tong_tien_san_pham
     FROM {{ref("t1_shopee_shop_fee_total")}},   
     UNNEST(items) AS i
 
@@ -27,14 +27,14 @@ sale_detail as(
     i.quantity_purchased,
     i.discounted_price,
     COALESCE(rd.so_tien_hoan_tra, 0) as so_tien_hoan_tra,
-    (i.quantity_purchased * i.discounted_price) as tong_tien_san_pham,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.service_fee ELSE 0 END, 0) as phi_dich_vu,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee ELSE 0 END, 0) as phi_thanh_toan,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.actual_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_thuc_te,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate ELSE 0 END, 0) as phi_van_chuyen_tro_gia_tu_shopee,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.credit_card_promotion ELSE 0 END, 0) as khuyen_mai_cho_the_tin_dung,
-    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.quantity_purchased * i.discounted_price) / ta.total_tong_tien_san_pham) * detail.final_shipping_fee ELSE 0 END, 0) as phi_van_chuyen,
+    (i.discounted_price) as tong_tien_san_pham,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.service_fee ELSE 0 END, 0) as phi_dich_vu,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee ELSE 0 END, 0) as phi_thanh_toan,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.actual_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_thuc_te,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate ELSE 0 END, 0) as phi_van_chuyen_tro_gia_tu_shopee,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.credit_card_promotion ELSE 0 END, 0) as khuyen_mai_cho_the_tin_dung,
+    COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.final_shipping_fee ELSE 0 END, 0) as phi_van_chuyen,
     i.discount_from_voucher_shopee as shopee_voucher,
     i.discount_from_coin,
     i.discount_from_voucher_seller,
@@ -80,5 +80,5 @@ select
   discount_from_voucher_seller,
   khuyen_mai_cho_the_tin_dung,
   phi_van_chuyen,
-  round(tong_tien_san_pham - phi_van_chuyen - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung ) as tong_tien_thanh_toan
+  round(tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung ) as tong_tien_thanh_toan
 from sale_order_detail
