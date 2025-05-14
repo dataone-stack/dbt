@@ -21,6 +21,7 @@ total_amount AS (
 sale_detail as(
  select 
     detail.order_id,
+    detail.buyer_user_name,
     i.model_sku,
     i.item_name,
     i.model_name,
@@ -49,6 +50,8 @@ sale_order_detail as (
   select
     DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR) as create_time,
     ord.order_status,
+    ord.payment_method,
+    ord.shipping_carrier,
     sd.*,
     COALESCE((sd.tong_tien_san_pham/ta.total_tong_tien_san_pham)*ord.total_amount,0) as total_amount
   from sale_detail as sd
@@ -59,13 +62,15 @@ sale_order_detail as (
 
 select
   create_time,
+  buyer_user_name,
+  payment_method,
+  shipping_carrier,
   order_status,
   order_id,
   item_name,
   model_name,
   model_sku,
   quantity_purchased,
-  discounted_price,
   tong_tien_san_pham,
   total_amount,
   so_tien_hoan_tra,
