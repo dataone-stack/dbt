@@ -53,7 +53,7 @@ sale_order_detail as (
   from sale_detail as sd
   left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
   on sd.order_id = ord.order_id
-  left join total_amount ta on ta.order_id = detail.order_id
+  left join total_amount ta on ta.order_id = sd.order_id
 )
 
 select
