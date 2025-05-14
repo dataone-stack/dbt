@@ -21,7 +21,7 @@ total_amount AS (
 sale_detail as(
  select 
     detail.order_id,
-    detail.buyer_user_name,
+    detail.buyer_user_name as ten_nguoi_mua,
     i.model_sku,
     i.item_name,
     i.model_name,
@@ -50,8 +50,8 @@ sale_order_detail as (
   select
     DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR) as create_time,
     ord.order_status,
-    ord.payment_method,
-    ord.shipping_carrier,
+    ord.payment_method as hinh_thuc_thanh_toan,
+    ord.shipping_carrier as ten_don_vi_van_chuyen,
     sd.*,
     COALESCE((sd.tong_tien_san_pham/ta.total_tong_tien_san_pham)*ord.total_amount,0) as total_amount
   from sale_detail as sd
@@ -62,9 +62,9 @@ sale_order_detail as (
 
 select
   create_time,
-  buyer_user_name,
-  payment_method,
-  shipping_carrier,
+  ten_nguoi_mua,
+  hinh_thuc_thanh_toan,
+  ten_don_vi_van_chuyen,
   order_status,
   order_id,
   item_name,
