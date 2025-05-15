@@ -73,6 +73,8 @@ select
   order_id,
   item_name,
   model_name,
+  SUBSTRING_INDEX(model_name, ',', 1) AS color,
+  TRIM(SUBSTRING_INDEX(model_name, ',', -1)) AS size,
   model_sku,
   quantity_purchased,
   tong_tien_san_pham,
