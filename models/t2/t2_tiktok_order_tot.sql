@@ -2,7 +2,6 @@ WITH LineItems AS (
   SELECT
     o.brand,
     o.order_id,
-    o.item_count,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     JSON_VALUE(li, '$.seller_sku') AS Seller_SKU,
     JSON_VALUE(li, '$.product_name') AS Product_Name,
@@ -19,12 +18,11 @@ WITH LineItems AS (
     SUM(CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64)) AS SKU_Subtotal_After_Discount,
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID
-  FROM {{ ref('t1_tiktok_order_tot')}} o
+  FROM {{ ref('t1_tiktok_order_tot') }} o
   CROSS JOIN UNNEST(o.line_items) AS li
   GROUP BY
     o.brand,
     o.order_id,
-    o.item_count,
     JSON_VALUE(li, '$.sku_id'),
     JSON_VALUE(li, '$.seller_sku'),
     JSON_VALUE(li, '$.product_name'),
@@ -139,7 +137,7 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN {{ ref('t1_tiktok_order_tot')}} o
+  JOIN {{ ref('t1_tiktok_order_tot') }} o
     ON li.order_id = o.order_id
     AND li.brand = o.brand
 )
