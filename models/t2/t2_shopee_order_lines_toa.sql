@@ -54,8 +54,7 @@ sale_order_detail as (
     ord.shipping_carrier as ten_don_vi_van_chuyen,
     ord.ship_by_date as ngay_ship,
     ord.buyer_cancel_reason as ly_do_huy_don,
-    sd.*,
-    COALESCE((sd.tong_tien_san_pham/ta.total_tong_tien_san_pham)*ord.total_amount,0) as total_amount
+    sd.*
   from sale_detail as sd
   left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
   on sd.order_id = ord.order_id
@@ -76,7 +75,6 @@ select
   model_sku,
   quantity_purchased,
   tong_tien_san_pham,
-  total_amount,
   so_tien_hoan_tra,
   phi_van_chuyen_thuc_te,
   phi_van_chuyen_tro_gia_tu_shopee,
