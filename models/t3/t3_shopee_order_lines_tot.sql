@@ -7,7 +7,7 @@ with total_amount AS (
 
     GROUP BY order_id
 
-),
+)
 
 
 select 
