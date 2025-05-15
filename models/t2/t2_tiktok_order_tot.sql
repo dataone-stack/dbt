@@ -10,6 +10,7 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.sku_type') AS Normal_or_Preorder,
     CAST(JSON_VALUE(li, '$.is_gift') AS BOOL) AS is_gift,
     JSON_VALUE(li, '$.cancel_reason') AS SKU_Cancel_Reason,
+    JSON_VALUE(li, '$.display_status') AS SKU_Display_Status,
     COUNT(*) AS Quantity,
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64) AS SKU_Unit_Original_Price,
     SUM(CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64)) AS SKU_Subtotal_Before_Discount,
@@ -31,6 +32,7 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.sku_type'),
     CAST(JSON_VALUE(li, '$.is_gift') AS BOOL),
     JSON_VALUE(li, '$.cancel_reason'),
+    JSON_VALUE(li, '$.display_status'),
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id')
@@ -50,7 +52,7 @@ OrderData AS (
       ELSE o.order_status
     END AS Order_Substatus,
     CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL THEN 'Cancel'
+      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN 'Cancel'
       ELSE NULL
     END AS Cancelation_Return_Type,
     li.Normal_or_Preorder,
@@ -60,7 +62,7 @@ OrderData AS (
     li.Variation,
     li.Quantity,
     CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.is_gift = FALSE THEN li.Quantity
+      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.is_gift = FALSE AND li.SKU_Display_Status = 'CANCELLED' THEN li.Quantity
       ELSE 0
     END AS Sku_Quantity_of_Return,
     li.SKU_Unit_Original_Price,
@@ -72,11 +74,12 @@ OrderData AS (
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_platform_discount') AS FLOAT64) AS Shipping_Fee_Platform_Discount,
-    CAST(JSON_VALUE(o.payment, '$.platform_discount') AS FLOAT64) AS Payment_Platform_Discount,
+    -- CAST(JSON_VALUE(o.payment, '$.platform_discount') AS FLOAT64) AS Payment_Platform_Discount,
+    0 AS Payment_Platform_Discount,
     CAST(JSON_VALUE(o.payment, '$.tax') AS FLOAT64) AS Taxes,
     CAST(JSON_VALUE(o.payment, '$.total_amount') AS FLOAT64) AS Order_Amount,
     CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL THEN li.SKU_Refund_Amount
+      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN li.SKU_Refund_Amount
       ELSE NULL
     END AS Order_Refund_Amount,
     DATETIME_ADD(o.create_time, INTERVAL 7 HOUR) AS Created_Time,
