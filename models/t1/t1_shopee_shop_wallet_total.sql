@@ -1,0 +1,1 @@
+select * from `chaching_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching_brand`
