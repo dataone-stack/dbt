@@ -82,7 +82,7 @@ select
   phi_dich_vu,
   phi_thanh_toan,
   phi_hoa_hong_tiep_thi_lien_ket,
-  round(tong_tien_san_pham - phi_hoa_hong_tiep_thi_lien_ket- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
+  round(tong_tien_san_pham -so_tien_hoan_tra- phi_hoa_hong_tiep_thi_lien_ket- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
   shopee_voucher,
   discount_from_coin,
   discount_from_voucher_seller,
