@@ -2,7 +2,7 @@ with return_detail as(
 SELECT 
 order_id, 
 i.variation_sku, 
-i.refund_amount as so_tien_hoan_tra
+i.refund_amount * i.amount  as so_tien_hoan_tra
   FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) as i
 ),
