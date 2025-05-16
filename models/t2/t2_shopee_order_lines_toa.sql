@@ -63,6 +63,7 @@ sale_order_detail as (
 
 select
   create_time,
+  'Chaching' as brand,
   ten_nguoi_mua,
   hinh_thuc_thanh_toan,
   ten_don_vi_van_chuyen,
