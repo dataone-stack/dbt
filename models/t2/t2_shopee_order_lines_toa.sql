@@ -1,6 +1,7 @@
 with return_detail as(
 SELECT 
-order_id, 
+order_id,
+brand,
 i.variation_sku, 
 i.refund_amount * i.amount  as so_tien_hoan_tra
   FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
@@ -10,6 +11,7 @@ i.refund_amount * i.amount  as so_tien_hoan_tra
 total_amount AS (
     SELECT 
         order_id,
+        brand,
         SUM(i.discounted_price) AS total_tong_tien_san_pham
     FROM {{ref("t1_shopee_shop_fee_total")}},   
     UNNEST(items) AS i
@@ -21,6 +23,7 @@ total_amount AS (
 sale_detail as(
  select 
     detail.order_id,
+    detail.brand,
     detail.buyer_user_name as ten_nguoi_mua,
     i.model_sku,
     i.item_name,
@@ -42,8 +45,8 @@ sale_detail as(
     i.shopee_discount
   from {{ref("t1_shopee_shop_fee_total")}} as detail,
   unnest (items) as i
-  left join return_detail rd on detail.order_id = rd.order_id and i.model_sku = rd.variation_sku
-  left join total_amount ta on ta.order_id = detail.order_id
+  left join return_detail rd on detail.order_id = rd.order_id and i.model_sku = rd.variation_sku and detail.brand = rd.brand
+  left join total_amount ta on ta.order_id = detail.order_id and ta.brand = detail.brand
 ),
 
 sale_order_detail as (
@@ -59,13 +62,13 @@ sale_order_detail as (
     
   from sale_detail as sd
   left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
-  on sd.order_id = ord.order_id
-  left join total_amount ta on ta.order_id = sd.order_id
+  on sd.order_id = ord.order_id and sd.brand = ord.brand
+  left join total_amount ta on ta.order_id = sd.order_id and ta.brand = sd.brand
 )
 
 select
   create_time,
-  'Chaching' as brand,
+  brand,
   ten_nguoi_mua,
   hinh_thuc_thanh_toan,
   ten_don_vi_van_chuyen,
