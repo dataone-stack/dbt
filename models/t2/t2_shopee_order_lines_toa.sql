@@ -16,7 +16,7 @@ total_amount AS (
     FROM {{ref("t1_shopee_shop_fee_total")}},   
     UNNEST(items) AS i
 
-    GROUP BY order_id
+    GROUP BY order_id,brand
 
 ),
 
