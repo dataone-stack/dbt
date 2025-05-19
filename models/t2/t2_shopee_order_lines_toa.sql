@@ -29,6 +29,7 @@ sale_detail as(
     i.item_name,
     i.model_name,
     i.quantity_purchased,
+    (i.original_price/ i.quantity_purchased) as gia_san_pham_goc,
     i.discounted_price,
     COALESCE(rd.so_tien_hoan_tra, 0) as so_tien_hoan_tra,
     (i.discounted_price) as tong_tien_san_pham,
@@ -67,7 +68,7 @@ sale_order_detail as (
 )
 
 select
-    test_doanh_thu,
+test_doanh_thu,
   create_time,
   brand,
   ten_nguoi_mua,
@@ -82,6 +83,7 @@ select
   model_name,
   model_sku,
   quantity_purchased,
+  gia_san_pham_goc,
   tong_tien_san_pham,
   so_tien_hoan_tra,
   phi_van_chuyen_thuc_te,
