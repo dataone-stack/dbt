@@ -1,6 +1,5 @@
 SELECT
     create_time,
-    test_doanh_thu,
     brand,
     ten_nguoi_mua,
     hinh_thuc_thanh_toan,
@@ -10,6 +9,7 @@ SELECT
     order_status,
     order_id,
     sum(day_to_ship) as day_to_ship,
+    sum(test_doanh_thu) as test_doanh_thu,
     SUM(tong_tien_san_pham) AS tong_tien_san_pham,
     SUM(so_tien_hoan_tra) AS so_tien_hoan_tra,
     SUM(phi_van_chuyen_thuc_te) AS phi_van_chuyen_thuc_te,
