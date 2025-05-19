@@ -1,5 +1,6 @@
 SELECT
     create_time,
+    test_doanh_thu,
     brand,
     ten_nguoi_mua,
     hinh_thuc_thanh_toan,
