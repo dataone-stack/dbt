@@ -60,8 +60,8 @@ sale_order_detail as (
     ord.shipping_carrier as ten_don_vi_van_chuyen,
     ord.ship_by_date as ngay_ship,
     ord.buyer_cancel_reason as ly_do_huy_don,
-    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship,0)  as day_to_ship,
-    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount,0)  as test_doanh_thu
+    COALESCE(((sd.tong_tien_san_pham) / ta.total_tong_tien_san_pham) * ord.days_to_ship,0)  as day_to_ship,
+    COALESCE(((sd.tong_tien_san_pham) / ta.total_tong_tien_san_pham) * ord.total_amount,0)  as test_doanh_thu
   from sale_detail as sd
   left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
   on sd.order_id = ord.order_id and sd.brand = ord.brand
