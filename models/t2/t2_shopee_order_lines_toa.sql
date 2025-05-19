@@ -29,11 +29,9 @@ sale_detail as(
     i.item_name,
     i.model_name,
     i.quantity_purchased,
-    (i.original_price/i.quantity_purchased) as gia_san_pham_goc,
-    (i.discounted_price/i.quantity_purchased) as gia_san_pham_sau_khi_khuyen_mai,
-
+    i.discounted_price,
     COALESCE(rd.so_tien_hoan_tra, 0) as so_tien_hoan_tra,
-    ((i.discounted_price/i.quantity_purchased) * quantity_purchased - rd.so_tien_hoan_tra) as tong_tien_san_pham,
+    (i.discounted_price) as tong_tien_san_pham,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.service_fee ELSE 0 END, 0) as phi_dich_vu,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee ELSE 0 END, 0) as phi_thanh_toan,
@@ -60,8 +58,8 @@ sale_order_detail as (
     ord.shipping_carrier as ten_don_vi_van_chuyen,
     ord.ship_by_date as ngay_ship,
     ord.buyer_cancel_reason as ly_do_huy_don,
-    COALESCE(((sd.tong_tien_san_pham) / ta.total_tong_tien_san_pham) * ord.days_to_ship,0)  as day_to_ship,
-    COALESCE(((sd.tong_tien_san_pham) / ta.total_tong_tien_san_pham) * ord.total_amount,0)  as test_doanh_thu
+    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship,0)  as day_to_ship,
+    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount,0)  as test_doanh_thu
   from sale_detail as sd
   left join {{ref("t1_shopee_shop_order_detail_total")}} as ord
   on sd.order_id = ord.order_id and sd.brand = ord.brand
@@ -92,7 +90,7 @@ select
   phi_dich_vu,
   phi_thanh_toan,
   phi_hoa_hong_tiep_thi_lien_ket,
-  round(tong_tien_san_pham - phi_hoa_hong_tiep_thi_lien_ket- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
+  round(tong_tien_san_pham -so_tien_hoan_tra- phi_hoa_hong_tiep_thi_lien_ket- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
   shopee_voucher,
   discount_from_coin,
   discount_from_voucher_seller,
