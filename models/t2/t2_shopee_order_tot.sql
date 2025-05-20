@@ -5,7 +5,7 @@ select
     vi.order_id,
     ord.order_status,
     ord.create_time as ngay_dat_hang,
-    DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR) as ngay_hoan_thanh_thanh_toan,
+    DATETIME_ADD(vi., INTERVAL 7 HOUR) as ngay_hoan_thanh_thanh_toan,
     ord.hinh_thuc_thanh_toan as phuong_thuc_thanh_toan,
     ord.doanh_thu_don_hang_uoc_tinh as doanh_thu_don_hang,
     ord.tong_tien_san_pham as tong_tien_san_pham,
