@@ -1,5 +1,6 @@
 select 
     'Order' as don_hang_san_pham,
+    ord.brand,
     vi.order_id,
     ord.create_time as ngay_dat_hang,
     vi.create_time as ngay_hoan_thanh_thanh_toan,
