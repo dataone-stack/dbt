@@ -10,9 +10,12 @@ select
     ord.phi_van_chuyen_nguoi_mua_tra * -1 as phi_van_chuyen_nguoi_mua_tra,
     ord.phi_van_chuyen_thuc_te * -1 as phi_van_chuyen_thuc_te,
     ord.phi_van_chuyen_tro_gia_tu_shopee as phi_van_chuyen_tro_gia_tu_shopee,
-    ord.tro_gia_tu_shopee as tro_gia_tu_shopee,
-    ord.discount_from_voucher_seller as ma_giam_gia,
-    
+    ord.tro_gia_tu_shopee * -1 as tro_gia_tu_shopee,
+    ord.discount_from_voucher_seller * -1 as ma_giam_gia,
+    ord.phi_co_dinh * -1 as phi_co_dinh,
+    ord.phi_dich_vu * -1 as phi_dich_vu,
+    ord.phi_thanh_toan * -1 as phi_thanh_toan,
+    ord.phi_hoa_hong_tiep_thi_lien_ket * -1 as phi_hoa_hong_tiep_thi_lien_ket
 from {{ref("t1_shopee_shop_wallet_total")}} as vi
 left join {{ref("t2_shopee_order_toa")}} as ord 
 on vi.order_id = ord.order_id
