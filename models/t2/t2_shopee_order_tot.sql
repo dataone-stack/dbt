@@ -19,5 +19,5 @@ select
     ord.phi_hoa_hong_tiep_thi_lien_ket * -1 as phi_hoa_hong_tiep_thi_lien_ket
 from {{ref("t1_shopee_shop_wallet_total")}} as vi
 left join {{ref("t2_shopee_order_toa")}} as ord 
-on vi.order_id = ord.order_id
+on vi.order_id = ord.order_id and vi.brand = ord.brand
 
