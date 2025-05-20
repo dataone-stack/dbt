@@ -1,5 +1,6 @@
 select 
     'Order' as don_hang_san_pham,
+    vi.amount as test_doanh_thu,
     ord.brand,
     vi.order_id,
     ord.order_status,
