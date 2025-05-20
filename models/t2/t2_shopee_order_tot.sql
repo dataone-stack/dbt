@@ -2,6 +2,7 @@ select
     'Order' as don_hang_san_pham,
     ord.brand,
     vi.order_id,
+    ord.order_status,
     ord.create_time as ngay_dat_hang,
     vi.create_time as ngay_hoan_thanh_thanh_toan,
     ord.hinh_thuc_thanh_toan as phuong_thuc_thanh_toan,
