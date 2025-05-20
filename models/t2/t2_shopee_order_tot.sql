@@ -1,4 +1,4 @@
-select 
+SELECT 
     'Order' as don_hang_san_pham,
     vi.amount as test_doanh_thu,
     ord.brand,
@@ -19,6 +19,6 @@ select
     ord.phi_dich_vu * -1 as phi_dich_vu,
     ord.phi_thanh_toan * -1 as phi_thanh_toan,
     ord.phi_hoa_hong_tiep_thi_lien_ket * -1 as phi_hoa_hong_tiep_thi_lien_ket
-from {{ref("t1_shopee_shop_wallet_total")}} as vi
-left join {{ref("t2_shopee_order_toa")}} ás ord 
-on vi.order_id = ord.order_id and vi.brand = ord.brand
+FROM {{ref("t1_shopee_shop_wallet_total")}} as vi
+LEFT JOIN {{ref("t2_shopee_order_toa")}} as ord 
+ON vi.order_id = ord.order_id AND vi.brand = ord.brand
