@@ -25,7 +25,6 @@ SELECT
     SUM(discount_from_voucher_seller) AS discount_from_voucher_seller,
     SUM(khuyen_mai_cho_the_tin_dung) AS khuyen_mai_cho_the_tin_dung,
     SUM(tong_tien_thanh_toan) AS tong_tien_thanh_toan,
-    sum(tong_tien_san_pham) as tong_tien_san_pham,
     sum(tro_gia_tu_shopee) as tro_gia_tu_shopee
 FROM {{ref("t2_shopee_order_lines_toa")}}
 GROUP BY
