@@ -8,6 +8,7 @@ SELECT
     ly_do_huy_don,
     order_status,
     order_id,
+    sum(voucher_from_seller) as voucher_from_seller,
     sum(day_to_ship) as day_to_ship,
     sum(test_doanh_thu) as test_doanh_thu,
     SUM(tong_tien_san_pham) AS tong_tien_san_pham,
