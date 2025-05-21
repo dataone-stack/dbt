@@ -30,10 +30,10 @@ sale_detail AS (
     i.quantity_purchased,
     (i.original_price / i.quantity_purchased) AS gia_san_pham_goc,
     i.discounted_price,
-    DATETIME_ADD(rd.update_time, INTERVAL 7 HOUR) AS ngay_return,
-    DATE(DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR)) AS ngay_tien_ve_vi,
+    -- DATETIME_ADD(rd.update_time, INTERVAL 7 HOUR) AS ngay_return,
+    -- DATE(DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR)) AS ngay_tien_ve_vi,
     CASE 
-      WHEN DATE(DATETIME_ADD(rd.update_time, INTERVAL 7 HOUR)) = DATE(DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR)) 
+      WHEN DATE(rd.update_time)= DATE(vi.create_time) 
       THEN rd.so_tien_hoan_tra 
       ELSE 0 
     END AS so_tien_hoan_tra,
