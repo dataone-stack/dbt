@@ -2,7 +2,7 @@ with return_detail as(
 SELECT 
 order_id,
 brand,
-update_time,
+update_time as ngay_hoan,
 i.variation_sku, 
 i.refund_amount * i.amount  as so_tien_hoan_tra
   FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
@@ -32,8 +32,13 @@ sale_detail as(
     i.quantity_purchased,
     (i.original_price/ i.quantity_purchased) as gia_san_pham_goc,
     i.discounted_price,
-    rd.so_tien_hoan_tra
+    
     (i.discounted_price) as tong_tien_san_pham,
+    case
+        when date(rd.ngay_hoan) = date(vi.create_time)
+        then rd.so_tien_hoan_tra
+        ELSE 0
+    end as so_tien_hoan_tra,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_nguoi_mua_tra,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.service_fee ELSE 0 END, 0) as phi_dich_vu,
@@ -50,7 +55,7 @@ sale_detail as(
   unnest (items) as i
   left join return_detail rd on detail.order_id = rd.order_id and i.model_sku = rd.variation_sku and detail.brand = rd.brand
   left join total_amount ta on ta.order_id = detail.order_id and ta.brand = detail.brand
-  left join {{ref("t1_shopee_shop_wallet_total")}} vi on detail.order_id = vi.order_id and detail.brand = vi.brand
+  left join {{ref("t1_shopee_shop_wallet_total")}} vi on detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
 ),
 
 sale_order_detail as (
