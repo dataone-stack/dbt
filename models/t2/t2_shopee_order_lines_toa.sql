@@ -38,7 +38,7 @@ sale_detail AS (
     CASE 
       WHEN DATE(rd.update_time)= DATE(vi.create_time) or rd.refund_amount = 0
       THEN rd.so_tien_hoan_tra
-      ELSE 0
+      ELSE rd.refund_amount
     END AS so_tien_hoan_tra,
     (i.discounted_price) AS tong_tien_san_pham,
     (i.discounted_price / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee AS phi_van_chuyen_nguoi_mua_tra,
