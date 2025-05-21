@@ -35,7 +35,7 @@ sale_detail AS (
     rd.update_time AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
     CASE 
-      WHEN DATE(rd.update_time)= DATE(vi.create_time) or rd.refund_amount = 0
+      WHEN DATE(rd.update_time)= DATE(vi.create_time) or rd.refund_amount >= 0
       THEN rd.so_tien_hoan_tra
       ELSE 0
     END AS so_tien_hoan_tra,
