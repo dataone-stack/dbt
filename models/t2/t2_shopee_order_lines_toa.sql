@@ -84,12 +84,12 @@ sale_order_detail_wallet AS (
   FROM sale_order_detail AS ord 
   LEFT JOIN wallet_transactions AS vi
     ON ord.order_id = vi.order_id
-    AND ord.ngay_return IS NOT NULL
     and ord.brand = vi.brand
 )
 SELECT
   test_doanh_thu,
   create_time,
+  brand,
   ngay_return,
   ngay_tien_ve_vi,
   ten_nguoi_mua,
