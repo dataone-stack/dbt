@@ -50,7 +50,6 @@ sale_detail as(
   unnest (items) as i
   left join return_detail rd on detail.order_id = rd.order_id and i.model_sku = rd.variation_sku and detail.brand = rd.brand
   left join total_amount ta on ta.order_id = detail.order_id and ta.brand = detail.brand
-  left join {{ref("t1_shopee_shop_wallet_total")}} vi on detail.order_id = vi.order_id and detail.brand = vi.brand
 ),
 
 sale_order_detail as (
