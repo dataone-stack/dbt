@@ -52,7 +52,11 @@ sale_detail AS (
     i.discount_from_voucher_shopee AS shopee_voucher,
     i.discount_from_coin,
     i.discount_from_voucher_seller,
-    i.shopee_discount AS tro_gia_tu_shopee
+    case
+        when vi.transaction_tab_type = 'wallet_order_income'
+        then i.shopee_discount
+        else 0
+    end AS tro_gia_tu_shopee
   FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
