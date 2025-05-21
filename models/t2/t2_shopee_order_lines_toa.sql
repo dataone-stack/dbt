@@ -32,7 +32,11 @@ sale_detail as(
     i.quantity_purchased,
     (i.original_price/ i.quantity_purchased) as gia_san_pham_goc,
     i.discounted_price,
-    CASE WHEN DATETIME_ADD(rd.update_time, INTERVAL 7 HOUR) = DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR) then rd.so_tien_hoan_tra else 0 end  as so_tien_hoan_tra,
+    CASE 
+        WHEN DATE(DATETIME_ADD(rd.update_time, INTERVAL 7 HOUR)) = DATE(DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR)) 
+        THEN rd.so_tien_hoan_tra 
+        ELSE 0 
+    END as so_tien_hoan_tra,
     (i.discounted_price) as tong_tien_san_pham,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_nguoi_mua_tra,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
