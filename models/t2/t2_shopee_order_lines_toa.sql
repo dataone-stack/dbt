@@ -4,7 +4,8 @@ WITH return_detail AS (
     brand,
     update_time,
     i.variation_sku, 
-    i.refund_amount * i.amount AS so_tien_hoan_tra
+    i.refund_amount * i.amount AS so_tien_hoan_tra,
+    status
   FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
 ),
@@ -52,7 +53,7 @@ sale_detail AS (
     i.shopee_discount AS tro_gia_tu_shopee
   FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
-  LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand
+  LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
   LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
 ),
@@ -79,6 +80,8 @@ SELECT
   create_time,
   ten_nguoi_mua,
   brand,
+  ngay_return,
+  ngay_tien_ve_vi,
   hinh_thuc_thanh_toan,
   ten_don_vi_van_chuyen,
   ngay_ship,
