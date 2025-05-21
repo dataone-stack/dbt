@@ -7,7 +7,8 @@ WITH return_detail AS (
     i.variation_sku, 
     i.item_price * i.amount AS so_tien_hoan_tra,
     status,
-    refund_amount
+    refund_amount,
+    return_seller_due_date
   FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
 ),
@@ -33,10 +34,10 @@ sale_detail AS (
     i.quantity_purchased,
     (i.original_price / i.quantity_purchased) AS gia_san_pham_goc,
     i.discounted_price,
-    rd.update_time AS ngay_return,
+    rd.return_seller_due_date AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
     CASE
-      WHEN DATE(rd.update_time) >= DATE(vi.create_time) or rd.refund_amount = 0
+      WHEN DATE(rd.return_seller_due_date) = DATE(vi.create_time) or rd.refund_amount = 0
       THEN rd.so_tien_hoan_tra
       ELSE 0
     END AS so_tien_hoan_tra,
