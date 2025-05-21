@@ -1,26 +1,29 @@
 WITH return_detail AS (
   SELECT 
     order_id,
+    brand,
     update_time,
     i.variation_sku, 
     i.refund_amount * i.amount AS so_tien_hoan_tra
-  FROM `chaching_shopee_shop_dwh.shopee_return_chaching_brand`,
+  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
 ),
 
 total_amount AS (
   SELECT 
     order_id,
+    brand,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
-  FROM `chaching_shopee_shop_dwh.shopee_payment_escrow_detail_chaching_brand`,   
+  FROM {{ref("t1_shopee_shop_fee_total")}},   
   UNNEST(items) AS i
-  GROUP BY order_id
+  GROUP BY order_id,brand
 ),
 
 sale_detail AS (
   SELECT 
     detail.order_id,
     detail.buyer_user_name AS ten_nguoi_mua,
+    detail.brand,
     i.model_sku,
     i.item_name,
     i.model_name,
@@ -47,11 +50,11 @@ sale_detail AS (
     i.discount_from_coin,
     i.discount_from_voucher_seller,
     i.shopee_discount AS tro_gia_tu_shopee
-  FROM `chaching_shopee_shop_dwh.shopee_payment_escrow_detail_chaching_brand` AS detail,
+  FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
-  LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku
-  LEFT JOIN total_amount ta ON ta.order_id = detail.order_id
-  LEFT JOIN `chaching_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching_brand` vi ON detail.order_id = vi.order_id
+  LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand
+  LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
+  LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand
 ),
 
 sale_order_detail AS (
@@ -66,15 +69,16 @@ sale_order_detail AS (
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship,
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount, 0) AS test_doanh_thu
   FROM sale_detail AS sd
-  LEFT JOIN `chaching_shopee_shop_dwh.shopee_order_detail_chaching_brand` AS ord
-    ON sd.order_id = ord.order_id
-  LEFT JOIN total_amount ta ON ta.order_id = sd.order_id 
+  LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} AS ord
+    ON sd.order_id = ord.order_id and sd.brand = ord.brand
+  LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
 
 SELECT
   test_doanh_thu,
   create_time,
   ten_nguoi_mua,
+  brand,
   hinh_thuc_thanh_toan,
   ten_don_vi_van_chuyen,
   ngay_ship,
