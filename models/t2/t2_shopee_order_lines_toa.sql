@@ -32,7 +32,7 @@ sale_detail as(
     i.quantity_purchased,
     (i.original_price/ i.quantity_purchased) as gia_san_pham_goc,
     i.discounted_price,
-    rd.so_tien_hoan_tra
+    rd.so_tien_hoan_tra,
     (i.discounted_price) as tong_tien_san_pham,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_nguoi_mua_tra,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
