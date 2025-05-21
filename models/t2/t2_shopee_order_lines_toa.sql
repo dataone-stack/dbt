@@ -16,9 +16,7 @@ total_amount AS (
         SUM(i.discounted_price) AS total_tong_tien_san_pham
     FROM {{ref("t1_shopee_shop_fee_total")}},   
     UNNEST(items) AS i
-
     GROUP BY order_id,brand
-
 ),
 
 sale_detail as(

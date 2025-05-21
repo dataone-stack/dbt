@@ -27,4 +27,3 @@ SELECT
 FROM {{ref("t1_shopee_shop_wallet_total")}} as vi
 LEFT JOIN {{ref("t2_shopee_order_toa")}} as ord 
 ON vi.order_id = ord.order_id AND vi.brand = ord.brand
-where vi.transaction_tab_type = 'wallet_order_income'
