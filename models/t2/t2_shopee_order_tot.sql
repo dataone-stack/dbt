@@ -15,7 +15,7 @@ SELECT
     ord.doanh_thu_don_hang_uoc_tinh as doanh_thu_don_hang,
     ord.tong_tien_san_pham as tong_tien_san_pham,
     ord.so_tien_hoan_tra * -1 as so_tien_hoan_lai,
-    ord.phi_van_chuyen_nguoi_mua_tra * -1 as phi_van_chuyen_nguoi_mua_tra,
+    ord.phi_van_chuyen_nguoi_mua_tra as phi_van_chuyen_nguoi_mua_tra,
     ord.phi_van_chuyen_thuc_te * -1 as phi_van_chuyen_thuc_te,
     ord.phi_van_chuyen_tro_gia_tu_shopee as phi_van_chuyen_tro_gia_tu_shopee,
     ord.tro_gia_tu_shopee * -1 as tro_gia_tu_shopee,
