@@ -32,11 +32,7 @@ sale_detail as(
     i.quantity_purchased,
     (i.original_price/ i.quantity_purchased) as gia_san_pham_goc,
     i.discounted_price,
-    CASE 
-        WHEN DATE(DATETIME_ADD(rd.update_time, INTERVAL 7 HOUR)) = DATE(DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR)) 
-        THEN rd.so_tien_hoan_tra 
-        ELSE 0 
-    END as so_tien_hoan_tra,
+    rd.so_tien_hoan_tra
     (i.discounted_price) as tong_tien_san_pham,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee ELSE 0 END, 0) as phi_van_chuyen_nguoi_mua_tra,
     COALESCE(CASE WHEN COALESCE(rd.so_tien_hoan_tra, 0) = 0 THEN ((i.discounted_price) / ta.total_tong_tien_san_pham) * detail.commission_fee ELSE 0 END, 0) as phi_co_dinh,
@@ -101,7 +97,6 @@ test_doanh_thu,
   phi_thanh_toan,
   phi_hoa_hong_tiep_thi_lien_ket,
   tro_gia_tu_shopee,
-  round(tong_tien_san_pham -so_tien_hoan_tra -discount_from_voucher_seller + tro_gia_tu_shopee-phi_van_chuyen_nguoi_mua_tra- phi_hoa_hong_tiep_thi_lien_ket- phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_shopee - phi_co_dinh - phi_thanh_toan - phi_dich_vu) as doanh_thu_don_hang_uoc_tinh,
   shopee_voucher,
   discount_from_coin,
   discount_from_voucher_seller,
