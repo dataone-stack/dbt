@@ -63,7 +63,7 @@ sale_order_detail AS (
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship,
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount, 0) AS test_doanh_thu
   FROM sale_detail AS sd
-  LEFT JOIN `chaching_shopee_shop_dwh.shopee_order_detail_chaching_brand` AS ord
+  LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id  and ta.brand = sd.brand
 ),
