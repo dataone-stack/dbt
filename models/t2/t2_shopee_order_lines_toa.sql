@@ -66,32 +66,32 @@ sale_order_detail AS (
   LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id  and ta.brand = sd.brand
-),
-
-sale_order_detail_wallet AS (
-  WITH wallet_transactions AS (
-    SELECT 
-      order_id,
-      brand,
-      MAX(date(create_time)) AS create_time  -- Select the most recent create_time
-    FROM {{ref("t1_shopee_shop_wallet_total")}}
-    where transaction_tab_type = 'wallet_order_income'
-    GROUP BY order_id,brand
-  )
-  SELECT 
-    ord.*,
-    vi.create_time AS ngay_tien_ve_vi
-  FROM sale_order_detail AS ord 
-  LEFT JOIN wallet_transactions AS vi
-    ON ord.order_id = vi.order_id
-    and ord.brand = vi.brand
 )
+
+
+-- sale_order_detail_wallet AS (
+--   WITH wallet_transactions AS (
+--     SELECT 
+--       order_id,
+--       brand,
+--       MAX(date(create_time)) AS create_time  -- Select the most recent create_time
+--     FROM {{ref("t1_shopee_shop_wallet_total")}}
+--     where transaction_tab_type = 'wallet_order_income'
+--     GROUP BY order_id,brand
+--   )
+--   SELECT 
+--     ord.*,
+--     vi.create_time AS ngay_tien_ve_vi
+--   FROM sale_order_detail AS ord 
+--   LEFT JOIN wallet_transactions AS vi
+--     ON ord.order_id = vi.order_id
+--     and ord.brand = vi.brand
+-- )
 SELECT
   test_doanh_thu,
   create_time,
   brand,
   ngay_return,
-  ngay_tien_ve_vi,
   ten_nguoi_mua,
   hinh_thuc_thanh_toan,
   ten_don_vi_van_chuyen,
@@ -117,11 +117,7 @@ SELECT
   tro_gia_tu_shopee,
   ROUND(
     tong_tien_san_pham 
-    - CASE 
-        WHEN DATE(ngay_tien_ve_vi) = DATE(ngay_return) 
-        THEN so_tien_hoan_tra 
-        ELSE 0 
-      END
+    - so_tien_hoan_tra
     - discount_from_voucher_seller 
     + tro_gia_tu_shopee 
     - phi_van_chuyen_nguoi_mua_tra 
@@ -137,4 +133,4 @@ SELECT
   discount_from_voucher_seller,
   khuyen_mai_cho_the_tin_dung,
   ROUND(tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung) AS tong_tien_thanh_toan
-FROM sale_order_detail_wallet 
+FROM sale_order_detail 
