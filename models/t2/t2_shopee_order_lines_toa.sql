@@ -4,7 +4,7 @@ WITH return_detail AS (
     brand,
     update_time,
     i.variation_sku, 
-    i.refund_amount * i.amount AS so_tien_hoan_tra,
+    i.item_price * i.amount AS so_tien_hoan_tra,
     status
   FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
