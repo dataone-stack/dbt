@@ -1,6 +1,7 @@
 WITH return_detail AS (
   SELECT 
     order_id,
+    return_id,
     brand,
     update_time,
     i.variation_sku, 
@@ -53,7 +54,7 @@ sale_detail AS (
     i.discount_from_coin,
     i.discount_from_voucher_seller,
     case
-        when vi.transaction_tab_type = 'wallet_order_income'
+        when rd.return_id is not null
         then 0
         else i.shopee_discount
     end AS tro_gia_tu_shopee
