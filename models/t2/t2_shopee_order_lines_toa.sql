@@ -54,8 +54,8 @@ sale_detail AS (
     i.discount_from_voucher_seller,
     case
         when vi.transaction_tab_type = 'wallet_order_income'
-        then i.shopee_discount
-        else 0
+        then 0
+        else i.shopee_discount
     end AS tro_gia_tu_shopee
   FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
