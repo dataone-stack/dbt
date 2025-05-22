@@ -1,12 +1,11 @@
 SELECT 
-    'Order' as don_hang_san_pham,
-    vi.amount as test_doanh_thu,
+    'SKU' as don_hang_san_pham,
     ord.brand,
     ord.ten_nguoi_mua,
     ord.hinh_thuc_thanh_toan,
     ord.ten_don_vi_van_chuyen,
-    '-' as ten_san_pham,
-    '-' as ma_san_pham,
+    item_name as ten_san_pham,
+    model_sku as ma_san_pham,
     ord.ngay_ship,
     ord.ly_do_huy_don,
     vi.order_id,
@@ -26,7 +25,7 @@ SELECT
     ord.phi_dich_vu * -1 as phi_dich_vu,
     ord.phi_thanh_toan * -1 as phi_thanh_toan,
     ord.phi_hoa_hong_tiep_thi_lien_ket * -1 as phi_hoa_hong_tiep_thi_lien_ket
-FROM {{ref("t2_shopee_order_toa")}} as ord
+FROM {{ref("t2_shopee_order_lines_toa")}} as ord
 LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} as vi
-ON vi.order_id = ord.order_id AND vi.brand = ord.brand
+ON ord.order_id = vi.order_id AND ord.brand = vi.brand
 where vi.transaction_tab_type = 'wallet_order_income'
