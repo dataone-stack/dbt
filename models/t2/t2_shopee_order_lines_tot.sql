@@ -100,7 +100,7 @@ sale_order_detail AS (
 
 SELECT 
     brand as brand,
-    ''as ma_giao_dich,
+    GENERATE_UUID() as ma_giao_dich,
     'SKU' as don_hang_san_pham,
     order_id,
     ''as ma_so_thue,
