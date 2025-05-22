@@ -1,4 +1,5 @@
 select 
+brand
 ''as ma_giao_dich,
 'Order' as don_hang_san_pham,
 order_id,
@@ -48,4 +49,4 @@ SUM(shopee_voucher) AS shopee_voucher,
 SUM(ngan_hang_khuyen_mai_the_tin_dung) AS ngan_hang_khuyen_mai_the_tin_dung,
 SUM(shopee_khuyen_mai_the_tin_dung) AS shopee_khuyen_mai_the_tin_dung
 from `dtm.t2_shopee_order_lines_tot`
-group by order_id, ngay_dat_hang, ngay_hoan_thanh_thanh_toan, phuong_thuc_thanh_toan, loai_don_hang, ma_giao_dich, ma_so_thue, ma_yeu_cau_hoan_tien, thue_gtgt, thue_tncn, ten_nguoi_mua, phuong_thuc_thanh_toan_nguoi_mua, transaction_fee_rate, buyer_payment_method_details_1, installment_plan, ten_don_vi_van_chuyen, couruer_name, voucher_code, den_bu_don_mat_hang
+group by order_id, ngay_dat_hang, ngay_hoan_thanh_thanh_toan, phuong_thuc_thanh_toan, loai_don_hang, ma_giao_dich, ma_so_thue, ma_yeu_cau_hoan_tien, thue_gtgt, thue_tncn, ten_nguoi_mua, phuong_thuc_thanh_toan_nguoi_mua, transaction_fee_rate, buyer_payment_method_details_1, installment_plan, ten_don_vi_van_chuyen, couruer_name, voucher_code, den_bu_don_mat_hang, brand
