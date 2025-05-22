@@ -101,7 +101,7 @@ sale_order_detail AS (
 SELECT 
     brand as brand,
     ''as ma_giao_dich,
-    'Order' as don_hang_san_pham,
+    'SKU' as don_hang_san_pham,
     order_id,
     ''as ma_so_thue,
     refund_sn as ma_yeu_cau_hoan_tien, -- chưa lấy được
