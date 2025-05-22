@@ -3,7 +3,7 @@ with order_tot as (
         order_id,
         brand,
         'Order' as don_hang_san_pham,
-        '-' as model_sku
+        '-' as model_sku,
         ngay_dat_hang,
         ngay_hoan_thanh_thanh_toan,
         ten_nguoi_mua,
