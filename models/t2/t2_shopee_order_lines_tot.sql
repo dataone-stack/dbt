@@ -99,7 +99,8 @@ sale_order_detail AS (
 )
 
 SELECT 
-  ''as ma_giao_dich,
+    brand,
+    ''as ma_giao_dich,
     'Order' as don_hang_san_pham,
     order_id,
     ''as ma_so_thue,
