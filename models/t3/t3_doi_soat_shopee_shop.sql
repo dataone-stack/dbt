@@ -34,7 +34,7 @@ order_lines as (
         'SKU' as don_hang_san_pham,
         model_sku,
         create_time as ngay_dat_hang,
-        null as ngay_hoan_thanh_thanh_toan,
+        CAST(NULL AS TIMESTAMP) as ngay_hoan_thanh_thanh_toan,
         ten_nguoi_mua,
         hinh_thuc_thanh_toan as phuong_thuc_thanh_toan,
         ten_don_vi_van_chuyen,
