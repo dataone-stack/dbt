@@ -140,11 +140,11 @@ SELECT
     discount_from_voucher_seller as phi_van_chuyen_seller_support, -- kiểm tra thêm ý phí vận chuyển seller support
     ten_don_vi_van_chuyen,
     courier_name as couruer_name,
-    credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
     seller_voucher_code as voucher_code,
     0 as den_bu_don_mat_hang, --- chưa biết
     amount_before_discount * -1 as gia_san_pham_sau_khuyen_mai,
     discount_from_coin as shopee_xu,
     shopee_voucher,
+    credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
     0 as shopee_khuyen_mai_the_tin_dung,
 FROM sale_order_detail
