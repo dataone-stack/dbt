@@ -105,7 +105,7 @@ SELECT
     order_id,
     ''as ma_so_thue,
     refund_sn as ma_yeu_cau_hoan_tien, -- chưa lấy được
-    item_id as ma_san_pham,
+    CAST(item_id AS STRING)  as ma_san_pham,
     item_name as ten_san_pham,
     create_time as ngay_dat_hang,
     DATETIME_ADD(ngay_tien_ve_vi, INTERVAL 7 HOUR) as ngay_hoan_thanh_thanh_toan,
