@@ -54,7 +54,7 @@ order_lines as (
         phi_thanh_toan,
         phi_hoa_hong_tiep_thi_lien_ket,
         1 as sort_order
-    from {{ ref('t2_shopee_order_lines_toa') }}
+    from {{ ref('t2_shopee_order_lines_tot') }}
 )
 
 select *

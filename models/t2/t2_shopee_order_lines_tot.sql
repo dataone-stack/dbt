@@ -26,7 +26,7 @@ SELECT
     ord.phi_dich_vu * -1 as phi_dich_vu,
     ord.phi_thanh_toan * -1 as phi_thanh_toan,
     ord.phi_hoa_hong_tiep_thi_lien_ket * -1 as phi_hoa_hong_tiep_thi_lien_ket
-FROM {{ref("t1_shopee_shop_wallet_total")}} as vi
-LEFT JOIN {{ref("t2_shopee_order_toa")}} as ord 
+FROM {{ref("t2_shopee_order_toa")}} as ord
+LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} as vi
 ON vi.order_id = ord.order_id AND vi.brand = ord.brand
 where vi.transaction_tab_type = 'wallet_order_income'
