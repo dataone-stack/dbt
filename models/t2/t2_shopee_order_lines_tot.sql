@@ -1,4 +1,4 @@
--WITH return_detail AS (
+WITH return_detail AS (
   SELECT 
     order_id,
     return_id,
