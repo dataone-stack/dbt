@@ -25,8 +25,7 @@ total_amount AS (
     credit_card_promotion
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total`,   
   UNNEST(items) AS i
-  GROUP BY order_id,brand
-  ,instalment_plan,seller_voucher_code,seller_shipping_discount,credit_card_promotion
+  GROUP BY order_id,brand,instalment_plan,seller_voucher_code,seller_shipping_discount,credit_card_promotion
 ),
 
 sale_detail AS (
@@ -62,6 +61,7 @@ sale_detail AS (
     i.discount_from_voucher_seller,
     rd.amount_before_discount,
     vi.refund_sn,
+    
     case
         when rd.return_id is not null
         then 0
@@ -146,4 +146,4 @@ SELECT
     discount_from_coin as shopee_xu,
     shopee_voucher,
     0 as shopee_khuyen_mai_the_tin_dung,
-FROM sale_order_detail 
+FROM sale_order_detail
