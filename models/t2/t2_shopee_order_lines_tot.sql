@@ -111,7 +111,7 @@ SELECT
     DATETIME_ADD(ngay_tien_ve_vi, INTERVAL 7 HOUR) as ngay_hoan_thanh_thanh_toan,
    "Ví ShopeePay" as phuong_thuc_thanh_toan,
     'Đơn thường' as loai_don_hang,
-    tong_tien_san_pham - phi_co_dinh - phi_dich_vu - phi_thanh_toan  - phi_hoa_hong_tiep_thi_lien_ket - (phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee) - so_tien_hoan_tra - tro_gia_tu_shopee + ma_giam_gia - phi_van_chuyen_nguoi_mua_tra as tong_tien_da_thanh_toan,
+    tong_tien_san_pham - phi_co_dinh - phi_dich_vu - phi_thanh_toan  - phi_hoa_hong_tiep_thi_lien_ket - (phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee) - so_tien_hoan_tra - tro_gia_tu_shopee + voucher_from_seller - phi_van_chuyen_nguoi_mua_tra as tong_tien_da_thanh_toan,
     tong_tien_san_pham,
     so_tien_hoan_tra * -1 as so_tien_hoan_lai,
     phi_van_chuyen_nguoi_mua_tra as phi_van_chuyen_nguoi_mua_tra,
