@@ -1,6 +1,6 @@
 select 
 brand,
-''as ma_giao_dich,
+GENERATE_UUID() as ma_giao_dich,
 'Order' as don_hang_san_pham,
 order_id,
 ma_so_thue,
