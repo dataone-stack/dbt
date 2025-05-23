@@ -204,4 +204,4 @@ SELECT
     shopee_voucher,
     credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
     0 as shopee_khuyen_mai_the_tin_dung
-FROM sale_order_detail;
+FROM sale_order_detail
