@@ -21,7 +21,7 @@ fb_order_detail AS (
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS INT64) AS quantity,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id') AS sku,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.name') AS name,
-        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) AS gia_san_phम्,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) AS `gia_san_pham`,
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS dong_gia_khuyen_mai,
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) * 
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS INT64) - 
@@ -37,5 +37,5 @@ fb_order_detail AS (
 )
 SELECT 
     fb.*,
-    fb.tong_tien_san_pham - fb.giam_gia_don_hang AS tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
+    fb.tong_tien_san_pham - fb.giam_gia_don_hang AS `tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai`
 FROM fb_order_detail fb
