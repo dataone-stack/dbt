@@ -12,7 +12,7 @@ WITH return_detail AS (
     refund_amount,
     return_seller_due_date,
     amount_before_discount
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
+  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
 ),
 
@@ -30,7 +30,7 @@ total_amount AS (
     f.seller_voucher_code,
     f.seller_shipping_discount,
     f.credit_card_promotion
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,   
+  FROM {{ref("t1_shopee_shop_fee_total")}} f,   
   UNNEST(items) AS i
   LEFT JOIN return_detail r ON f.order_id = r.order_id AND i.item_id = r.item_id
   GROUP BY f.order_id, f.brand, f.instalment_plan, f.seller_voucher_code, f.seller_shipping_discount, f.credit_card_promotion
@@ -115,11 +115,11 @@ sale_detail AS (
       ELSE i.shopee_discount
     END AS tro_gia_tu_shopee
     
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` AS detail,
+  FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
+  LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
 ),
 
 sale_order_detail AS (
@@ -149,7 +149,7 @@ sale_order_detail AS (
     ta.seller_shipping_discount,
     ta.credit_card_promotion
   FROM sale_detail AS sd
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` AS ord
+  LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
