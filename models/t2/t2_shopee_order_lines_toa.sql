@@ -99,6 +99,27 @@ SELECT
   order_id,
   item_name,
   model_name,
+    CASE 
+        -- Case 1: With parentheses, e.g., "Trắng,XS (dưới 50kg)" or "Den,S (50kg-60kg)"
+        WHEN REGEXP_CONTAINS(model_name, r',([A-Za-z]+) \([^\)]+\)') 
+        THEN REGEXP_EXTRACT(model_name, r',([A-Za-z]+) \([^\)]+\)')
+        -- Case 2: With size range or letter, e.g., "Quần Đỏ Đỏ,S/M" or "Xanh navy,M"
+        WHEN REGEXP_CONTAINS(model_name, r',([A-Za-z\/]+)$') 
+        THEN REGEXP_EXTRACT(model_name, r',([A-Za-z\/]+)$')
+        ELSE NULL
+    END AS size,
+     CASE 
+        -- Case 1: With parentheses, e.g., "Trắng,XS (dưới 50kg)"
+        WHEN REGEXP_CONTAINS(model_name, r',([A-Za-z]+) \([^\)]+\)') 
+        THEN TRIM(SUBSTR(model_name, 1, STRPOS(model_name, ',') - 1))
+        -- Case 2: With size range or letter, e.g., "Quần Đỏ Đỏ,S/M"
+        WHEN REGEXP_CONTAINS(model_name, r',([A-Za-z\/]+)$') 
+        THEN TRIM(SUBSTR(model_name, 1, STRPOS(model_name, ',') - 1))
+        -- Case 3: No comma, e.g., "Hồng"
+        WHEN NOT REGEXP_CONTAINS(model_name, r',') 
+        THEN model_name
+        ELSE NULL
+    END AS color,
   model_sku,
   quantity_purchased,
   gia_san_pham_goc,
