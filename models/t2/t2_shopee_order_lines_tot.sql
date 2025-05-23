@@ -58,49 +58,49 @@ sale_detail AS (
     
     (i.discounted_price) AS tong_tien_san_pham,
     
-    -- Các phí sẽ bằng 0 nếu sản phẩm có return
+    -- Các phí sẽ bằng 0 nếu sản phẩm có return hoặc total_tong_tien_san_pham = 0
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee 
     END AS phi_van_chuyen_nguoi_mua_tra,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.commission_fee 
     END AS phi_co_dinh,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.service_fee 
     END AS phi_dich_vu,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee 
     END AS phi_thanh_toan,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.actual_shipping_fee 
     END AS phi_van_chuyen_thuc_te,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate 
     END AS phi_van_chuyen_tro_gia_tu_shopee,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.credit_card_promotion 
     END AS khuyen_mai_cho_the_tin_dung,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.order_ams_commission_fee 
     END AS phi_hoa_hong_tiep_thi_lien_ket,
     
     CASE 
-      WHEN rd.return_id IS NOT NULL THEN 0
+      WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.voucher_from_seller 
     END AS voucher_from_seller,
     
@@ -133,12 +133,12 @@ sale_order_detail AS (
     
     -- Các phí trong sale_order_detail cũng cần điều kiện tương tự
     CASE 
-      WHEN sd.ngay_return IS NOT NULL THEN 0
+      WHEN sd.ngay_return IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) 
     END AS day_to_ship,
     
     CASE 
-      WHEN sd.ngay_return IS NOT NULL THEN 0
+      WHEN sd.ngay_return IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount, 0) 
     END AS doanh_thu_don_hang,
     
@@ -147,28 +147,27 @@ sale_order_detail AS (
     ta.instalment_plan,
     ta.seller_voucher_code,
     ta.seller_shipping_discount,
-    ta.credit_card_promotion,
+    ta.credit_card_promotion
   FROM sale_detail AS sd
   LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
 
-
 SELECT 
     brand as brand,
     GENERATE_UUID() as ma_giao_dich,
     'SKU' as don_hang_san_pham,
     order_id,
-    ''as ma_so_thue,
-    refund_sn as ma_yeu_cau_hoan_tien, -- chưa lấy được
-    CAST(item_id AS STRING)  as ma_san_pham,
+    '' as ma_so_thue,
+    refund_sn as ma_yeu_cau_hoan_tien,
+    CAST(item_id AS STRING) as ma_san_pham,
     item_name as ten_san_pham,
     create_time as ngay_dat_hang,
     DATETIME_ADD(ngay_tien_ve_vi, INTERVAL 7 HOUR) as ngay_hoan_thanh_thanh_toan,
-   "Ví ShopeePay" as phuong_thuc_thanh_toan,
+    "Ví ShopeePay" as phuong_thuc_thanh_toan,
     'Đơn thường' as loai_don_hang,
-    tong_tien_san_pham - phi_co_dinh - phi_dich_vu - phi_thanh_toan  - phi_hoa_hong_tiep_thi_lien_ket - (phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee) - so_tien_hoan_tra + tro_gia_tu_shopee - voucher_from_seller + phi_van_chuyen_nguoi_mua_tra as tong_tien_da_thanh_toan,
+    tong_tien_san_pham - phi_co_dinh - phi_dich_vu - phi_thanh_toan - phi_hoa_hong_tiep_thi_lien_ket - (phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee) - so_tien_hoan_tra + tro_gia_tu_shopee - voucher_from_seller + phi_van_chuyen_nguoi_mua_tra as tong_tien_da_thanh_toan,
     tong_tien_san_pham,
     so_tien_hoan_tra * -1 as so_tien_hoan_lai,
     phi_van_chuyen_nguoi_mua_tra as phi_van_chuyen_nguoi_mua_tra,
@@ -193,16 +192,16 @@ SELECT
     doanh_thu_don_hang as amount_paid_by_buyer,
     0 as transaction_fee_rate,
     hinh_thuc_thanh_toan as phuong_thuc_thanh_toan_nguoi_mua,
-    ''as buyer_payment_method_details_1,
+    '' as buyer_payment_method_details_1,
     instalment_plan as installment_plan,
-    discount_from_voucher_seller as phi_van_chuyen_seller_support, -- kiểm tra thêm ý phí vận chuyển seller support
+    discount_from_voucher_seller as phi_van_chuyen_seller_support,
     ten_don_vi_van_chuyen,
     courier_name as couruer_name,
     seller_voucher_code as voucher_code,
-    0 as den_bu_don_mat_hang, --- chưa biết
+    0 as den_bu_don_mat_hang,
     amount_before_discount * -1 as gia_san_pham_sau_khuyen_mai,
     discount_from_coin as shopee_xu,
     shopee_voucher,
     credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
-    0 as shopee_khuyen_mai_the_tin_dung,
-FROM sale_order_detail
+    0 as shopee_khuyen_mai_the_tin_dung
+FROM sale_order_detail;
