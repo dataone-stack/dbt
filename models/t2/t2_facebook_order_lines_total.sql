@@ -23,16 +23,17 @@ fb_order_detail as (
         JSON_EXTRACT_SCALAR(i, '$.variation_info.name') AS name,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS gia_san_pham,
         JSON_EXTRACT_SCALAR(i, '$.total_discount') AS dong_gia_khuyen_mai,
+        JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') * JSON_EXTRACT_SCALAR(i, '$.quantity') - JSON_EXTRACT_SCALAR(i, '$.total_discount') as tong_tien_san_pham,
+        (tong_tien_san_pham / ta.total_amount) * ord.total_discount AS giam_gia_don_hang,
         
-    FROM `chaching_pancake_pos_dwh.pancake_order` AS ord,
+    FROM {{ref("t1_pancake_pos_order_total")}}AS ord,
     UNNEST(items) AS i
     left join total as tt on tt.id = ord.id and tt.brand = ord.brand
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
 )
 
-
-    gia_san_pham * quantity - dong_gia_khuyen_mai as tong_tien_san_pham,
-
-    (tong_tien_san_pham / ta.total_amount) * ord.total_discount AS giam_gia_don_hang,
-
-    tong_tien_san_pham - giam_gia_don_hang as tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
+select 
+    fb.*,
+    fb.tong_tien_san_pham - fb.giam_gia_don_hang as tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
+from fb_order_detail fb
+   
