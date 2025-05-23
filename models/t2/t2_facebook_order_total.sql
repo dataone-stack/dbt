@@ -1,4 +1,4 @@
-select
+SELECT
     ord.brand,
     ord.id,
     ord.inserted_at,
@@ -8,9 +8,8 @@ select
     ord.total_price,
     ord.total_price_after_sub_discount,
     ord.total_quantity,
-    ord.json_value(page,"$.id") as page_id,
-    ord.json_value(marketer,"$.name") as marketer_name,
-    ord.json_value(customer,"$.name") as nguoi_mua
-
-from {{ref("t1_pancake_pos_order_total")}} as ord
-where ord.order_sources_name in ('Facebook','Ladipage Facebook')
+    JSON_EXTRACT_SCALAR(ord.page, '$.id') AS page_id,
+    JSON_EXTRACT_SCALAR(ord.marketer, '$.name') AS marketer_name,
+    JSON_EXTRACT_SCALAR(ord.customer, '$.name') AS nguoi_mua
+FROM {{ref("t1_pancake_pos_order_total")}} AS ord
+WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
