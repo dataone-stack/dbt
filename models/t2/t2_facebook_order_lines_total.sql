@@ -25,7 +25,7 @@ fb_order_detail AS (
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS gia_san_pham,
 
-        (quantity * gia_san_pham) as tong_so_tien
+        
 
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
     CROSS JOIN UNNEST(COALESCE(ord.items, [])) AS i
@@ -48,5 +48,5 @@ SELECT
     sku,
     name,
     gia_san_pham,
-    tong_so_tien
+    (quantity * gia_san_pham) as tong_so_tien,
 FROM fb_order_detail
