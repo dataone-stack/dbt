@@ -50,7 +50,7 @@ fb_order_detail AS (
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
 )
 SELECT 
-    fb.*,
-    fb.gia_san_pham * fb.quantity - dong_gia_khuyen_mai + phi_van_chuyen as tong_tien_san_pham,
-    fb.gia_san_pham * fb.quantity - dong_gia_khuyen_mai + phi_van_chuyen - fb.giam_gia_don_hang AS tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
+    *,
+    gia_san_pham * quantity - dong_gia_khuyen_mai + phi_van_chuyen as tong_tien_san_pham,
+    gia_san_pham * quantity - dong_gia_khuyen_mai + phi_van_chuyen - giam_gia_don_hang AS tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
 FROM fb_order_detail fb
