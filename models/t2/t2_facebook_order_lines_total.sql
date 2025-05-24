@@ -30,7 +30,7 @@ fb_order_detail AS (
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) as tong_so_tien,
         
-        JSON_EXTRACT_SCALAR(i, '$.total_discount') AS khuyen_mai_dong_gia,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64) AS khuyen_mai_dong_gia,
 
         SAFE_DIVIDE(
             (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
@@ -39,6 +39,22 @@ fb_order_detail AS (
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
         ) * SAFE_CAST(ord.total_discount AS FLOAT64) AS giam_gia_don_hang,
+
+        SAFE_DIVIDE(
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
+            tt.total_amount
+        ) * SAFE_CAST(ord.shipping_fee AS FLOAT64) AS phi_van_chuyen,
+
+        SAFE_DIVIDE(
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
+            tt.total_amount
+        ) * SAFE_CAST(ord.total_price_after_sub_discount AS FLOAT64) AS test_doanh_thu
 
 
         
@@ -66,5 +82,8 @@ SELECT
     gia_san_pham,
     tong_so_tien,
     khuyen_mai_dong_gia,
-    giam_gia_don_hang
+    giam_gia_don_hang,
+    phi_van_chuyen,
+    test_doanh_thu,
+    (tong_so_tien - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen) as  tong_tien_can_thanh_toan
 FROM fb_order_detail
