@@ -1,4 +1,4 @@
-WITH tiktok  AS (
+WITH total  AS (
     SELECT 
         ord.id,
         ord.brand,
