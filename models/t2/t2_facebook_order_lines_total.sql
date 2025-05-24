@@ -11,7 +11,7 @@ fb_order_detail AS (
     SELECT
         ord.id,
         ord.brand,
-        ord.inserted_at,
+        DATETIME_ADD(ord.inserted_at, INTERVAL 7 HOUR) AS inserted_at,
         ord.updated_at,
         ord.status_name,
         ord.returned_reason_name,
