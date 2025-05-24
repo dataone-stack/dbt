@@ -21,7 +21,7 @@ fb_order_detail AS (
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS INT64) AS quantity,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id') AS sku,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.name') AS name,
-        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') + SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS gia_san_pham,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') + SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')) AS FLOAT64) AS gia_san_pham,
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS dong_gia_khuyen_mai,
         SAFE_DIVIDE(
             (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) * 
@@ -49,6 +49,7 @@ fb_order_detail AS (
     LEFT JOIN total AS tt ON tt.id = ord.id AND tt.brand = ord.brand
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
 )
+
 SELECT 
     *,
     gia_san_pham * quantity - dong_gia_khuyen_mai + phi_van_chuyen as tong_tien_san_pham,
