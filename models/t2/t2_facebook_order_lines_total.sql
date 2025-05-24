@@ -25,6 +25,8 @@ fb_order_detail AS (
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS gia_san_pham,
 
+        JSON_EXTRACT_SCALAR(i, '$.total_discount') AS khuyen_mai_dong_gia
+
         
 
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
@@ -49,4 +51,5 @@ SELECT
     name,
     gia_san_pham,
     (quantity * gia_san_pham) as tong_so_tien,
+    (tong_so_tien - khuyen_mai_dong_gia) as tru
 FROM fb_order_detail
