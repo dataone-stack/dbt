@@ -1,0 +1,32 @@
+SELECT 
+    id,
+    brand,
+    inserted_at,
+    updated_at,
+    status_name,
+    returned_reason_name,
+    page_id,
+    marketer_name,
+    ten_nguoi_mua,
+    sku,
+    name as ten_san_pham,
+    sum(quantity) as so_luong_ban ,
+    sum(gia_san_pham) as gia_san_pham,
+    sum(tong_so_tien) as tong_so_tien,
+    sum(khuyen_mai_dong_gia) as khuyen_mai_dong_gia,
+    sum(giam_gia_don_hang) as giam_gia_don_hang,
+    sum(phi_van_chuyen) as phi_van_chuyen,
+    sum(tong_tien_can_thanh_toan) as tong_tien_can_thanh_toan
+FROM {{ref("t2_facebook_order_lines_total")}}
+group BY
+    id,
+    brand,
+    inserted_at,
+    updated_at,
+    status_name,
+    returned_reason_name,
+    page_id,
+    marketer_name,
+    ten_nguoi_mua,
+    sku,
+    name
