@@ -7,6 +7,7 @@ WITH total AS (
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
     GROUP BY ord.id, ord.brand
 ),
+
 fb_order_detail AS (
     SELECT
         ord.id,
@@ -18,14 +19,27 @@ fb_order_detail AS (
         JSON_EXTRACT_SCALAR(ord.page, '$.id') AS page_id,
         JSON_EXTRACT_SCALAR(ord.marketer, '$.name') AS marketer_name,
         JSON_EXTRACT_SCALAR(ord.customer, '$.name') AS ten_nguoi_mua,
-        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS INT64) AS quantity,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) AS quantity,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id') AS sku,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.name') AS name,
         
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS gia_san_pham,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS gia_san_pham,
 
-        JSON_EXTRACT_SCALAR(i, '$.total_discount') AS khuyen_mai_dong_gia
+        (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) as tong_so_tien,
+        
+        JSON_EXTRACT_SCALAR(i, '$.total_discount') AS khuyen_mai_dong_gia,
+
+        SAFE_DIVIDE(
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
+            tt.total_amount
+        ) * SAFE_CAST(ord.total_discount AS FLOAT64) AS giam_gia_don_hang,
+
 
         
 
@@ -50,6 +64,7 @@ SELECT
     sku,
     name,
     gia_san_pham,
-    (quantity * gia_san_pham) as tong_so_tien,
-    (tong_so_tien - khuyen_mai_dong_gia) as tru
+    tong_so_tien,
+    khuyen_mai_dong_gia,
+    giam_gia_don_hang
 FROM fb_order_detail
