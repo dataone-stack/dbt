@@ -24,26 +24,29 @@ fb_order_detail AS (
         JSON_EXTRACT_SCALAR(i, '$.variation_info.name') AS name,
         
         SAFE_DIVIDE(
-         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) +
-         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
+        (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
         )
-          AS gia_san_pham,
+         AS gia_san_pham,
 
          SAFE_DIVIDE(
-         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) +
-         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
+        (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
         ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
          as tong_so_tien,
 
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64) AS khuyen_mai_dong_gia,
 
         SAFE_DIVIDE(
-            SAFE_DIVIDE(
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) +
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
+           SAFE_DIVIDE(
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
             ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
@@ -51,9 +54,10 @@ fb_order_detail AS (
 
         SAFE_DIVIDE(
             SAFE_DIVIDE(
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) +
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
             ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
@@ -61,9 +65,10 @@ fb_order_detail AS (
 
         SAFE_DIVIDE(
            SAFE_DIVIDE(
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) +
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-                SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
+            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
             ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
