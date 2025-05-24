@@ -85,5 +85,5 @@ SELECT
     giam_gia_don_hang,
     phi_van_chuyen,
     test_doanh_thu,
-    (tong_so_tien - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen) as  tong_tien_can_thanh_toan
+    (tong_so_tien - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) as  tong_tien_can_thanh_toan
 FROM fb_order_detail
