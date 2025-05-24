@@ -8,8 +8,6 @@ SELECT
     page_id,
     marketer_name,
     ten_nguoi_mua,
-    sku,
-    name as ten_san_pham,
     sum(quantity) as so_luong_ban ,
     sum(gia_san_pham) as gia_san_pham,
     sum(tong_so_tien) as tong_so_tien,
@@ -27,6 +25,4 @@ group BY
     returned_reason_name,
     page_id,
     marketer_name,
-    ten_nguoi_mua,
-    sku,
-    name
+    ten_nguoi_mua
