@@ -41,8 +41,14 @@ fb_order_detail AS (
              SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)),
             tt.total_amount
         ) * SAFE_CAST(ord.total_price_after_sub_discount AS FLOAT64) AS test_doanh_thu,
-        
 
+        SAFE_DIVIDE(
+            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) * 
+             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS INT64) - 
+             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)),
+            tt.total_amount
+        ) * SAFE_CAST(ord.cod AS FLOAT64) AS cod
+    
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord,
     UNNEST(items) AS i
     LEFT JOIN total AS tt ON tt.id = ord.id AND tt.brand = ord.brand
