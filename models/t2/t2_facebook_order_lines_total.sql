@@ -1,9 +1,11 @@
-WITH total AS (
+WITH tiktok  AS (
     SELECT 
         ord.id,
         ord.brand,
-        SUM(ord.total_price) AS total_amount
+        SUM( SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) * 
+        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)) AS total_amount
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
+    CROSS JOIN UNNEST(COALESCE(ord.items, [])) AS i
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
     GROUP BY ord.id, ord.brand
 ),
