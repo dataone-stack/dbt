@@ -23,34 +23,29 @@ fb_order_detail AS (
         JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id') AS sku,
         JSON_EXTRACT_SCALAR(i, '$.variation_info.name') AS name,
         
-        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
-        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64) AS gia_san_pham,
+        pr.retail_price AS gia_san_pham,
 
-        (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
-        SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+        SAFE_CAST(pr.retail_price AS FLOAT64) *  
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) as tong_so_tien,
-        
+
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64) AS khuyen_mai_dong_gia,
 
         SAFE_DIVIDE(
-            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+            SAFE_CAST(pr.retail_price AS FLOAT64) *  
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
         ) * SAFE_CAST(ord.total_discount AS FLOAT64) AS giam_gia_don_hang,
 
         SAFE_DIVIDE(
-            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+            SAFE_CAST(pr.retail_price AS FLOAT64) *  
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
         ) * SAFE_CAST(ord.shipping_fee AS FLOAT64) AS phi_van_chuyen,
 
         SAFE_DIVIDE(
-            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount') AS FLOAT64)) * 
+            SAFE_CAST(pr.retail_price AS FLOAT64) *  
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
@@ -63,6 +58,7 @@ fb_order_detail AS (
     CROSS JOIN UNNEST(COALESCE(ord.items, [])) AS i
 
     LEFT JOIN total AS tt ON tt.id = ord.id AND tt.brand = ord.brand
+    LEFT JOIN {{ref("t1_pancake_pos_product_total")}} as pr on pr.brand = ord.brand and pr.display_id = JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id')
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
 )
 
