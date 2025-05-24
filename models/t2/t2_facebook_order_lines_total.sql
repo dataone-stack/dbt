@@ -52,5 +52,5 @@ fb_order_detail AS (
 SELECT 
     fb.*,
     fb.gia_san_pham * fb.quantity - dong_gia_khuyen_mai + phi_van_chuyen as tong_tien_san_pham,
-    tong_tien_san_pham - fb.giam_gia_don_hang AS tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
+    fb.gia_san_pham * fb.quantity - dong_gia_khuyen_mai + phi_van_chuyen - fb.giam_gia_don_hang AS tong_tien_san_pham_sau_khi_tru_cac_khuyen_mai
 FROM fb_order_detail fb
