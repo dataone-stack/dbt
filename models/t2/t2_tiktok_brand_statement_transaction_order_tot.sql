@@ -52,4 +52,4 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.seller_shipping_fee_discount_amount') AS FLOAT64) AS `seller_shipping_fee_discount`,
     NULL AS `estimated_package_weight`,
     NULL AS `actual_package_weight`
-FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }}
+FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 

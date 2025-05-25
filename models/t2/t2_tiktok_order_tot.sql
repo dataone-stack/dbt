@@ -1,201 +1,82 @@
-WITH LineItems AS (
-  SELECT
-    o.brand,
-    o.order_id,
-    JSON_VALUE(li, '$.sku_id') AS SKU_ID,
-    JSON_VALUE(li, '$.seller_sku') AS Seller_SKU,
-    JSON_VALUE(li, '$.product_name') AS Product_Name,
-    JSON_VALUE(li, '$.sku_name') AS Variation,
-    JSON_VALUE(li, '$.sku_type') AS Normal_or_Preorder,
-    CAST(JSON_VALUE(li, '$.is_gift') AS BOOL) AS is_gift,
-    JSON_VALUE(li, '$.cancel_reason') AS SKU_Cancel_Reason,
-    JSON_VALUE(li, '$.display_status') AS SKU_Display_Status,
-    COUNT(*) AS Quantity,
-    CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64) AS SKU_Unit_Original_Price,
-    SUM(CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64)) AS SKU_Subtotal_Before_Discount,
-    SUM(CAST(JSON_VALUE(li, '$.platform_discount') AS FLOAT64)) AS SKU_Platform_Discount,
-    SUM(CAST(JSON_VALUE(li, '$.seller_discount') AS FLOAT64)) AS SKU_Seller_Discount,
-    SUM(CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64)) AS SKU_Subtotal_After_Discount,
-    CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
-    JSON_VALUE(li, '$.package_id') AS Package_ID
-  FROM {{ ref('t1_tiktok_order_tot') }} o
-  CROSS JOIN UNNEST(o.line_items) AS li
-  GROUP BY
-    o.brand,
-    o.order_id,
-    JSON_VALUE(li, '$.sku_id'),
-    JSON_VALUE(li, '$.seller_sku'),
-    JSON_VALUE(li, '$.product_name'),
-    JSON_VALUE(li, '$.sku_name'),
-    JSON_VALUE(li, '$.sku_type'),
-    CAST(JSON_VALUE(li, '$.is_gift') AS BOOL),
-    JSON_VALUE(li, '$.cancel_reason'),
-    JSON_VALUE(li, '$.display_status'),
-    CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
-    CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
-    JSON_VALUE(li, '$.package_id')
-),
-OrderData AS (
-  SELECT
-    li.brand,
-    li.order_id AS Order_ID,
-    CASE o.order_status
-      WHEN 'CANCELLED' THEN 'Canceled'
-      WHEN 'DELIVERED' THEN 'Shipped'
-      ELSE o.order_status
-    END AS Order_Status,
-    CASE o.order_status
-      WHEN 'CANCELLED' THEN 'Canceled'
-      WHEN 'DELIVERED' THEN 'Delivered'
-      ELSE o.order_status
-    END AS Order_Substatus,
-    CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN 'Cancel'
-      ELSE NULL
-    END AS Cancelation_Return_Type,
-    li.Normal_or_Preorder,
-    li.SKU_ID,
-    li.Seller_SKU,
-    li.Product_Name,
-    li.Variation,
-    li.Quantity,
-    CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.is_gift = FALSE AND li.SKU_Display_Status = 'CANCELLED' THEN li.Quantity
-      ELSE 0
-    END AS Sku_Quantity_of_Return,
-    li.SKU_Unit_Original_Price,
-    li.SKU_Subtotal_Before_Discount,
-    li.SKU_Platform_Discount,
-    li.SKU_Seller_Discount,
-    li.SKU_Subtotal_After_Discount,
-    CAST(JSON_VALUE(o.payment, '$.shipping_fee') AS FLOAT64) AS Shipping_Fee_After_Discount,
-    CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
-    CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
-    CAST(JSON_VALUE(o.payment, '$.shipping_fee_platform_discount') AS FLOAT64) AS Shipping_Fee_Platform_Discount,
-    -- CAST(JSON_VALUE(o.payment, '$.platform_discount') AS FLOAT64) AS Payment_Platform_Discount,
-    0 AS Payment_Platform_Discount,
-    CAST(JSON_VALUE(o.payment, '$.tax') AS FLOAT64) AS Taxes,
-    CAST(JSON_VALUE(o.payment, '$.total_amount') AS FLOAT64) AS Order_Amount,
-    CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN li.SKU_Refund_Amount
-      ELSE NULL
-    END AS Order_Refund_Amount,
-    DATETIME_ADD(o.create_time, INTERVAL 7 HOUR) AS Created_Time,
-    DATETIME_ADD(o.paid_time, INTERVAL 7 HOUR) AS Paid_Time,
-    DATETIME_ADD(o.rts_time, INTERVAL 7 HOUR) AS RTS_Time,
-    DATETIME_ADD(o.collection_time, INTERVAL 7 HOUR) AS Shipped_Time,
-    DATETIME_ADD(o.delivery_time, INTERVAL 7 HOUR) AS Delivered_Time,
-    DATETIME_ADD(o.cancel_time, INTERVAL 7 HOUR) AS Cancelled_Time,
-    CASE o.cancellation_initiator
-      WHEN 'BUYER' THEN 'User'
-      ELSE o.cancellation_initiator
-    END AS Cancel_By,
-    CASE li.SKU_Cancel_Reason
-      WHEN 'Không còn nhu cầu' THEN 'No longer needed'
-      ELSE li.SKU_Cancel_Reason
-    END AS Cancel_Reason,
-    CASE o.fulfillment_type
-      WHEN 'FULFILLMENT_BY_SELLER' THEN 'Fulfillment by seller'
-      ELSE o.fulfillment_type
-    END AS Fulfillment_Type,
-    CASE o.warehouse_id
-      WHEN '7414347696732063494' THEN 'BH'
-      ELSE NULL
-    END AS Warehouse_Name,
-    o.tracking_number AS Tracking_ID,
-    CASE o.delivery_option_name
-      WHEN 'Standard shipping' THEN 'Vận chuyển tiêu chuẩn'
-      ELSE o.delivery_option_name
-    END AS Delivery_Option,
-    o.shipping_provider AS Shipping_Provider_Name,
-    o.buyer_message AS Buyer_Message,
-    o.buyer_email AS Buyer_Username,
-    JSON_VALUE(o.recipient_address, '$.name') AS Recipient,
-    JSON_VALUE(o.recipient_address, '$.phone_number') AS Phone_Number,
-    (SELECT JSON_VALUE(d, '$.address_name')
-     FROM UNNEST(JSON_QUERY_ARRAY(o.recipient_address, '$.district_info')) d
-     WHERE JSON_VALUE(d, '$.address_level') = 'L0') AS Country,
-    (SELECT JSON_VALUE(d, '$.address_name')
-     FROM UNNEST(JSON_QUERY_ARRAY(o.recipient_address, '$.district_info')) d
-     WHERE JSON_VALUE(d, '$.address_level') = 'L1') AS Province,
-    (SELECT JSON_VALUE(d, '$.address_name')
-     FROM UNNEST(JSON_QUERY_ARRAY(o.recipient_address, '$.district_info')) d
-     WHERE JSON_VALUE(d, '$.address_level') = 'L2') AS District,
-    (SELECT JSON_VALUE(d, '$.address_name')
-     FROM UNNEST(JSON_QUERY_ARRAY(o.recipient_address, '$.district_info')) d
-     WHERE JSON_VALUE(d, '$.address_level') = 'L3') AS Commune,
-    JSON_VALUE(o.recipient_address, '$.address_detail') AS Detail_Address,
-    JSON_VALUE(o.recipient_address, '$.address_line2') AS Additional_Address_Information,
-    CASE o.payment_method_name
-      WHEN 'Cash on delivery' THEN 'Thanh toán khi giao hàng'
-      ELSE o.payment_method_name
-    END AS Payment_Method,
-    NULL AS Weight_kg,
-    NULL AS Product_Category,
-    li.Package_ID,
-    o.seller_note AS Seller_Note,
-    'Unchecked' AS Checked_Status,
-    NULL AS Checked_Marked_by
-  FROM LineItems li
-  JOIN {{ ref('t1_tiktok_order_tot') }} o
-    ON li.order_id = o.order_id
-    AND li.brand = o.brand
-)
 SELECT
   brand,
   Order_ID,
   Order_Status,
   Order_Substatus,
-  Cancelation_Return_Type,
-  Normal_or_Preorder,
-  SKU_ID,
-  Seller_SKU,
-  Product_Name,
-  Variation,
-  Quantity,
-  Sku_Quantity_of_Return,
-  SKU_Unit_Original_Price,
-  SKU_Subtotal_Before_Discount,
-  SKU_Platform_Discount,
-  SKU_Seller_Discount,
-  SKU_Subtotal_After_Discount,
-  Shipping_Fee_After_Discount,
-  Original_Shipping_Fee,
-  Shipping_Fee_Seller_Discount,
-  Shipping_Fee_Platform_Discount,
-  Payment_Platform_Discount,
-  Taxes,
-  Order_Amount,
-  Order_Refund_Amount,
-  Created_Time,
-  Paid_Time,
-  RTS_Time,
-  Shipped_Time,
-  Delivered_Time,
-  Cancelled_Time,
-  Cancel_By,
-  Cancel_Reason,
-  Fulfillment_Type,
-  Warehouse_Name,
-  Tracking_ID,
-  Delivery_Option,
-  Shipping_Provider_Name,
-  Buyer_Message,
-  Buyer_Username,
-  Recipient,
-  Phone_Number,
-  Country,
-  Province,
-  District,
-  Commune,
-  Detail_Address,
-  Additional_Address_Information,
-  Payment_Method,
-  Weight_kg,
-  Product_Category,
-  Package_ID,
-  Seller_Note,
-  Checked_Status,
-  Checked_Marked_by
-FROM OrderData
-ORDER BY Order_ID, SKU_ID
+  
+  -- Tổng hợp thông tin sản phẩm
+  COUNT(DISTINCT SKU_ID) AS Total_SKU_Count,
+  SUM(Quantity) AS Total_Quantity,
+  SUM(Sku_Quantity_of_Return) AS Total_Quantity_of_Return,
+  STRING_AGG(DISTINCT Product_Name, '; ' ORDER BY Product_Name) AS Product_Names,
+  STRING_AGG(DISTINCT Seller_SKU, '; ' ORDER BY Seller_SKU) AS Seller_SKUs,
+  STRING_AGG(DISTINCT Variation, '; ' ORDER BY Variation) AS Variations,
+  STRING_AGG(DISTINCT Normal_or_Preorder, '; ') AS Order_Types,
+  STRING_AGG(DISTINCT Cancelation_Return_Type, '; ') AS Cancelation_Return_Types,
+  
+  -- Tổng hợp giá trị đơn hàng
+  SUM(SKU_Subtotal_Before_Discount) AS Total_Subtotal_Before_Discount,
+  SUM(SKU_Platform_Discount) AS Total_SKU_Platform_Discount,
+  SUM(SKU_Seller_Discount) AS Total_SKU_Seller_Discount,
+  SUM(SKU_Subtotal_After_Discount) AS Total_Subtotal_After_Discount,
+  SUM(COALESCE(Order_Refund_Amount, 0)) AS Total_Refund_Amount,
+  
+  -- Phí vận chuyển và thuế (lấy giá trị đầu tiên vì giống nhau trong cùng order)
+  ANY_VALUE(Shipping_Fee_After_Discount) AS Shipping_Fee_After_Discount,
+  ANY_VALUE(Original_Shipping_Fee) AS Original_Shipping_Fee,
+  ANY_VALUE(Shipping_Fee_Seller_Discount) AS Shipping_Fee_Seller_Discount,
+  ANY_VALUE(Shipping_Fee_Platform_Discount) AS Shipping_Fee_Platform_Discount,
+  ANY_VALUE(Payment_Platform_Discount) AS Payment_Platform_Discount,
+  ANY_VALUE(Taxes) AS Taxes,
+  ANY_VALUE(Order_Amount) AS Order_Amount,
+  
+  -- Thời gian (lấy giá trị đầu tiên)
+  ANY_VALUE(Created_Time) AS Created_Time,
+  ANY_VALUE(Paid_Time) AS Paid_Time,
+  ANY_VALUE(RTS_Time) AS RTS_Time,
+  ANY_VALUE(Shipped_Time) AS Shipped_Time,
+  ANY_VALUE(Delivered_Time) AS Delivered_Time,
+  ANY_VALUE(Cancelled_Time) AS Cancelled_Time,
+  
+  -- Thông tin hủy đơn
+  ANY_VALUE(Cancel_By) AS Cancel_By,
+  STRING_AGG(DISTINCT Cancel_Reason, '; ') AS Cancel_Reasons,
+  
+  -- Thông tin vận chuyển
+  ANY_VALUE(Fulfillment_Type) AS Fulfillment_Type,
+  ANY_VALUE(Warehouse_Name) AS Warehouse_Name,
+  ANY_VALUE(Tracking_ID) AS Tracking_ID,
+  ANY_VALUE(Delivery_Option) AS Delivery_Option,
+  ANY_VALUE(Shipping_Provider_Name) AS Shipping_Provider_Name,
+  
+  -- Thông tin khách hàng
+  ANY_VALUE(Buyer_Message) AS Buyer_Message,
+  ANY_VALUE(Buyer_Username) AS Buyer_Username,
+  ANY_VALUE(Recipient) AS Recipient,
+  ANY_VALUE(Phone_Number) AS Phone_Number,
+  
+  -- Địa chỉ
+  ANY_VALUE(Country) AS Country,
+  ANY_VALUE(Province) AS Province,
+  ANY_VALUE(District) AS District,
+  ANY_VALUE(Commune) AS Commune,
+  ANY_VALUE(Detail_Address) AS Detail_Address,
+  ANY_VALUE(Additional_Address_Information) AS Additional_Address_Information,
+  
+  -- Thông tin bổ sung
+  CASE 
+    WHEN SUM(Sku_Quantity_of_Return) > 0 THEN TRUE 
+    ELSE FALSE 
+  END AS Has_Returns,
+  ROUND(SUM(SKU_Subtotal_After_Discount) + ANY_VALUE(Shipping_Fee_After_Discount) + ANY_VALUE(Taxes), 2) AS Calculated_Total_Amount
+
+FROM {{ref('t2_tiktok_order_line_tot'}}
+WHERE DATE(Created_Time) >= '2024-03-01'
+GROUP BY 
+  brand,
+  Order_ID,
+  Order_Status,
+  Order_Substatus
+ORDER BY 
+  brand,
+  Order_ID
