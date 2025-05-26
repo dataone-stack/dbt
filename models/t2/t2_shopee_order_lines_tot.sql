@@ -64,16 +64,18 @@ sale_detail AS (
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee 
     END AS phi_van_chuyen_nguoi_mua_tra,
     
+    --- Phí cố định = tổng giá trị đơn hàng x tỷ lệ % phí cố định (đã bao gồm thuế)
     CASE 
       WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.commission_fee 
     END AS phi_co_dinh,
-    
+
+    -- % phí dịch vụ * giá trị mỗi sản phẩm theo đơn hàng
     CASE 
       WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.service_fee 
     END AS phi_dich_vu,
-    
+    -- Phí thanh toán = (giá sản phẩm trước shopee trợ giá + Phí vận chuyển người mua trả, - khuyến mãi người bán đã áp dụng - khuyến mãi từ ngân hàng) X 5%
     CASE 
       WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
       ELSE (i.discounted_price / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee 
