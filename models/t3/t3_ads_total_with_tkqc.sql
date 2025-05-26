@@ -35,10 +35,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
                 ORDER BY ladi.date_insert
             ) = 1 THEN ladi.doanhThuLadi 
             ELSE 0 
-        END AS doanhThuLadi,
-        COUNT(ladi.id) OVER (
-            PARTITION BY ads.date_start, ads.ma_nhan_vien, ads.manager, ads.brand, ads.channel
-        ) AS countLadiRecords
+        END AS doanhThuLadi
     FROM ads_total_with_tkqc AS ads
     LEFT JOIN {{ ref('t2_ladipage_facebook_total') }} AS ladi
         ON ads.date_start = ladi.date_insert 

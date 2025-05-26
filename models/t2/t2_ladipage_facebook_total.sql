@@ -2,7 +2,6 @@ SELECT
    DATE(DATE_ADD(od.inserted_at, INTERVAL 7 HOUR)) AS date_insert,
   'Facebook' AS channel,
   od.brand,
-  od.id,
   mar.staff,
   mar.ma_nhan_vien AS id_staff,
   mar.manager AS manager,
