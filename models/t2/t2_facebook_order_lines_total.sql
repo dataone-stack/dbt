@@ -83,7 +83,7 @@ SELECT
     end as tra_truoc,
     case
     when pos.prepaid = 0
-    then 0
+    then (ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen)
     else (ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen) - (((ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen)/pos.total_price_after_sub_discount) * pos.prepaid)
     end as cod
 FROM fb_order_detail as ord
