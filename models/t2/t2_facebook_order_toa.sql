@@ -18,7 +18,7 @@ SELECT
     sum(ord.tong_tien_can_thanh_toan) as tong_tien_can_thanh_toan,
     sum(ord.cod) as cod,
     pos.total_price_after_sub_discount
-FROM {{ref("t2_facebook_order_lines_total")}} as ord
+FROM {{ref("t2_facebook_order_lines_toa")}} as ord
 left join {{ref("t1_pancake_pos_order_total")}} as pos
 on ord.id = pos.id and ord.brand = pos.brand
 group BY
