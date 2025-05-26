@@ -85,7 +85,7 @@ SELECT
         when pos.prepaid = 0
         then (ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen)
         else 0
-    end as code,
+    end as cod,
 FROM fb_order_detail as ord
 left join {{ref("t1_pancake_pos_order_total")}} as pos
 on ord.id = pos.id and ord.brand = pos.brand
