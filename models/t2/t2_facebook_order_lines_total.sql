@@ -13,7 +13,7 @@ total_after_dis  AS (
     SELECT 
         ord.id,
         ord.brand,
-        SUM(ordtotal_price_after_sub_discount) AS total_amount
+        SUM(ord.total_price_after_sub_discount) AS total_amount
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
     GROUP BY ord.id, ord.brand
