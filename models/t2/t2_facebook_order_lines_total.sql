@@ -6,7 +6,7 @@ WITH total  AS (
         SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)) AS total_amount
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
     CROSS JOIN UNNEST(COALESCE(ord.items, [])) AS i
-    WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
+    WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
     GROUP BY ord.id, ord.brand
 ),
 
@@ -76,14 +76,12 @@ fb_order_detail AS (
             tt.total_amount
         ) * SAFE_CAST(ord.prepaid AS FLOAT64) AS tra_truoc,
 
-        
-
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
     CROSS JOIN UNNEST(COALESCE(ord.items, [])) AS i
 
     LEFT JOIN total AS tt ON tt.id = ord.id AND tt.brand = ord.brand
     LEFT JOIN {{ref("t1_pancake_pos_product_total")}} as pr on pr.brand = ord.brand and pr.display_id = JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id')
-    WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook')
+    WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
 )
 
 SELECT 
