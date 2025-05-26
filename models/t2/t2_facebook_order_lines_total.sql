@@ -9,15 +9,6 @@ WITH total  AS (
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
     GROUP BY ord.id, ord.brand
 ),
-total_after_dis  AS (
-    SELECT 
-        ord.id,
-        ord.brand,
-        SUM(ord.total_price_after_sub_discount) AS total_amount
-    FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
-    WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
-    GROUP BY ord.id, ord.brand
-),
 fb_order_detail AS (
     SELECT
         ord.id,
@@ -71,68 +62,31 @@ fb_order_detail AS (
             ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
             SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
             tt.total_amount
-        ) * SAFE_CAST(ord.shipping_fee AS FLOAT64) AS phi_van_chuyen,
-
-        SAFE_DIVIDE(
-           SAFE_DIVIDE(
-            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
-            ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64) -
-            SAFE_DIVIDE(
-           SAFE_DIVIDE(
-            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
-            ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-            tt.total_amount
-             ) * SAFE_CAST(ord.total_discount AS FLOAT64) + 
-            SAFE_DIVIDE(
-            SAFE_DIVIDE(
-            (SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.variation_info.retail_price') AS FLOAT64)*
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) + 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64)),
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64)
-            ) * SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.quantity') AS FLOAT64) - 
-            SAFE_CAST(JSON_EXTRACT_SCALAR(i, '$.total_discount')AS FLOAT64),
-            tt.total_amount
-            ) * SAFE_CAST(ord.shipping_fee AS FLOAT64),
-            tt1.total_amount
-        ) * SAFE_CAST(ord.prepaid AS FLOAT64) AS tra_truoc,
+        ) * SAFE_CAST(ord.shipping_fee AS FLOAT64) AS phi_van_chuyen
 
 
     FROM {{ ref("t1_pancake_pos_order_total") }} AS ord
     CROSS JOIN UNNEST(COALESCE(ord.items, [])) AS i
 
     LEFT JOIN total AS tt ON tt.id = ord.id AND tt.brand = ord.brand
-    left join total_after_dis as tt1 on tt1.id = ord.id AND tt1.brand = ord.brand
     LEFT JOIN {{ref("t1_pancake_pos_product_total")}} as pr on pr.brand = ord.brand and pr.display_id = JSON_EXTRACT_SCALAR(i, '$.variation_info.display_id')
     WHERE ord.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
 )
 
 SELECT 
-    id,
-    brand,
-    inserted_at,
-    updated_at,
-    status_name,
-    returned_reason_name,
-    page_id,
-    marketer_name,
-    ten_nguoi_mua,
-    quantity,
-    sku,
-    name,
-    gia_san_pham,
-    tong_so_tien,
-    khuyen_mai_dong_gia,
-    giam_gia_don_hang,
-    phi_van_chuyen,
-    tra_truoc,
-    (tong_so_tien - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) as  tong_tien_can_thanh_toan,
-    (tong_so_tien - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) - tra_truoc as cod
-FROM fb_order_detail
+    ord.*,
+    (ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen) as  tong_tien_can_thanh_toan,
+    case
+    when pos.prepaid > 0
+    then ((ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen)/pos.total_price_after_sub_discount) * pos.prepaid 
+    else 0
+    end as tra_truoc,
+    case
+    when pos.prepaid = 0
+    then 0
+    else (ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen) - (((ord.tong_so_tien - ord.khuyen_mai_dong_gia - ord.giam_gia_don_hang + ord.phi_van_chuyen)/pos.total_price_after_sub_discount) * pos.prepaid)
+    end as cod
+FROM fb_order_detail as ord
+left join {{ref("t1_pancake_pos_order_total")}} as pos
+on ord.id = pos.id and ord.brand = pos.brand
+WHERE pos.order_sources_name IN ('Facebook', 'Ladipage Facebook','Webcake')
