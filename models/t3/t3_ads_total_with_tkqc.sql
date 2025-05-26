@@ -10,10 +10,10 @@ WITH ads_total_with_tkqc AS (
         tkqc.channel, 
         SUM(ads.spend) AS chiPhiAds, 
         SUM(ads.doanhThuAds) AS doanhThuAds,
-        sum(ads.cpc) as cpc,
-        sum(ads.cpm) as cpm,
+        AVG(ads.cpc) as cpc,
+        AVG(ads.cpm) as cpm,
         sum(ads.purchase) as purchase
-    FROM {{ ref('t2_ads_total') }} AS ads 
+    FROM {{ ref('t2_ads_total')}} AS ads 
     RIGHT JOIN {{ ref('t1_tkqc') }} AS tkqc
         ON CAST(ads.account_id AS STRING) = tkqc.idtkqc
     GROUP BY 
