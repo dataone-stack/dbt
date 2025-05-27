@@ -71,4 +71,4 @@ GROUP BY
     couruer_name, 
     voucher_code, 
     den_bu_don_mat_hang, 
-    brand;
+    brand
