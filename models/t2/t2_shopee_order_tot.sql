@@ -49,9 +49,7 @@ SELECT
     0 AS shopee_voucher,
     SUM(ngan_hang_khuyen_mai_the_tin_dung) AS ngan_hang_khuyen_mai_the_tin_dung,
     SUM(shopee_khuyen_mai_the_tin_dung) AS shopee_khuyen_mai_the_tin_dung
-FROM `dtm.t2_shopee_order_lines_tot` 
-where order_id = "250430MK5EWDBD"
-
+FROM {{ref("t2_shopee_order_lines_tot")}}
 GROUP BY 
     order_id, 
     ngay_dat_hang, 

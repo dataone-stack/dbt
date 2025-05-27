@@ -11,7 +11,7 @@ WITH return_detail AS (
     status,
     refund_amount,
     return_seller_due_date
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
+  FROM {{ ref('t1_shopee_shop_order_retrurn_total') }},
   UNNEST(item) AS i
 ),
 
@@ -20,7 +20,7 @@ total_amount AS (
     order_id,
     brand,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total`,   
+  FROM {{ ref('t1_shopee_shop_fee_total') }},   
   UNNEST(items) AS i
   GROUP BY order_id,brand
 ),
@@ -57,16 +57,19 @@ sale_detail AS (
     i.discount_from_coin,
     i.discount_from_voucher_seller,
     rd.status as return_status,
+    mapping.gia_gach,
+    mapping.gia_ban_daily,
     case
         when rd.return_id is not null
         then 0
         else i.shopee_discount
     end AS tro_gia_tu_shopee
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` AS detail,
+  FROM {{ ref('t1_shopee_shop_fee_total') }} AS detail,
   UNNEST(items) AS i
+  LEFT JOIN `crypto-arcade-453509-i8`.`google_sheet`.`mapping_brand_sku` AS mapping ON i.model_sku = mapping.ma_sku and detail.brand = mapping.brand
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
+  LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
 ),
 
 sale_order_detail AS (
@@ -81,7 +84,7 @@ sale_order_detail AS (
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship,
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount, 0) AS test_doanh_thu
   FROM sale_detail AS sd
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` AS ord
+  LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
@@ -143,5 +146,10 @@ SELECT
   discount_from_voucher_seller,
   khuyen_mai_cho_the_tin_dung,
   tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung AS tong_tien_thanh_toan,
-  return_status
+  return_status,
+  gia_gach,
+  gia_gach * quantity_purchased as tong_gia_gach,
+  gia_ban_daily,
+  gia_ban_daily * quantity_purchased as tong_gia_ban_daily,
+  tong_tien_san_pham - discount_from_voucher_seller as tien_sau_chiet_khau_seller
 FROM sale_order_detail

@@ -26,7 +26,7 @@ return_detail AS (
     refund_amount,
     return_seller_due_date,
     amount_before_discount
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
+  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
 ),
 
@@ -51,7 +51,7 @@ total_amount AS (
     f.seller_shipping_discount,
     f.credit_card_promotion,
     f.service_fee
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,   
+  FROM {{ref("t1_shopee_shop_fee_total")}} f,   
   UNNEST(items) AS i
   LEFT JOIN return_detail r ON f.order_id = r.order_id AND i.item_id = r.item_id
   GROUP BY f.order_id, f.brand, f.instalment_plan, f.seller_voucher_code, f.seller_shipping_discount, f.credit_card_promotion, f.service_fee
@@ -101,7 +101,7 @@ sale_detail AS (
     
     CASE 
       WHEN rd.return_id IS NOT NULL OR ta.total_tong_tien_san_pham = 0 THEN 0
-      ELSE ROUND((i.discounted_price+ i.shopee_discount + detail.buyer_paid_shipping_fee - i.discount_from_voucher_seller - detail.credit_card_promotion) * 0.05)
+      ELSE ROUND((i.discounted_price + i.shopee_discount + detail.buyer_paid_shipping_fee - i.discount_from_voucher_seller - detail.credit_card_promotion) * 0.05)
     END AS phi_thanh_toan,
     
     CASE 
@@ -134,19 +134,19 @@ sale_detail AS (
     i.discount_from_voucher_seller,
     rd.amount_before_discount,
     vi.refund_sn,
-    
+    detail.tax_code,
     CASE
       WHEN rd.return_id IS NOT NULL THEN 0
       ELSE i.shopee_discount
     END AS tro_gia_tu_shopee
     
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` AS detail,
+  FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
+  LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
   -- Join với bảng order_detail để lấy create_time
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` ord ON detail.order_id = ord.order_id and detail.brand = ord.brand
+  LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} ord ON detail.order_id = ord.order_id and detail.brand = ord.brand
   -- Join với bảng phí config để lấy tỷ lệ phí hiệu lực dựa trên create_time từ bảng order_detail
   LEFT JOIN fee_config fc ON fc.effective_date = (
     SELECT MAX(fc2.effective_date) 
@@ -182,7 +182,7 @@ sale_order_detail AS (
     ta.seller_shipping_discount,
     ta.credit_card_promotion
   FROM sale_detail AS sd
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` AS ord
+  LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
@@ -192,7 +192,7 @@ SELECT
     GENERATE_UUID() as ma_giao_dich,
     'SKU' as don_hang_san_pham,
     order_id,
-    '' as ma_so_thue,
+    tax_code as ma_so_thue,
     refund_sn as ma_yeu_cau_hoan_tien,
     CAST(item_id AS STRING) as ma_san_pham,
     item_name as ten_san_pham,
