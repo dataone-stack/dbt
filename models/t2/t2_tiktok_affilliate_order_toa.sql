@@ -53,3 +53,13 @@ SELECT
   sum(tong_tien_sp - so_hoan) as tong_tien_san_pham_sau_khi_tru_hoan,
   
 from tiktok_aff_order
+group by
+    ngay_tao_don,
+    order_id,
+    brand,
+    payment_method_name as phuong_thuc_thanh_toan,
+    status as trang_thai_don_hang,
+    loai_noi_dung,
+    ten_nguoi_dung_nha_sang_tao,
+    thanh_toan_hoa_hong_tieu_chuan_uoc_tinh,
+    organic_ads
