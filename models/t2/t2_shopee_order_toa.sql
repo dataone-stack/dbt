@@ -26,7 +26,8 @@ SELECT
     SUM(discount_from_voucher_seller) AS discount_from_voucher_seller,
     SUM(khuyen_mai_cho_the_tin_dung) AS khuyen_mai_cho_the_tin_dung,
     SUM(tong_tien_thanh_toan) AS tong_tien_thanh_toan,
-    sum(tro_gia_tu_shopee) as tro_gia_tu_shopee
+    sum(tro_gia_tu_shopee) as tro_gia_tu_shopee,
+    return_status
 FROM {{ref("t2_shopee_order_lines_toa")}}
 GROUP BY
     create_time,
@@ -37,4 +38,5 @@ GROUP BY
     ngay_ship,
     ly_do_huy_don,
     order_status,
-    order_id
+    order_id,
+    return_status

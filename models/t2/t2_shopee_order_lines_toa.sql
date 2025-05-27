@@ -54,6 +54,7 @@ sale_detail AS (
     i.discount_from_voucher_shopee AS shopee_voucher,
     i.discount_from_coin,
     i.discount_from_voucher_seller,
+    rd.status as return_status,
     case
         when rd.return_id is not null
         then 0
