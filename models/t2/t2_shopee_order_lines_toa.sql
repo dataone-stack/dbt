@@ -148,5 +148,8 @@ SELECT
   tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung AS tong_tien_thanh_toan,
   return_status,
   gia_gach,
-  gia_ban_daily
+  gia_gach * quantity_purchased as tong_gia_gach,
+  gia_ban_daily,
+  gia_ban_daily * quantity_purchased as tong_gia_ban_daily,
+  total_tong_tien_san_pham - discount_from_voucher_seller as tien_sau_chiet_khau_seller
 FROM sale_order_detail
