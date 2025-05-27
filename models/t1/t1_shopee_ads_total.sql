@@ -1,0 +1,9 @@
+select *,'1' as idtkqc from `chaching_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_brand`
+union all
+select *,'2' as idtkqc from `lyb_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_official`
+union all
+select *,'3' as idtkqc from `ume_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ume_viet_nam`
+union all
+select *,'4' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
+union all
+select * ,'5' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
