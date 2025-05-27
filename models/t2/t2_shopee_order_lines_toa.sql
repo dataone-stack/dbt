@@ -1,3 +1,5 @@
+
+
 WITH return_detail AS (
   SELECT 
     order_id,
@@ -9,7 +11,7 @@ WITH return_detail AS (
     status,
     refund_amount,
     return_seller_due_date
-  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
   UNNEST(item) AS i
 ),
 
@@ -18,7 +20,7 @@ total_amount AS (
     order_id,
     brand,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
-  FROM {{ref("t1_shopee_shop_fee_total")}},   
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total`,   
   UNNEST(items) AS i
   GROUP BY order_id,brand
 ),
@@ -60,11 +62,11 @@ sale_detail AS (
         then 0
         else i.shopee_discount
     end AS tro_gia_tu_shopee
-  FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` AS detail,
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
-  LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
 ),
 
 sale_order_detail AS (
@@ -79,7 +81,7 @@ sale_order_detail AS (
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship,
     COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount, 0) AS test_doanh_thu
   FROM sale_detail AS sd
-  LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} AS ord
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
@@ -141,4 +143,4 @@ SELECT
   discount_from_voucher_seller,
   khuyen_mai_cho_the_tin_dung,
   tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung AS tong_tien_thanh_toan
-FROM sale_order_detail 
+FROM sale_order_detail
