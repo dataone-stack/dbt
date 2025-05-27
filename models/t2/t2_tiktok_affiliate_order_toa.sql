@@ -41,7 +41,7 @@ SELECT
   status as trang_thai_don_hang,
   loai_noi_dung,
   ten_nguoi_dung_nha_sang_tao,
-  thanh_toan_hoa_hong_tieu_chuan_uoc_tinh,
+
   organic_ads,
   sum(so_hoan) as so_hoan,
   sum(so_luong) as quantity,
@@ -61,5 +61,4 @@ group by
     status,
     loai_noi_dung,
     ten_nguoi_dung_nha_sang_tao,
-    thanh_toan_hoa_hong_tieu_chuan_uoc_tinh,
     organic_ads
