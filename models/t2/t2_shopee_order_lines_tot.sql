@@ -134,7 +134,7 @@ sale_detail AS (
     i.discount_from_voucher_seller,
     rd.amount_before_discount,
     vi.refund_sn,
-    
+    detail.tax_code,
     CASE
       WHEN rd.return_id IS NOT NULL THEN 0
       ELSE i.shopee_discount
@@ -192,7 +192,7 @@ SELECT
     GENERATE_UUID() as ma_giao_dich,
     'SKU' as don_hang_san_pham,
     order_id,
-    '' as ma_so_thue,
+    tax_code as ma_so_thue,
     refund_sn as ma_yeu_cau_hoan_tien,
     CAST(item_id AS STRING) as ma_san_pham,
     item_name as ten_san_pham,
