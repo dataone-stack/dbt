@@ -166,7 +166,7 @@ SELECT
         WHEN LOWER(order_status) = 'to_return' THEN 'Đơn đổi, trả'
         WHEN LOWER(order_status) = 'unpaid' THEN 'Chưa thanh toán'
         WHEN LOWER(order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
-        ELSE status
+        ELSE ""
     END AS status
 
 FROM sale_order_detail
