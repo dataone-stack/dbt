@@ -150,6 +150,7 @@ SELECT
   khuyen_mai_cho_the_tin_dung,
   tong_tien_san_pham - shopee_voucher - discount_from_coin - discount_from_voucher_seller - khuyen_mai_cho_the_tin_dung AS tong_tien_thanh_toan,
   return_status,
+  gia_san_pham_goc * quantity_purchased as gia_san_pham_goc_total,
   gia_gach,
   gia_gach * quantity_purchased as tong_gia_gach,
   gia_ban_daily,
