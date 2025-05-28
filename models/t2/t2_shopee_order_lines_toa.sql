@@ -157,7 +157,7 @@ COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
 COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0) AS gia_ban_daily_total,
 COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0) AS tien_sp_sau_giam_gia,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) AS tien_ban_daily_truoc_chiet_khau,
-(COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS tien_chiet_khau_sp
+(COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS tien_chiet_khau_sp,
 
     CASE
         WHEN LOWER(return_status) = 'accepted' THEN 'Đơn đổi, trả'
