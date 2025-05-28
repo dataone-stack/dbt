@@ -34,7 +34,8 @@ sale_detail AS (
     i.item_name,
     i.model_name,
     i.quantity_purchased,
-    (i.original_price / i.quantity_purchased) AS gia_san_pham_goc,
+    (i.original_price * i.quantity_purchased) AS gia_san_pham_goc,
+    seller_discount AS nguoi_ban_tro_gia,
     i.discounted_price,
     rd.update_time AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
@@ -129,6 +130,7 @@ SELECT
   model_sku,
   quantity_purchased,
   gia_san_pham_goc,
+  discounted_price,
   tong_tien_san_pham,
   so_tien_hoan_tra,
   phi_van_chuyen_nguoi_mua_tra,
@@ -151,12 +153,13 @@ SELECT
   gia_gach * quantity_purchased as tong_gia_gach,
   gia_ban_daily,
   gia_ban_daily * quantity_purchased as tong_gia_ban_daily,
-  tong_tien_san_pham - discount_from_voucher_seller as tien_sp_sau_chiet_khau,
+  gia_san_pham_goc - nguoi_ban_tro_gia - discount_from_voucher_seller as tien_sp_sau_chiet_khau,
   (gia_ban_daily * quantity_purchased) as tien_ban_daily_truoc_chiet_khau,
-  (gia_ban_daily * quantity_purchased) - (tong_tien_san_pham - discount_from_voucher_seller)  AS tien_chiet_khau_sp,
+  (gia_ban_daily * quantity_purchased) - (gia_san_pham_goc - nguoi_ban_tro_gia - discount_from_voucher_seller)  AS tien_chiet_khau_sp,
     case
         when return_status = "ACCEPTED"
         then return_status
         else order_status
     end AS status
 FROM sale_order_detail
+--- tổng tiền sản phẩm là lấy (gia_san_pham_goc- chiết khấu người bán) * quantity 
