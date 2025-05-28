@@ -130,6 +130,7 @@ SELECT
   model_sku,
   quantity_purchased,
   gia_san_pham_goc,
+  nguoi_ban_tro_gia,
   discounted_price,
   tong_tien_san_pham,
   so_tien_hoan_tra,
