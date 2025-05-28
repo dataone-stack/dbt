@@ -157,10 +157,17 @@ SELECT
   gia_san_pham_goc - nguoi_ban_tro_gia - discount_from_voucher_seller as tien_sp_sau_chiet_khau,
   (gia_ban_daily * quantity_purchased) as tien_ban_daily_truoc_chiet_khau,
   (gia_ban_daily * quantity_purchased) - (gia_san_pham_goc - nguoi_ban_tro_gia - discount_from_voucher_seller)  AS tien_chiet_khau_sp,
-    case
-        when return_status = "ACCEPTED"
-        then return_status
-        else order_status
-    end AS status
+
+    CASE
+        WHEN LOWER(return_status) = 'accepted' THEN 'Đơn đổi, trả'
+        WHEN LOWER(order_status) = 'cancelled' THEN 'Đã hủy'
+        WHEN LOWER(order_status) IN ('ready_to_ship', 'processed') THEN 'Đang giao'
+        WHEN LOWER(order_status) = 'to_confirm_receive' THEN 'Đang đơn'
+        WHEN LOWER(order_status) = 'to_return' THEN 'Đơn đổi, trả'
+        WHEN LOWER(order_status) = 'unpaid' THEN 'Chưa thanh toán'
+        WHEN LOWER(order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
+        ELSE status
+    END AS status
+
 FROM sale_order_detail
 --- tổng tiền sản phẩm là lấy (gia_san_pham_goc- chiết khấu người bán) * quantity 
