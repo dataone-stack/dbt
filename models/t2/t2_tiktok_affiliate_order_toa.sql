@@ -41,8 +41,8 @@ SELECT
   status as trang_thai_don_hang,
   loai_noi_dung,
   ten_nguoi_dung_nha_sang_tao,
-
   organic_ads,
+  
   sum(so_hoan) as so_hoan,
   sum(so_luong) as quantity,
   sum(thanh_toan_hoa_hong_tieu_chuan_uoc_tinh) as thanh_toan_hoa_hong_tieu_chuan_uoc_tinh,
