@@ -151,7 +151,12 @@ SELECT
   gia_gach * quantity_purchased as tong_gia_gach,
   gia_ban_daily,
   gia_ban_daily * quantity_purchased as tong_gia_ban_daily,
-  tong_tien_san_pham - discount_from_voucher_seller as tien_sau_chiet_khau_seller,
-  (gia_gach * quantity_purchased) - discount_from_voucher_seller as tien_gia_gach_sau_chiet_khau,
-  (gia_ban_daily * quantity_purchased) - discount_from_voucher_seller as tien_ban_daily_sau_chiet_khau
+  tong_tien_san_pham - discount_from_voucher_seller as tien_sp_sau_chiet_khau,
+  (gia_ban_daily * quantity_purchased) - discount_from_voucher_seller as tien_ban_daily_truoc_chiet_khau,
+  tong_tien_san_pham - discount_from_voucher_seller AS tien_chiet_khau_sp,
+    case
+        when return_status = "ACCEPTED"
+        then return_status
+        else order_status
+    end AS status
 FROM sale_order_detail
