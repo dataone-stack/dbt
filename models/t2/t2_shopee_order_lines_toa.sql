@@ -34,7 +34,7 @@ sale_detail AS (
     i.item_name,
     i.model_name,
     i.quantity_purchased,
-    (i.original_price * i.quantity_purchased) AS gia_san_pham_goc,
+    (i.original_price) AS gia_san_pham_goc,
     seller_discount AS nguoi_ban_tro_gia,
     i.discounted_price,
     rd.update_time AS ngay_return,
