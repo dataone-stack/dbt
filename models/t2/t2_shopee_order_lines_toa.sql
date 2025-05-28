@@ -152,5 +152,6 @@ SELECT
   gia_ban_daily,
   gia_ban_daily * quantity_purchased as tong_gia_ban_daily,
   tong_tien_san_pham - discount_from_voucher_seller as tien_sau_chiet_khau_seller,
-  gia_gach - discount_from_voucher_seller as tien_gia_gach_sau_chiet_khau
+  (gia_gach * quantity_purchased) - discount_from_voucher_seller as tien_gia_gach_sau_chiet_khau,
+  (gia_ban_daily * quantity_purchased) - discount_from_voucher_seller as tien_ban_daily_sau_chiet_khau
 FROM sale_order_detail
