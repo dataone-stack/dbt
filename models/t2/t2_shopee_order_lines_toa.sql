@@ -154,8 +154,8 @@ SELECT
   gia_gach,
   gia_gach * quantity_purchased as tong_gia_gach,
   gia_ban_daily,
-gia_ban_daily * quantity_purchased  as gia_ban_daily_total,
-  gia_san_pham_goc * quantity_purchased - nguoi_ban_tro_gia - discount_from_voucher_seller as tien_sp_sau_chiet_khau,
+ gia_ban_daily * quantity_purchased  as gia_ban_daily_total,
+  gia_san_pham_goc * quantity_purchased - nguoi_ban_tro_gia - discount_from_voucher_seller as tien_sp_sau_giam_gia,
   (gia_ban_daily * quantity_purchased) as tien_ban_daily_truoc_chiet_khau,
   (gia_ban_daily * quantity_purchased) - (gia_san_pham_goc * quantity_purchased - nguoi_ban_tro_gia - discount_from_voucher_seller)  AS tien_chiet_khau_sp,
 
