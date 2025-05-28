@@ -3,7 +3,7 @@ with tiktok_aff_order as(
   select
     DATE(DATE_ADD(aff.create_time, INTERVAL 427 MINUTE)) as ngay_tao_don,
     aff.order_id,
-    aff.brand
+    aff.brand,
     ord.payment_method_name,
     aff.status,
     safe_cast(json_value(json, '$.price.amount') as int64) as tong_tien_sp,
