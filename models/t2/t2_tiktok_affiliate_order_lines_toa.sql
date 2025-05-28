@@ -3,6 +3,7 @@ with tiktok_aff_order as(
   select
     DATE(DATE_ADD(aff.create_time, INTERVAL 427 MINUTE)) as ngay_tao_don,
     aff.order_id,
+    aff.brand
     ord.payment_method_name,
     aff.status,
     safe_cast(json_value(json, '$.price.amount') as int64) as tong_tien_sp,
@@ -18,10 +19,10 @@ with tiktok_aff_order as(
     COALESCE(safe_cast(json_value(json, '$.estimated_paid_commission.amount') as int64),0)as thanh_toan_hoa_hong_tieu_chuan_uoc_tinh,
     COALESCE(safe_cast(json_value(json, '$.estimated_paid_shop_ads_commission.amount') as int64),0) as thanh_toan_hoa_hong_quang_cao_cua_hang_uoc_tinh
 
-  from `chaching_tiktok_shop_dwh.tiktok_shop_chaching_brand_seller_affiliate_order` as aff,
+  from {{ref("t1_tiktok_affiliate_order_total")}} as aff,
   unnest(aff.skus) as json
-  LEFT JOIN `chaching_tiktok_shop_dwh.tiktok_shop_chaching_brand_order` as ord
-  on aff.order_id = ord.order_id
+  LEFT JOIN {{ref("t1_tiktok_order_tot")}} as ord
+  on aff.order_id = ord.order_id and aff.brand = ord.brand
 
 )
 
