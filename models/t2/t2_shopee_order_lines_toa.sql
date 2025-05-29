@@ -82,8 +82,7 @@ sale_order_detail AS (
     ord.shipping_carrier AS ten_don_vi_van_chuyen,
     ord.ship_by_date AS ngay_ship,
     ord.buyer_cancel_reason AS ly_do_huy_don,
-    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship,
-    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.total_amount, 0) AS test_doanh_thu
+    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship
   FROM sale_detail AS sd
   LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} AS ord
     ON sd.order_id = ord.order_id and sd.brand = ord.brand
@@ -91,7 +90,6 @@ sale_order_detail AS (
 )
 
 SELECT
-  test_doanh_thu,
   create_time,
   ten_nguoi_mua,
   brand,
@@ -158,17 +156,17 @@ COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0) AS gia_ban_daily_to
 COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0) AS tien_sp_sau_giam_gia,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) AS tien_ban_daily_truoc_chiet_khau,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS tien_chiet_khau_sp,
-
-    CASE
-        WHEN LOWER(return_status) = 'accepted' THEN 'Đơn đổi, trả'
-        WHEN LOWER(order_status) = 'cancelled' THEN 'Đã hủy'
-        WHEN LOWER(order_status) IN ('ready_to_ship', 'processed') THEN 'Đang giao'
-        WHEN LOWER(order_status) = 'to_confirm_receive' THEN 'Đang đơn'
-        WHEN LOWER(order_status) = 'to_return' THEN 'Đơn đổi, trả'
-        WHEN LOWER(order_status) = 'unpaid' THEN 'Chưa thanh toán'
-        WHEN LOWER(order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
-        ELSE ""
-    END AS status
+CASE
+    WHEN LOWER(return_status) = 'accepted' THEN 'Đã hoàn'
+    WHEN LOWER(order_status) = 'cancelled' THEN 'Đã hủy'
+    WHEN LOWER(order_status) IN ('ready_to_ship', 'processed') THEN 'Đăng đơn'
+    WHEN LOWER(order_status) = 'to_confirm_receive' THEN 'Đăng đơn'
+    WHEN LOWER(order_status) = 'to_return' THEN 'Đã hoàn'
+    WHEN LOWER(order_status) = 'unpaid' THEN 'Đăng đơn'
+    WHEN LOWER(order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
+    ELSE ""
+END AS status,
+(COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu
 
 FROM sale_order_detail
 --- tổng tiền sản phẩm là lấy (gia_san_pham_goc- chiết khấu người bán) * quantity 
