@@ -1,9 +1,9 @@
-SELECT * FROM tiktok_ads_dwh.chaching_tiktok_ads_dwh
+SELECT total_onsite_shopping_value,spend,account_id,stat_time_day FROM tiktok_ads_dwh.chaching_tiktok_ads_dwh
 UNION ALL
-SELECT * FROM tiktok_ads_dwh.lyb_tiktok_ads_dwh
+SELECT total_onsite_shopping_value,spend,account_id,stat_time_day FROM tiktok_ads_dwh.lyb_tiktok_ads_dwh
 UNION ALL
-SELECT * FROM tiktok_ads_dwh.ume_tiktok_ads_dwh
+SELECT total_onsite_shopping_value,spend,account_id,stat_time_day FROM tiktok_ads_dwh.ume_tiktok_ads_dwh
 union all
-SELECT * from tiktok_ads_dwh.ancung_tiktok_ads_dwh
+SELECT total_onsite_shopping_value,spend,account_id,stat_time_day from tiktok_ads_dwh.ancung_tiktok_ads_dwh
 union all
-SELECT * from tiktok_ads_dwh.lybcosmetic_tiktok_ads_dwh
+SELECT total_onsite_shopping_value,spend,account_id,stat_time_day from tiktok_ads_dwh.lybcosmetic_tiktok_ads_dwh
