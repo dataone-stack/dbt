@@ -1,34 +1,19 @@
-SELECT 
-    ord.id,
-    ord.brand,
-    ord.inserted_at,
-    ord.updated_at,
-    ord.status_name,
-    ord.returned_reason_name,
-    ord.page_id,
-    ord.marketer_name,
-    ord.ten_nguoi_mua,
-    sum(ord.quantity) as so_luong_ban ,
-    sum(ord.gia_san_pham) as gia_san_pham,
-    sum(ord.tong_so_tien) as tong_so_tien,
-    sum(ord.khuyen_mai_dong_gia) as khuyen_mai_dong_gia,
-    sum(ord.giam_gia_don_hang) as giam_gia_don_hang,
-    sum(ord.phi_van_chuyen) as phi_van_chuyen,
-    sum(ord.tra_truoc) as tra_truoc,
-    sum(ord.tong_tien_can_thanh_toan) as tong_tien_can_thanh_toan,
-    sum(ord.cod) as cod,
-    pos.total_price_after_sub_discount
-FROM {{ref("t2_facebook_order_lines_toa")}} as ord
-left join {{ref("t1_pancake_pos_order_total")}} as pos
-on ord.id = pos.id and ord.brand = pos.brand
-group BY
-    ord.id,
-    ord.brand,
-    ord.inserted_at,
-    ord.updated_at,
-    ord.status_name,
-    ord.returned_reason_name,
-    ord.page_id,
-    ord.marketer_name,
-    ord.ten_nguoi_mua,
-    pos.total_price_after_sub_discount
+select
+  ma_don_hang,
+  ngay_tao_don,
+  brand,
+  sum(so_luong) as so_luong,
+  sum(gia_goc) as gia_goc,
+  sum(khuyen_mai_dong_gia) as khuyen_mai_dong_gia, 
+  sum(giam_gia_don_hang) as giam_gia_don_hang,
+  sum(phi_van_chuyen) as phi_van_chuyen,
+  sum(tong_tien_sau_giam_gia) as tong_tien_sau_giam_gia,
+  sum(cod) as cod,
+  sum(tra_truoc) as tra_truoc,
+  sum(cuoc_vc) as cuoc_vc,
+  sum(phi_van_chuyen) as phi_van_chuyen
+from {{ref("t2_facebook_order_lines_toa")}}
+group by
+  ma_don_hang,
+  ngay_tao_don,
+  brand,
