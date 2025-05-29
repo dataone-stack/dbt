@@ -22,7 +22,7 @@ SELECT date(date_start) as date_start,account_id,spend,COALESCE(
           LIMIT 1
         ),
         '$.value'
-      ) AS INT
+      ) AS INT64
     ),
     0
   ) AS purchase,
