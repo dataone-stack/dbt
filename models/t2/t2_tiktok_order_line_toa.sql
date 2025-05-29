@@ -18,7 +18,7 @@ WITH LineItems AS (
     SUM(CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64)) AS SKU_Subtotal_After_Discount,
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID
-  FROM {{ ref('t1_tiktok_order_tot') }} o
+  FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
   GROUP BY
     o.brand,
@@ -35,6 +35,18 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id')
 ),
+
+ReturnLineItems AS (
+  SELECT
+    r.order_id,
+    JSON_VALUE(li, '$.sku_id') AS SKU_ID,
+    COALESCE(CAST(JSON_VALUE(li, '$.quantity') AS INT64), 1) AS Sku_Quantity_of_Return,
+    CAST(JSON_VALUE(r.refund_amount, '$.refund_total') AS FLOAT64) AS Order_Refund_Amount,
+    'return_refund' AS Cancelation_Return_Type
+  FROM {{ref("t1_tiktok_order_return")}} r
+  CROSS JOIN UNNEST(r.return_line_items) AS li
+),
+
 OrderData AS (
   SELECT
     li.brand,
@@ -49,20 +61,24 @@ OrderData AS (
       WHEN 'DELIVERED' THEN 'Delivered'
       ELSE o.order_status
     END AS Order_Substatus,
-    CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN 'Cancel'
-      ELSE NULL
-    END AS Cancelation_Return_Type,
+    -- Map return info nếu có, ưu tiên Cancelation_Return_Type từ return
+    COALESCE(r.Cancelation_Return_Type,
+      CASE 
+        WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN 'Cancel'
+        ELSE NULL
+      END) AS Cancelation_Return_Type,
     li.Normal_or_Preorder,
     li.SKU_ID,
     li.Seller_SKU,
     li.Product_Name,
     li.Variation,
     li.Quantity,
-    CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.is_gift = FALSE AND li.SKU_Display_Status = 'CANCELLED' THEN li.Quantity
-      ELSE 0
-    END AS Sku_Quantity_of_Return,
+    -- Nếu có return thì lấy số lượng return, không thì lấy theo cancel logic cũ
+    COALESCE(r.Sku_Quantity_of_Return,
+      CASE 
+        WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.is_gift = FALSE AND li.SKU_Display_Status = 'CANCELLED' THEN li.Quantity
+        ELSE 0
+      END) AS Sku_Quantity_of_Return,
     li.SKU_Unit_Original_Price,
     li.SKU_Subtotal_Before_Discount,
     li.SKU_Platform_Discount,
@@ -72,14 +88,15 @@ OrderData AS (
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_platform_discount') AS FLOAT64) AS Shipping_Fee_Platform_Discount,
-    -- CAST(JSON_VALUE(o.payment, '$.platform_discount') AS FLOAT64) AS Payment_Platform_Discount,
     0 AS Payment_Platform_Discount,
     CAST(JSON_VALUE(o.payment, '$.tax') AS FLOAT64) AS Taxes,
     CAST(JSON_VALUE(o.payment, '$.total_amount') AS FLOAT64) AS Order_Amount,
-    CASE 
-      WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN li.SKU_Refund_Amount
-      ELSE NULL
-    END AS Order_Refund_Amount,
+    -- Lấy tiền hoàn trả từ return nếu có, nếu không thì theo logic cũ
+    COALESCE(r.Order_Refund_Amount,
+      CASE 
+        WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.SKU_Display_Status = 'CANCELLED' THEN li.SKU_Refund_Amount
+        ELSE NULL
+      END) AS Order_Refund_Amount,
     DATETIME_ADD(o.create_time, INTERVAL 7 HOUR) AS Created_Time,
     DATETIME_ADD(o.paid_time, INTERVAL 7 HOUR) AS Paid_Time,
     DATETIME_ADD(o.rts_time, INTERVAL 7 HOUR) AS RTS_Time,
@@ -137,9 +154,12 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN {{ ref('t1_tiktok_order_tot') }} o
+  JOIN {{ref("t1_tiktok_order_tot")}} o
     ON li.order_id = o.order_id
     AND li.brand = o.brand
+  LEFT JOIN ReturnLineItems r
+    ON li.order_id = r.order_id
+    AND li.SKU_ID = r.SKU_ID
 )
 SELECT
   brand,
