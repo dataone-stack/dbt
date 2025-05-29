@@ -1,37 +1,71 @@
-SELECT date(date_start) as date_start,account_id,spend,COALESCE(
-    CAST(
-      JSON_VALUE(
-        (
-          SELECT value
-          FROM UNNEST(action_values) AS value
-          WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
-          LIMIT 1
+SELECT
+    date(date_start) as date_start,
+    account_id,
+    spend,
+    COALESCE(
+        CAST(
+            JSON_VALUE(
+                (
+                    SELECT value
+                    FROM UNNEST(action_values) AS value
+                    WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
+                    LIMIT 1
+                ),
+                '$.value'
+            ) AS FLOAT64
         ),
-        '$.value'
-      ) AS FLOAT64
-    ),
-    0
-  ) AS doanhThuAds,
-  cpm,
-  cpc,
-  COALESCE(
-    CAST(
-      JSON_VALUE(
-        (
-          SELECT value
-          FROM UNNEST(actions) AS value
-          WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
-          LIMIT 1
+        0
+    ) AS doanhThuAds,
+    COALESCE(
+        CAST(
+            JSON_VALUE(
+                (
+                    SELECT value
+                    FROM UNNEST(actions) AS value
+                    WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
+                    LIMIT 1
+                ),
+                '$.value'
+            ) AS INT64
         ),
-        '$.value'
-      ) AS FLOAT64
-    ),
-    0
-  ) AS purchase
-   FROM  {{ ref('t1_facebook_ads_total')}}
-union all
-select date(stat_time_day) as date_start ,account_id,spend,cast(total_onsite_shopping_value as FLOAT64) as doanhThuAds, cpm,cpc,onsite_shopping as purchase From {{ref("t1_tiktok_ads_total")}}
-union all
-select date(stat_time_day) as date_start ,account_id,spend, 0 as doanhThuAds,0 as cpm,0 as cpc,0 as purchase From {{ref("t1_tiktokLive_ads_chiPhi_total")}}
-union all
-select date(date) as date_start , cast(idtkqc as int64) as account_id,expense as spend, broad_gmv as doanhThuAds,0 as cpm,0 as cpc,0 as purchase From {{ref("t1_shopee_ads_total")}}
+        0
+    ) AS purchase,
+    cpc,
+    cpm
+FROM {{ ref('t1_facebook_ads_total') }}
+
+UNION ALL
+
+SELECT
+    date(stat_time_day) as date_start,
+    account_id,
+    spend,
+    CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
+    onsite_shopping AS purchase,
+    cpc,
+    cpm
+FROM {{ ref('t1_tiktok_ads_total') }}
+
+UNION ALL
+
+SELECT
+    date(stat_time_day) as date_start,
+    account_id,
+    spend,
+    0 AS doanhThuAds,
+    0 AS purchase,
+    0 AS cpc,
+    0 AS cpm
+FROM {{ ref('t1_tiktokGMV_ads_total') }}
+
+UNION ALL
+
+SELECT
+    date(date) as date_start,
+    CAST(idtkqc AS INT64) AS account_id,
+    expense AS spend,
+    broad_gmv AS doanhThuAds,
+    0 AS purchase,
+    0 AS cpc,
+    0 AS cpm
+FROM {{ ref('t1_shopee_ads_total') }}
