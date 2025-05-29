@@ -7,3 +7,21 @@ union all
 select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'LYB Cosmetics' as brand from `lybcosmetic_shopee_shop_dwh.shopee_order_detail_lyb_cosmetic`
 union all
 select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'UME' as brand from `ume_shopee_shop_dwh.shopee_order_detail_ume_viet_nam`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'BE20(kẹo ngậm)' as brand from `be20keongamdautamtrangda_shopee_shop_dwh.shopee_order_detail_be20_keo_ngam_dau_tam_trang_da`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Belle Beauty' as brand from `bellebeautyvietnam_shopee_shop_dwh.shopee_order_detail_belle_beauty_vietnam`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Belle Beauty' as brand from `bellevietnamstore_shopee_shop_dwh.shopee_order_detail_belle_vietnam_store`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Cà phê gừng' as brand from `tongcongtycaphegiamcan_shopee_shop_dwh.shopee_order_detail_tong_cong_ty_ca_phe_giam_can`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Cà phê gừng' as brand from `caphegungmatonggiamcan_shopee_shop_dwh.shopee_order_detail_ca_phe_gung_mat_ong_giam_can`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Cà phê gừng' as brand from `caphegiamcanstore_shopee_shop_dwh.shopee_order_detail_ca_phe_giam_can_store`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Cà phê mâm xôi' as brand from `caphemamxoichinhhang_shopee_shop_dwh.shopee_order_detail_ca_phe_mam_xoi_chinh_hang`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'Cà phê mâm xôi' as brand from `caphemamxoivietnam_shopee_shop_dwh.shopee_order_detail_cafe_mam_xoi_viet_nam`
+union all
+select order_id,total_amount,create_time,order_status,payment_method,shipping_carrier,ship_by_date,buyer_cancel_reason,days_to_ship, checkout_shipping_carrier,'BE20(kẹo ngậm)' as brand from `keongamtrangdadautambe20_shopee_shop_dwh.shopee_order_detail_keo_ngam_trang_da_dau_tam_be20`
