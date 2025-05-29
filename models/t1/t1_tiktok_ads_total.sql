@@ -4,6 +4,6 @@ SELECT total_onsite_shopping_value,spend,account_id,stat_time_day FROM tiktok_ad
 UNION ALL
 SELECT total_onsite_shopping_value,spend,account_id,stat_time_day FROM tiktok_ads_dwh.ume_tiktok_ads_dwh
 union all
-SELECT total_onsite_shopping_value,spend,account_id,stat_time_day from tiktok_ads_dwh.ancung_tiktok_ads_dwh
+SELECT safe_cast(total_onsite_shopping_value as int64),spend,account_id,stat_time_day from tiktok_ads_dwh.ancung_tiktok_ads_dwh
 union all
 SELECT total_onsite_shopping_value,spend,account_id,stat_time_day from tiktok_ads_dwh.lybcosmetic_tiktok_ads_dwh
