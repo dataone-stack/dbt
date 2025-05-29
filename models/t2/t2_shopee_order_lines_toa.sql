@@ -37,6 +37,7 @@ sale_detail AS (
     (i.original_price/i.quantity_purchased) AS gia_san_pham_goc,
     seller_discount AS nguoi_ban_tro_gia,
     i.discounted_price,
+    (i.original_price/i.quantity_purchased) as test_doanh_thu,
     rd.update_time AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
     CASE
@@ -90,6 +91,7 @@ sale_order_detail AS (
 )
 
 SELECT
+  test_doanh_thu,
   create_time,
   ten_nguoi_mua,
   brand,
