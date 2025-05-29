@@ -55,7 +55,7 @@ select
   giam_gia_don_hang,
   phi_van_chuyen,
   round(gia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) as tong_tien_sau_giam_gia,
-  round(gia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) - sum(tra_truoc) as cod,
+  round(gia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) - tra_truoc as cod,
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen as phi_van_chuyen
