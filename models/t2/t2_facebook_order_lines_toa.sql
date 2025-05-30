@@ -12,7 +12,7 @@ order_line as (
     ord.brand,
     ord.inserted_at,
     ord.status_name,
-    json_value(promotion, '$.name')  as promotion_name,
+    json_value(promotion, '$.promotion_advance_info.name')  as promotion_name,
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp,
     json_value(item, '$.variation_info.fields[0].value') as color,
