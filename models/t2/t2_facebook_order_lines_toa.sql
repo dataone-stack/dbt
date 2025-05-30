@@ -41,13 +41,12 @@ order_line as (
       ) * ord.prepaid, 0) as tra_truoc
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
-  left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  where date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)) between '2025-05-01' and '2025-05-10' 
-    and order_sources_name in ('Facebook','Ladipage Facebook','Webcake')
+  left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand 
+  and order_sources_name in ('Facebook','Ladipage Facebook','Webcake')
 )
 select
   id as ma_don_hang,
-  inserted_at as ngay_tao_don,
+  DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
   so_luong,
   gia_goc,
