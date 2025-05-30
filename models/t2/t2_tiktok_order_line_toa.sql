@@ -46,7 +46,10 @@ ReturnLineItems AS (
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     COALESCE(CAST(JSON_VALUE(li, '$.quantity') AS INT64), 1) AS Sku_Quantity_of_Return,
     CAST(JSON_VALUE(r.refund_amount, '$.refund_total') AS FLOAT64) AS Order_Refund_Amount,
-    'return_refund' AS Cancelation_Return_Type
+    CASE r.return_status 
+        WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
+        ELSE null
+    END AS Cancelation_Return_Type
   FROM {{ref("t1_tiktok_order_return")}} r
   CROSS JOIN UNNEST(r.return_line_items) AS li
 ),

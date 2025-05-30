@@ -16,3 +16,9 @@ union all
 select order_id,return_seller_due_date,return_id ,update_time,status, item, amount_before_discount, 'Cà phê gừng' as brand from `caphegungmatonggiamcan_shopee_shop_dwh.shopee_return_ca_phe_gung_mat_ong_giam_can`
 union all
 select order_id,return_seller_due_date,return_id ,update_time,status, item, amount_before_discount, 'Cà phê mâm xôi' as brand from `caphemamxoichinhhang_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`
+union all
+select order_id,return_seller_due_date,return_id ,update_time,status, item, amount_before_discount, 'Cà phê mâm xôi' as brand from `raspberrycoffeeofficial_shopee_shop_dwh.shopee_return_raspberry_coffee_offlclal`
+union all
+select order_id,return_seller_due_date,return_id ,update_time,status, item, amount_before_discount, 'UME' as brand from `nhatdangnhidastore_shopee_shop_dwh.shopee_return_nhat_dang_nhi_da_store`
+union all
+select order_id,return_seller_due_date,return_id ,update_time,status, item, amount_before_discount, 'Cà phê mâm xôi' as brand from `caphemamxoichinhhang2_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`

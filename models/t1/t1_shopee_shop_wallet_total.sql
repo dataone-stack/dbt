@@ -25,3 +25,9 @@ union all
 select *,'Cà phê mâm xôi' as brand from `caphemamxoivietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_cafe_mam_xoi_viet_nam`
 union all
 select *,'BE20(kẹo ngậm)' as brand from `keongamtrangdadautambe20_shopee_shop_dwh.shopee_payment_wallet_transaction_keo_ngam_trang_da_dau_tam_be20`
+union all
+select *,'Cà phê mâm xôi' as brand from `raspberrycoffeeofficial_shopee_shop_dwh.shopee_payment_wallet_transaction_raspberry_coffee_offlclal`
+union all
+select *,'UME' as brand from `nhatdangnhidastore_shopee_shop_dwh.shopee_payment_wallet_transaction_nhat_dang_nhi_da_store`
+union all
+select *,'Cà phê mâm xôi' as brand from `caphemamxoichinhhang2_shopee_shop_dwh.shopee_payment_wallet_transaction_ca_phe_mam_xoi_chinh_hang`
