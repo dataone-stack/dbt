@@ -52,8 +52,8 @@ select
   gia_goc,
   khuyen_mai_dong_gia,
   giam_gia_don_hang,
-  round(gia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) as tong_tien_sau_giam_gia,
-  round(gia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) - tra_truoc as cod,
+  rgia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+  gia_goc - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen - tra_truoc as cod,
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen
