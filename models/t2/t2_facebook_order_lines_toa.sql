@@ -11,6 +11,11 @@ order_line as (
     ord.id,
     ord.brand,
     ord.inserted_at,
+    ord.status_name,
+    json_value(item, '$.variation_info.display_id')  as sku,
+    json_value(item, '$.variation_info.name')  as ten_sp,
+    json_value(item, '$.variation_info.fields[0].value')  as color,
+    json_value(item, '$.variation_info.fields[1].value')  as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
     COALESCE(
       SAFE_DIVIDE(
