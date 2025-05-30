@@ -6,7 +6,6 @@ select
   sum(gia_goc) as gia_goc,
   sum(khuyen_mai_dong_gia) as khuyen_mai_dong_gia, 
   sum(giam_gia_don_hang) as giam_gia_don_hang,
-  sum(phi_van_chuyen) as phi_van_chuyen,
   sum(tong_tien_sau_giam_gia) as tong_tien_sau_giam_gia,
   sum(cod) as cod,
   sum(tra_truoc) as tra_truoc,
