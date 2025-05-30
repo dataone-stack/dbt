@@ -54,7 +54,7 @@ order_line as (
   unnest (items) as item,
   unnest(activated_promotion_advances) as promotion
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand 
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake') and ord.status_name NOT IN ('removed')
+  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake')
 )
 
 select
