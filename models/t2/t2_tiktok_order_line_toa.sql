@@ -17,9 +17,12 @@ WITH LineItems AS (
     SUM(CAST(JSON_VALUE(li, '$.seller_discount') AS FLOAT64)) AS SKU_Seller_Discount,
     SUM(CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64)) AS SKU_Subtotal_After_Discount,
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
-    JSON_VALUE(li, '$.package_id') AS Package_ID
+    JSON_VALUE(li, '$.package_id') AS Package_ID,
+    mapping.gia_ban_daily AS Gia_Ban_Daily
   FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
+    ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.brand,
     o.order_id,
@@ -33,7 +36,8 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.display_status'),
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
-    JSON_VALUE(li, '$.package_id')
+    JSON_VALUE(li, '$.package_id'),
+    mapping.gia_ban_daily
 ),
 
 ReturnLineItems AS (
@@ -216,6 +220,7 @@ SELECT
   Package_ID,
   Seller_Note,
   Checked_Status,
-  Checked_Marked_by
+  Checked_Marked_by,
+  Gia_Ban_Daily,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
