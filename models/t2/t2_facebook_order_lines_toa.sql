@@ -14,8 +14,8 @@ order_line as (
     ord.status_name,
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp,
-    json_value(item, '$.variation_info.fields[0].value')  as color,
-    json_value(item, '$.variation_info.fields[1].value')  as size,
+    json_value(item, '$.variation_info.fields[0].value') as color,
+    json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
     COALESCE(
       SAFE_DIVIDE(
@@ -59,6 +59,11 @@ select
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
+  status_name,
+  sku,
+  ten_sp,
+  color,
+  size,
   so_luong,
   gia_goc,
   khuyen_mai_dong_gia,
@@ -69,7 +74,6 @@ select
   then 0
   else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
   end as cod,
-
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen
