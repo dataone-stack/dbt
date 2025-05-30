@@ -52,7 +52,7 @@ order_line as (
 
 select
   id as ma_don_hang,
-  DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
+  DATETIME_ADD(inserted_at, INTERVAL 7 HOUR + INTERVAL 30 MINUTE) as ngay_tao_don,
   brand,
   so_luong,
   gia_goc,
