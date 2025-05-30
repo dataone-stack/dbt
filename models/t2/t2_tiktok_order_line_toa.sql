@@ -88,6 +88,7 @@ OrderData AS (
     li.SKU_Platform_Discount,
     li.SKU_Seller_Discount,
     li.SKU_Subtotal_After_Discount,
+    li.Gia_Ban_Daily,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee') AS FLOAT64) AS Shipping_Fee_After_Discount,
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
