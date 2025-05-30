@@ -14,29 +14,34 @@ order_line as (
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64) + 
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64) + 
         safe_cast(json_value(item, '$.total_discount') as int64),
         safe_cast(json_value(item, '$.quantity') as int64)
       ), 0) as gia_goc,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64),
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64),
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64),
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64),
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc
   from {{ref("t1_pancake_pos_order_total")}} as ord,
