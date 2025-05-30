@@ -59,7 +59,12 @@ select
   khuyen_mai_dong_gia,
   giam_gia_don_hang,
   (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen - tra_truoc as cod,
+  case
+  when tra_truoc > 0
+  then 0
+  else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
+  end as cod,
+
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen
