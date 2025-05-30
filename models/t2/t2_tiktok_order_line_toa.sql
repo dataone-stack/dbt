@@ -223,11 +223,12 @@ SELECT
   Checked_Status,
   Checked_Marked_by,
   Gia_Ban_Daily AS gia_ban_daily,
-  Gia_Ban_Daily * Quantity AS gia_ban_daily_total
-  SKU_Unit_Original_Price AS gia_san_pham_goc,
-  SKU_Unit_Original_Price * Quantity AS gia_san_pham_goc_total,
-  AS tien_sp_sau_giam_gia,
-  AS tien_chiet_khau_sp,
-  AS doanh_thu,
+  Gia_Ban_Daily * Quantity AS gia_ban_daily_total,
+  COALESCE(SKU_Unit_Original_Price, 0) AS gia_san_pham_goc,
+  COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0) AS gia_san_pham_goc_total,
+  (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_giam_gia,
+  (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
+  (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu,
+
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
