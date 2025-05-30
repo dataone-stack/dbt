@@ -31,6 +31,7 @@ sale_detail AS (
     detail.buyer_user_name AS ten_nguoi_mua,
     detail.brand,
     i.model_sku,
+    i.item_sku,
     i.item_name,
     i.model_name,
     i.quantity_purchased,
@@ -127,6 +128,11 @@ SELECT
         THEN model_name
         ELSE NULL
     END AS color,
+  CASE 
+    WHEN model_sku = ""
+    THEN item_sku
+    ELSE model_sku
+  END AS sku_code,
   model_sku,
   quantity_purchased,
   gia_san_pham_goc,
