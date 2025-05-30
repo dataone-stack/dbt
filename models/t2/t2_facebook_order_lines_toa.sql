@@ -47,7 +47,7 @@ order_line as (
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand 
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake')
+  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake') and ord.status_name != 'removed'
 )
 
 select
