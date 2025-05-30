@@ -233,14 +233,15 @@ SELECT
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu,
   CASE
-    WHEN Cancelation_Return_Type = 'return_refund' THEN N'Đã hoàn'
-    WHEN Order_Status = 'Shipped' THEN N'Đang giao'
-    WHEN Order_Status = 'AWAITING_COLLECTION' THEN N'Đang giao'
-    WHEN Order_Status = 'Canceled' THEN N'Đã hủy'
-    WHEN Order_Status = 'COMPLETED' THEN N'Đã giao thành công'
-    WHEN Order_Status = 'Unpaid' THEN N'Đăng đơn'
-    ELSE N'Khác'
+    WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
+    WHEN Order_Status = 'Shipped' THEN 'Đang giao'
+    WHEN Order_Status = 'AWAITING_COLLECTION' THEN 'Đang giao'
+    WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
+    WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
+    WHEN Order_Status = 'Unpaid' THEN 'Đang đơn'
+    ELSE 'Khác'
 END AS status
+
 
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
