@@ -47,8 +47,9 @@ order_line as (
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand 
-  and order_sources_name in ('Facebook','Ladipage Facebook','Webcake')
+  and ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake')
 )
+
 select
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
