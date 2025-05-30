@@ -12,7 +12,7 @@ order_line as (
     ord.brand,
     ord.inserted_at,
     ord.status_name,
-    json_value(ord.activated_promotion_advances, '$.name')  as promotion_name,
+    json_value(promotion, '$.name')  as promotion_name,
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp,
     json_value(item, '$.variation_info.fields[0].value') as color,
@@ -51,7 +51,8 @@ order_line as (
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc
   from {{ref("t1_pancake_pos_order_total")}} as ord,
-  unnest (items) as item
+  unnest (items) as item,
+  unnest(activated_promotion_advances) as promotion
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake') and ord.status_name NOT IN ('removed')
 )
