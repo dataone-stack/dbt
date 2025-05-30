@@ -236,12 +236,12 @@ SELECT
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
     WHEN Order_Status = 'Shipped' THEN 'Đang giao'
     WHEN Order_Status = 'AWAITING_COLLECTION' THEN 'Đang giao'
+    WHEN Order_Status = 'AWAITING_SHIPMENT' THEN 'Đang giao'
     WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
     WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
-    WHEN Order_Status = 'Unpaid' THEN 'Đang đơn'
+    WHEN Order_Status = 'UNPAID' THEN 'Đang đơn'
+    WHEN Order_Status = 'IN_TRANSIT' THEN 'Đang giao'
     ELSE 'Khác'
-END AS status
-
-
+END AS status,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
