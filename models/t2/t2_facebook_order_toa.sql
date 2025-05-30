@@ -16,4 +16,4 @@ from {{ref("t2_facebook_order_lines_toa")}}
 group by
   ma_don_hang,
   ngay_tao_don,
-  brand,
+  brand
