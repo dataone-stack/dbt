@@ -222,6 +222,12 @@ SELECT
   Seller_Note,
   Checked_Status,
   Checked_Marked_by,
-  Gia_Ban_Daily,
+  Gia_Ban_Daily AS gia_ban_daily,
+  Gia_Ban_Daily * Quantity AS gia_ban_daily_total
+  SKU_Unit_Original_Price AS gia_san_pham_goc,
+  SKU_Unit_Original_Price * Quantity AS gia_san_pham_goc_total,
+  AS tien_sp_sau_giam_gia,
+  AS tien_chiet_khau_sp,
+  AS doanh_thu,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
