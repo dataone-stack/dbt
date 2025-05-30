@@ -2,7 +2,7 @@ select
   ma_don_hang,
   ngay_tao_don,
   brand,
-  status_name as trang_thai_don_hang,
+  status_name as trang_thai_don_han,g
   sum(so_luong) as so_luong,
   sum(gia_goc) as gia_goc,
   sum(khuyen_mai_dong_gia) as khuyen_mai_dong_gia, 
