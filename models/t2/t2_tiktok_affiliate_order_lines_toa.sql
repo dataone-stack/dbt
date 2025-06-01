@@ -23,7 +23,6 @@ with tiktok_aff_order as(
   unnest(aff.skus) as json
   LEFT JOIN {{ref("t1_tiktok_order_tot")}} as ord
   on aff.order_id = ord.order_id and aff.brand = ord.brand
-
 )
 
 SELECT 

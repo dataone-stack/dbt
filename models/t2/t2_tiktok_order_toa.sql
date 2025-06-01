@@ -70,8 +70,7 @@ SELECT
   END AS Has_Returns,
   ROUND(SUM(SKU_Subtotal_After_Discount) + ANY_VALUE(Shipping_Fee_After_Discount) + ANY_VALUE(Taxes), 2) AS Calculated_Total_Amount
 
-FROM {{ref('t2_tiktok_order_line_tot')}}
-WHERE DATE(Created_Time) >= '2024-03-01'
+FROM {{ref('t2_tiktok_order_line_toa')}}
 GROUP BY 
   brand,
   Order_ID,

@@ -31,6 +31,7 @@ sale_detail AS (
     detail.buyer_user_name AS ten_nguoi_mua,
     detail.brand,
     i.model_sku,
+    i.item_sku,
     i.item_name,
     i.model_name,
     i.quantity_purchased,
@@ -68,7 +69,7 @@ sale_detail AS (
     end AS tro_gia_tu_shopee
   FROM {{ ref('t1_shopee_shop_fee_total') }} AS detail,
   UNNEST(items) AS i
-  LEFT JOIN `crypto-arcade-453509-i8`.`google_sheet`.`mapping_brand_sku` AS mapping ON i.model_sku = mapping.ma_sku and detail.brand = mapping.brand
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON i.model_sku = mapping.ma_sku and detail.brand = mapping.brand
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
   LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
@@ -127,6 +128,11 @@ SELECT
         THEN model_name
         ELSE NULL
     END AS color,
+  CASE 
+    WHEN model_sku = ""
+    THEN item_sku
+    ELSE model_sku
+  END AS sku_code,
   model_sku,
   quantity_purchased,
   gia_san_pham_goc,

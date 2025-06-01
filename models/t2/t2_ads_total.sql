@@ -1,6 +1,6 @@
 SELECT
-    date(date_start) as date_start,
-    account_id,
+    DATE(date_start) AS date_start,
+    CAST(account_id AS STRING) AS account_id,
     spend,
     COALESCE(
         CAST(
@@ -37,8 +37,8 @@ FROM {{ ref('t1_facebook_ads_total') }}
 UNION ALL
 
 SELECT
-    date(stat_time_day) as date_start,
-    account_id,
+    DATE(stat_time_day) AS date_start,
+    CAST(account_id AS STRING) AS account_id,
     spend,
     CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     onsite_shopping AS purchase,
@@ -49,8 +49,8 @@ FROM {{ ref('t1_tiktok_ads_total') }}
 UNION ALL
 
 SELECT
-    date(stat_time_day) as date_start,
-    account_id,
+    DATE(stat_time_day) AS date_start,
+    CAST(account_id AS STRING) AS account_id,
     spend,
     0 AS doanhThuAds,
     0 AS purchase,
@@ -61,8 +61,8 @@ FROM {{ ref('t1_tiktokGMV_ads_total') }}
 UNION ALL
 
 SELECT
-    date(date) as date_start,
-    CAST(idtkqc AS INT64) AS account_id,
+    DATE(date) AS date_start,
+    CAST(idtkqc AS STRING) AS account_id,
     expense AS spend,
     broad_gmv AS doanhThuAds,
     0 AS purchase,
