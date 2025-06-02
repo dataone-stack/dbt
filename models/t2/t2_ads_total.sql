@@ -31,7 +31,8 @@ SELECT
         0
     ) AS purchase,
     cpc,
-    cpm
+    cpm,
+    account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }}
 
 UNION ALL
@@ -43,7 +44,8 @@ SELECT
     CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     onsite_shopping AS purchase,
     cpc,
-    cpm
+    cpm,
+    '-' as currency
 FROM {{ ref('t1_tiktok_ads_total') }}
 
 UNION ALL
@@ -55,7 +57,8 @@ SELECT
     0 AS doanhThuAds,
     0 AS purchase,
     0 AS cpc,
-    0 AS cpm
+    0 AS cpm,
+    '-' as currency
 FROM {{ ref('t1_tiktokGMV_ads_total') }}
 
 UNION ALL
@@ -67,5 +70,6 @@ SELECT
     broad_gmv AS doanhThuAds,
     0 AS purchase,
     0 AS cpc,
-    0 AS cpm
+    0 AS cpm,
+    '-' as currency
 FROM {{ ref('t1_shopee_ads_total') }}

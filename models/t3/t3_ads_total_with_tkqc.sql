@@ -7,7 +7,8 @@ WITH ads_total_with_tkqc AS (
         tkqc.staff,
         tkqc.manager, 
         tkqc.brand,
-        tkqc.channel, 
+        tkqc.channel,
+        ads.currency,
         SUM(ads.spend) AS chiPhiAds, 
         SUM(ads.doanhThuAds) AS doanhThuAds,
         sum(ads.cpc) as cpc,
@@ -24,7 +25,8 @@ WITH ads_total_with_tkqc AS (
         tkqc.staff,
         tkqc.manager, 
         tkqc.brand,
-        tkqc.channel
+        tkqc.channel,
+        ads.currency
 ),
 ads_ladipageFacebook_total_with_tkqc AS (
     SELECT 
