@@ -51,4 +51,4 @@ LEFT JOIN {{ref("t1_tiktokLive_ads_doanhThu_total")}} AS gmv
     AND CAST(gmv.account_id AS STRING) = ads.idtkqc
 LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch 
     ON shopeeSearch.date_start = ads.date_start 
-    AND CAST(shopeeSearch.account_id AS STRING) = ads.idtkqc;
+    AND CAST(shopeeSearch.account_id AS STRING) = ads.idtkqc
