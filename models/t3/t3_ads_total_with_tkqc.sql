@@ -8,7 +8,6 @@ WITH ads_total_with_tkqc AS (
         tkqc.manager, 
         tkqc.brand,
         tkqc.channel,
-        ads.currency,
         SUM(ads.spend) AS chiPhiAds, 
         SUM(ads.doanhThuAds) AS doanhThuAds
     FROM {{ ref('t2_ads_total')}} AS ads 
@@ -22,7 +21,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.staff,
         tkqc.manager, 
         tkqc.brand,
-        tkqc.channel,
+        tkqc.channel
 ),
 ads_ladipageFacebook_total_with_tkqc AS (
     SELECT 
@@ -52,4 +51,4 @@ LEFT JOIN {{ref("t1_tiktokLive_ads_doanhThu_total")}} AS gmv
     AND CAST(gmv.account_id AS STRING) = ads.idtkqc
 LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch 
     ON shopeeSearch.date_start = ads.date_start 
-    AND CAST(shopeeSearch.account_id AS STRING) = ads.idtkqc
+    AND CAST(shopeeSearch.account_id AS STRING) = ads.idtkqc;
