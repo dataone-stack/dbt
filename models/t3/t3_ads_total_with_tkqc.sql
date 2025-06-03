@@ -7,12 +7,9 @@ WITH ads_total_with_tkqc AS (
         tkqc.staff,
         tkqc.manager, 
         tkqc.brand,
-        tkqc.channel, 
+        tkqc.channel,
         SUM(ads.spend) AS chiPhiAds, 
-        SUM(ads.doanhThuAds) AS doanhThuAds,
-        sum(ads.cpc) as cpc,
-        sum(ads.cpm) as cpm,
-        sum(ads.purchase) as purchase
+        SUM(ads.doanhThuAds) AS doanhThuAds
     FROM {{ ref('t2_ads_total')}} AS ads 
     RIGHT JOIN {{ ref('t1_tkqc') }} AS tkqc
         ON CAST(ads.account_id AS STRING) = tkqc.idtkqc
@@ -44,6 +41,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
         AND ads.brand = ladi.brand 
         AND ads.channel = ladi.channel
 )
+
 SELECT
     ads.*,
     gmv.doanhThuAds AS doanhThuGMVTiktok,
