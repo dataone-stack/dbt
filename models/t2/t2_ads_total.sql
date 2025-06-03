@@ -21,7 +21,7 @@ FROM {{ ref('t1_facebook_ads_total') }}
 UNION ALL
 
 SELECT
-    DATE(stat_time_day) AS date_start,
+    DATE(DATETIME_ADD(stat_time_day, INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     spend,
     CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds
@@ -30,7 +30,7 @@ FROM {{ ref('t1_tiktok_ads_total') }}
 UNION ALL
 
 SELECT
-    DATE(stat_time_day) AS date_start,
+    DATE(DATETIME_ADD(stat_time_day, INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     spend,
     0 AS doanhThuAds
