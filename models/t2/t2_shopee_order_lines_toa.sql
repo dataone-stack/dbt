@@ -60,7 +60,6 @@ sale_detail AS (
     i.discount_from_coin,
     i.discount_from_voucher_seller,
     rd.status as return_status,
-    mapping.gia_gach,
     mapping.gia_ban_daily,
     case
         when rd.return_id is not null
@@ -157,8 +156,6 @@ COALESCE(khuyen_mai_cho_the_tin_dung, 0) AS khuyen_mai_cho_the_tin_dung,
 COALESCE(tong_tien_san_pham, 0) - COALESCE(shopee_voucher, 0) - COALESCE(discount_from_coin, 0) - COALESCE(discount_from_voucher_seller, 0) - COALESCE(khuyen_mai_cho_the_tin_dung, 0) AS tong_tien_thanh_toan,
 return_status,
 COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) AS gia_san_pham_goc_total,
-COALESCE(gia_gach, 0) AS gia_gach,
-COALESCE(gia_gach, 0) * COALESCE(quantity_purchased, 0) AS tong_gia_gach,
 COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
 COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0) AS gia_ban_daily_total,
 COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0) AS tien_sp_sau_giam_gia,

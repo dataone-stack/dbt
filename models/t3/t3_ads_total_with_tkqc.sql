@@ -41,6 +41,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
         AND ads.brand = ladi.brand 
         AND ads.channel = ladi.channel
 )
+
 SELECT
     ads.*,
     gmv.doanhThuAds AS doanhThuGMVTiktok,
