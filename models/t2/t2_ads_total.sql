@@ -51,5 +51,5 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     chiphi AS spend,
-    doanhThuAds AS doanhThuAds
+    0 AS doanhThuAds
 FROM {{ref("t1_shopee_search_ads_total")}}
