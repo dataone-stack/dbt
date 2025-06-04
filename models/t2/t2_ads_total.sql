@@ -32,7 +32,7 @@ UNION ALL
 SELECT
     DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
-    spend,
+    cost as spend,
     0 AS doanhThuAds
 FROM {{ ref('t1_tiktokGMV_ads_total') }}
 
