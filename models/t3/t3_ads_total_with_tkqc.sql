@@ -49,7 +49,7 @@ SELECT
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
 LEFT JOIN {{ref("t1_tiktokLive_ads_doanhThu_total")}} AS gmv 
     ON gmv.date_start = ads.date_start 
-    AND CAST(gmv.account_id AS STRING) = ads.idtkqc
+    AND CAST(gmv.account_id AS STRING) = cast (ads.idtkqc as string )
 LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch 
     ON shopeeSearch.date_start = ads.date_start 
-    AND CAST(shopeeSearch.account_id AS STRING) = ads.idtkqc
+    AND CAST(shopeeSearch.account_id AS STRING) = cast(ads.idtkqc as string)
