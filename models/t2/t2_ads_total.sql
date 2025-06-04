@@ -44,3 +44,12 @@ SELECT
     expense AS spend,
     broad_gmv AS doanhThuAds
 FROM {{ ref('t1_shopee_ads_total') }}
+
+union all
+
+SELECT
+    DATE(date) AS date_start,
+    CAST(account_id AS STRING) AS account_id,
+    chiphi AS spend,
+    doanhThuAds AS doanhThuAds
+FROM {{ref("t1_shopee_search_ads_total")}}
