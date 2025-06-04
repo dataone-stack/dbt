@@ -12,7 +12,7 @@ WITH ads_total_with_tkqc AS (
         SUM(ads.doanhThuAds) AS doanhThuAds
     FROM {{ ref('t2_ads_total')}} AS ads 
     RIGHT JOIN {{ ref('t1_tkqc') }} AS tkqc
-        ON CAST(ads.account_id AS STRING) = tkqc.idtkqc
+        ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
     GROUP BY 
         ads.date_start,
         tkqc.idtkqc,
