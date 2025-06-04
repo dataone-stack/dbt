@@ -71,4 +71,4 @@ SELECT
     t1.clicks,
     t1.impressions
 FROM tiktok_ads_dwh.lybcosmetic_tiktok_ads_dwh t1
-LEFT JOIN tiktok_ads_dwh.lybcosmetic_tiktok_ads_dwh_ad t2 ON t1.ad_id = t2.ad_id;
+LEFT JOIN tiktok_ads_dwh.lybcosmetic_tiktok_ads_dwh_ad t2 ON t1.ad_id = t2.ad_id
