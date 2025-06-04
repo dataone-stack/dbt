@@ -44,7 +44,8 @@ ads_ladipageFacebook_total_with_tkqc AS (
 
 SELECT
     ads.*,
-    gmv.doanhThuAds AS doanhThuGMVTiktok
+    gmv.doanhThuAds AS doanhThuGMVTiktok,
+    0 AS doanhThuShopeeSearch
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
 LEFT JOIN {{ref("t1_tiktokLive_ads_doanhThu_total")}} AS gmv 
     ON gmv.date_start = ads.date_start 
