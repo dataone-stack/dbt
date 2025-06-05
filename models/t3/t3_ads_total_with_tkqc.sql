@@ -1,6 +1,7 @@
 WITH ads_total_with_tkqc AS (
     SELECT 
         ads.date_start,
+        ads.revenue_type,
         tkqc.idtkqc,
         tkqc.nametkqc,
         tkqc.ma_nhan_vien,
