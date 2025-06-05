@@ -43,13 +43,29 @@ ads_ladipageFacebook_total_with_tkqc AS (
 )
 
 SELECT
-    ads.*,
+    ads.date_start,
+    ads.idtkqc,
+    ads.nametkqc,
+    ads.ma_nhan_vien,
+    ads.staff,
+    ads.manager,
+    ads.brand,
+    ads.channel,
+    ads.chiPhiAds,
+    ads.doanhThuAds,
+    ads.doanhThuLadi,
     gmv.gross_revenue AS doanhThuGMVTiktok,
-    shopeeSearch.doanhThuAds AS doanhThuShopeeSearch
+    shopeeSearch.doanhThuAds AS doanhThuShopeeSearch,
+    COALESCE(
+        CASE WHEN ads.doanhThuLadi > 0 THEN 'Ladipage' END,
+        CASE WHEN gmv.gross_revenue IS NOT NULL AND gmv.gross_revenue > 0 THEN 'GMV TikTok' END,
+        CASE WHEN shopeeSearch.doanhThuAds IS NOT NULL AND shopeeSearch.doanhThuAds > 0 THEN 'Shopee Search' END,
+        ads.revenue_type
+    ) AS loaiDoanhThu
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
-LEFT JOIN {{ref("t1_tiktokGMV_ads_total")}} AS gmv 
+LEFT JOIN {{ ref('t1_tiktokGMV_ads_total') }} AS gmv 
     ON DATE(DATETIME_ADD(DATETIME(gmv.stat_time_day), INTERVAL 7 HOUR)) = ads.date_start 
-    AND CAST(gmv.account_id AS STRING) = cast (ads.idtkqc as string )
+    AND CAST(gmv.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
 LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch 
     ON shopeeSearch.date_start = ads.date_start 
-    AND CAST(shopeeSearch.account_id AS STRING) = cast(ads.idtkqc as string)
+    AND CAST(shopeeSearch.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
