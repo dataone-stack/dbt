@@ -25,16 +25,33 @@ WITH ads_total_with_tkqc AS (
         tkqc.channel,
         ads.revenue_type
 ),
+
 ads_ladipageFacebook_total_with_tkqc AS (
     SELECT 
-        ads.*,
+        ads.date_start,
+        ads.idtkqc,
+        ads.nametkqc,
+        ads.ma_nhan_vien,
+        ads.staff,
+        ads.manager,
+        ads.brand,
+        ads.channel,
+        ads.chiPhiAds,
+        ads.doanhThuAds,
         CASE 
             WHEN ROW_NUMBER() OVER (
                 PARTITION BY ads.date_start, ads.ma_nhan_vien, ads.manager, ads.brand, ads.channel 
                 ORDER BY ladi.date_insert
             ) = 1 THEN ladi.doanhThuLadi 
             ELSE 0 
-        END AS doanhThuLadi
+        END AS doanhThuLadi,
+        CASE 
+            WHEN ROW_NUMBER() OVER (
+                PARTITION BY ads.date_start, ads.ma_nhan_vien, ads.manager, ads.brand, ads.channel 
+                ORDER BY ladi.date_insert
+            ) = 1 THEN 'Ladipage'
+            ELSE ads.revenue_type
+        END AS revenue_type
     FROM ads_total_with_tkqc AS ads
     LEFT JOIN {{ ref('t2_ladipage_facebook_total') }} AS ladi
         ON ads.date_start = ladi.date_insert 
