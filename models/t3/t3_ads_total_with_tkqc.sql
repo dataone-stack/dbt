@@ -29,8 +29,8 @@ WITH ads_total_with_tkqc AS (
 -- Tách Ladi thành bảng riêng theo ma_nhan_vien, brand, manager, channel, date_start
 ladi_deduplicated AS (
   SELECT
-    date_start,
-    ma_nhan_vien,
+    date_insert,
+    staff_id,
     manager,
     brand,
     channel,
@@ -60,8 +60,8 @@ ads_ladipageFacebook_total_with_tkqc AS (
     ads.revenue_type
   FROM ads_total_with_tkqc AS ads
   LEFT JOIN ladi_deduplicated AS ladi
-    ON ads.date_start = ladi.date_start
-    AND ads.ma_nhan_vien = ladi.ma_nhan_vien
+    ON ads.date_start = ladi.date_insert
+    AND ads.ma_nhan_vien = ladi.staff_id
     AND ads.manager = ladi.manager
     AND ads.brand = ladi.brand
     AND ads.channel = ladi.channel
