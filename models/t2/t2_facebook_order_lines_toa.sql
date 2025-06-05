@@ -51,7 +51,7 @@ order_line as (
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
 
-    maBangGia.gia_ban_daily
+    mapBangGia.gia_ban_daily
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
