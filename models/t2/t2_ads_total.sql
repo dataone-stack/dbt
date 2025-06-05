@@ -56,5 +56,5 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     chiphi AS spend,
     0 AS doanhThuAds,
-    'Shopee New Feed' AS revenue_type
+    'Shopee Search' AS revenue_type
 FROM {{ ref('t1_shopee_search_ads_total') }}
