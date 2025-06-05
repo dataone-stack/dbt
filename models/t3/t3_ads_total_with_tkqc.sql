@@ -22,7 +22,8 @@ WITH ads_total_with_tkqc AS (
         tkqc.staff,
         tkqc.manager, 
         tkqc.brand,
-        tkqc.channel
+        tkqc.channel,
+        ads.revenue_type
 ),
 ads_ladipageFacebook_total_with_tkqc AS (
     SELECT 
