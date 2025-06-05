@@ -30,15 +30,15 @@ WITH ads_total_with_tkqc AS (
 ladi_deduplicated AS (
   SELECT
     date_insert,
-    staff_id,
+    id_staff,
     manager,
     brand,
     channel,
     SUM(doanhThuLadi) AS doanhThuLadi
   FROM {{ ref("t2_ladipage_facebook_total") }}
   GROUP BY
-    date_start,
-    ma_nhan_vien,
+    date_insert,
+    id_staff,
     manager,
     brand,
     channel
@@ -61,7 +61,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
   FROM ads_total_with_tkqc AS ads
   LEFT JOIN ladi_deduplicated AS ladi
     ON ads.date_start = ladi.date_insert
-    AND ads.ma_nhan_vien = ladi.staff_id
+    AND ads.ma_nhan_vien = ladi.id_staff
     AND ads.manager = ladi.manager
     AND ads.brand = ladi.brand
     AND ads.channel = ladi.channel
