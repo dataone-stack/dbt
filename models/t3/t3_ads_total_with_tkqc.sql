@@ -26,24 +26,6 @@ WITH ads_total_with_tkqc AS (
     ads.revenue_type
 ),
 
--- Tách Ladi thành bảng riêng theo ma_nhan_vien, brand, manager, channel, date_start
-ladi_deduplicated AS (
-  SELECT
-    date_insert,
-    id_staff,
-    manager,
-    brand,
-    channel,
-    SUM(doanhThuLadi) AS doanhThuLadi
-  FROM {{ ref("t2_ladipage_facebook_total") }}
-  GROUP BY
-    date_insert,
-    id_staff,
-    manager,
-    brand,
-    channel
-),
-
 ads_ladipageFacebook_total_with_tkqc AS (
   SELECT
     ads.date_start,
@@ -59,9 +41,9 @@ ads_ladipageFacebook_total_with_tkqc AS (
     ladi.doanhThuLadi,
     ads.revenue_type
   FROM ads_total_with_tkqc AS ads
-  LEFT JOIN ladi_deduplicated AS ladi
-    ON ads.date_start = ladi.date_insert
-    AND ads.ma_nhan_vien = ladi.id_staff
+  LEFT JOIN {{ref("t2_ladipage_facebook_total")}} AS ladi
+    ON ads.date_start = ladi.date_start
+    AND ads.ma_nhan_vien = ladi.ma_nhan_vien
     AND ads.manager = ladi.manager
     AND ads.brand = ladi.brand
     AND ads.channel = ladi.channel
