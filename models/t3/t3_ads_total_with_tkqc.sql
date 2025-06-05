@@ -58,12 +58,7 @@ SELECT
     ads.doanhThuLadi,
     gmv.gross_revenue AS doanhThuGMVTiktok,
     shopeeSearch.doanhThuAds AS doanhThuShopeeSearch,
-    COALESCE(
-        CASE WHEN ads.doanhThuLadi > 0 THEN 'Ladipage' END,
-        CASE WHEN gmv.gross_revenue IS NOT NULL AND gmv.gross_revenue > 0 THEN 'TikTok GMVmax' END,
-        CASE WHEN shopeeSearch.doanhThuAds IS NOT NULL AND shopeeSearch.doanhThuAds > 0 THEN 'Shopee Search' END,
-        ads.revenue_type
-    ) AS loaiDoanhThu
+    ads.revenue_type AS loaiDoanhThu
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
 LEFT JOIN {{ ref('t1_tiktokGMV_ads_total') }} AS gmv 
     ON DATE(DATETIME_ADD(DATETIME(gmv.stat_time_day), INTERVAL 7 HOUR)) = ads.date_start 
