@@ -1,1 +1,1 @@
-select * from google_sheet.shopee_search
+select * from google_sheet.shopee_search_temp
