@@ -30,7 +30,7 @@ WITH ads_total_with_tkqc AS (
 ladi_aggregated AS (
   SELECT
     ladi.date_insert AS date_start,
-    ladi.staff_id AS ma_nhan_vien,
+    ladi.id_staff AS ma_nhan_vien,
     ladi.manager,
     ladi.brand,
     ladi.channel,
