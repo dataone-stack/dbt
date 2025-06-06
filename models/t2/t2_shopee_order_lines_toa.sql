@@ -92,7 +92,7 @@ sale_order_detail AS (
 
 SELECT
   test_doanh_thu,
-  create_time,
+  create_time as ngay_tao_don,
   ten_nguoi_mua,
   brand,
   ngay_return,
@@ -103,8 +103,8 @@ SELECT
   day_to_ship,
   ly_do_huy_don,
   order_status,
-  order_id,
-  item_name,
+  order_id as ma_don_hang,
+  item_name as ten_san_pham,
   model_name,
     CASE 
         -- Case 1: With parentheses, e.g., "Trắng,XS (dưới 50kg)" or "Den,S (50kg-60kg)"
@@ -133,7 +133,7 @@ SELECT
     ELSE model_sku
   END AS sku_code,
   model_sku,
-  quantity_purchased,
+  quantity_purchased as so_luong,
   gia_san_pham_goc,
   nguoi_ban_tro_gia,
   discounted_price,
@@ -159,7 +159,6 @@ COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) AS gia_san_pham_
 COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
 COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0) AS gia_ban_daily_total,
 COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0) AS tien_sp_sau_giam_gia,
-(COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) AS tien_ban_daily_truoc_chiet_khau,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS tien_chiet_khau_sp,
 CASE
     WHEN LOWER(return_status) = 'accepted' THEN 'Đã hoàn'
@@ -171,7 +170,7 @@ CASE
     WHEN LOWER(order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
     ELSE ""
 END AS status,
-(COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu
+(COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan
 
 FROM sale_order_detail
 --- tổng tiền sản phẩm là lấy (gia_san_pham_goc- chiết khấu người bán) * quantity 

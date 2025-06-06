@@ -171,16 +171,16 @@ OrderData AS (
 )
 SELECT
   brand,
-  Order_ID,
+  Order_ID as ma_don_hang,
   Order_Status,
   Order_Substatus,
   Cancelation_Return_Type,
   Normal_or_Preorder,
-  SKU_ID,
-  Seller_SKU,
-  Product_Name,
+  SKU_ID ,
+  Seller_SKU as sku_code,
+  Product_Name as ten_san_pham,
   Variation,
-  Quantity,
+  Quantity as so_luong,
   Sku_Quantity_of_Return,
   SKU_Unit_Original_Price,
   SKU_Subtotal_Before_Discount,
@@ -195,7 +195,7 @@ SELECT
   Taxes,
   Order_Amount,
   Order_Refund_Amount,
-  Created_Time,
+  Created_Time as ngay_tao_don,
   Paid_Time,
   RTS_Time,
   Shipped_Time,
@@ -231,7 +231,7 @@ SELECT
   COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0) AS gia_san_pham_goc_total,
   (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_giam_gia,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
-  (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu,
+  (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
   CASE
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
     WHEN Order_Status = 'Shipped' THEN 'Đang giao'
@@ -239,7 +239,7 @@ SELECT
     WHEN Order_Status = 'AWAITING_SHIPMENT' THEN 'Đang giao'
     WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
     WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
-    WHEN Order_Status = 'UNPAID' THEN 'Đang đơn'
+    WHEN Order_Status = 'UNPAID' THEN 'Đăng đơn'
     WHEN Order_Status = 'IN_TRANSIT' THEN 'Đang giao'
     ELSE 'Khác'
 END AS status,
