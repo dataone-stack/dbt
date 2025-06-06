@@ -26,42 +26,55 @@ WITH ads_total_with_tkqc AS (
     ads.revenue_type
 ),
 
--- Pre-aggregate doanhThuLadi to avoid duplication by tkqc
-ladi_aggregated AS (
+-- Aggregate ads data at staff level for joining with ladi
+ads_staff_level AS (
   SELECT
-    ladi.date_insert AS date_start,
-    ladi.id_staff AS ma_nhan_vien,
-    ladi.manager,
-    ladi.brand,
-    ladi.channel,
-    SUM(ladi.doanhThuLadi) AS doanhThuLadi
-  FROM {{ ref('t2_ladipage_facebook_total') }} AS ladi
+    date_start,
+    ma_nhan_vien,
+    staff,
+    manager,
+    brand,
+    channel,
+    revenue_type,
+    SUM(chiPhiAds) AS chiPhiAds,
+    SUM(doanhThuAds) AS doanhThuAds
+  FROM ads_total_with_tkqc
   GROUP BY
-    ladi.date_insert,
-    ladi.staff_id,
-    ladi.manager,
-    ladi.brand,
-    ladi.channel
+    date_start,
+    ma_nhan_vien,
+    staff,
+    manager,
+    brand,
+    channel,
+    revenue_type
 ),
 
+-- Join with ladi at staff level
 ads_ladipageFacebook_total_with_tkqc AS (
   SELECT
     ads.date_start,
-    ads.idtkqc,
-    ads.nametkqc,
-    ads.ma_nhan_vien,
-    ads.staff,
-    ads.manager,
-    ads.brand,
-    ads.channel,
-    ads.chiPhiAds,
-    ads.doanhThuAds,
+    tkqc.idtkqc,
+    tkqc.nametkqc,
+    tkqc.ma_nhan_vien,
+    tkqc.staff,
+    tkqc.manager,
+    tkqc.brand,
+    tkqc.channel,
+    tkqc.chiPhiAds,
+    tkqc.doanhThuAds,
     ladi.doanhThuLadi,
-    ads.revenue_type
-  FROM ads_total_with_tkqc AS ads
-  LEFT JOIN ladi_aggregated AS ladi
-    ON ads.date_start = ladi.date_start
-    AND ads.ma_nhan_vien = ladi.ma_nhan_vien
+    tkqc.revenue_type
+  FROM ads_total_with_tkqc AS tkqc
+  LEFT JOIN ads_staff_level AS ads
+    ON tkqc.date_start = ads.date_start
+    AND tkqc.ma_nhan_vien = ads.ma_nhan_vien
+    AND tkqc.manager = ads.manager
+    AND tkqc.brand = ads.brand
+    AND tkqc.channel = ads.channel
+    AND tkqc.revenue_type = ads.revenue_type
+  LEFT JOIN {{ ref('t2_ladipage_facebook_total') }} AS ladi
+    ON ads.date_start = ladi.date_insert
+    AND ads.ma_nhan_vien = ladi.staff_id
     AND ads.manager = ladi.manager
     AND ads.brand = ladi.brand
     AND ads.channel = ladi.channel
