@@ -35,7 +35,7 @@ SELECT
     DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     cost AS spend,
-    0 AS doanhThuAds,
+    gross_revenue AS doanhThuAds,
     'TikTok GMVmax' AS revenue_type
 FROM {{ ref('t1_tiktokGMV_ads_total') }}
 
@@ -55,6 +55,6 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     chiphi AS spend,
-    0 AS doanhThuAds,
+    doanhThuAds AS doanhThuAds,
     'Shopee Search' AS revenue_type
 FROM {{ ref('t1_shopee_search_ads_total') }}

@@ -57,13 +57,11 @@ ads.channel,
 ads.chiPhiAds,
 ads.doanhThuAds,
 ads.doanhThuLadi,
-gmv.gross_revenue AS doanhThuGMVTiktok,
-shopeeSearch.doanhThuAds AS doanhThuShopeeSearch,
 ads.revenue_type AS loaiDoanhThu
 FROM ads_ladipageFacebook_total_with_tkqc AS ads
-LEFT JOIN {{ ref('t1_tiktokGMV_ads_total') }} AS gmv
-ON DATE(DATETIME_ADD(DATETIME(gmv.stat_time_day), INTERVAL 7 HOUR)) = ads.date_start
-AND CAST(gmv.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
-LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch
-ON shopeeSearch.date_start = ads.date_start
-AND CAST(shopeeSearch.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
+-- LEFT JOIN {{ ref('t1_tiktokGMV_ads_total') }} AS gmv
+-- ON DATE(DATETIME_ADD(DATETIME(gmv.stat_time_day), INTERVAL 7 HOUR)) = ads.date_start
+-- AND CAST(gmv.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
+-- LEFT JOIN {{ ref('t1_shopee_search_ads_total') }} AS shopeeSearch
+-- ON shopeeSearch.date_start = ads.date_start
+-- AND CAST(shopeeSearch.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
