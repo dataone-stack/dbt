@@ -74,7 +74,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
     AND tkqc.revenue_type = ads.revenue_type
   LEFT JOIN {{ ref('t2_ladipage_facebook_total') }} AS ladi
     ON ads.date_start = ladi.date_insert
-    AND ads.ma_nhan_vien = ladi.staff_id
+    AND ads.ma_nhan_vien = ladi.id_staff
     AND ads.manager = ladi.manager
     AND ads.brand = ladi.brand
     AND ads.channel = ladi.channel
