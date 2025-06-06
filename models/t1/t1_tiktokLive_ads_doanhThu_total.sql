@@ -1,1 +1,0 @@
-select * from google_sheet.tiktokGmv_doanhThuAds
