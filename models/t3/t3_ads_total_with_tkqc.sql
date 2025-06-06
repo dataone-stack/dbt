@@ -26,55 +26,24 @@ WITH ads_total_with_tkqc AS (
     ads.revenue_type
 ),
 
--- Aggregate ads data at staff level for joining with ladi
-ads_staff_level AS (
-  SELECT
-    date_start,
-    ma_nhan_vien,
-    staff,
-    manager,
-    brand,
-    channel,
-    revenue_type,
-    SUM(chiPhiAds) AS chiPhiAds,
-    SUM(doanhThuAds) AS doanhThuAds
-  FROM ads_total_with_tkqc
-  GROUP BY
-    date_start,
-    ma_nhan_vien,
-    staff,
-    manager,
-    brand,
-    channel,
-    revenue_type
-),
-
--- Join with ladi at staff level
 ads_ladipageFacebook_total_with_tkqc AS (
   SELECT
     ads.date_start,
-    tkqc.idtkqc,
-    tkqc.nametkqc,
-    tkqc.ma_nhan_vien,
-    tkqc.staff,
-    tkqc.manager,
-    tkqc.brand,
-    tkqc.channel,
-    tkqc.chiPhiAds,
-    tkqc.doanhThuAds,
+    ads.idtkqc,
+    ads.nametkqc,
+    ads.ma_nhan_vien,
+    ads.staff,
+    ads.manager,
+    ads.brand,
+    ads.channel,
+    ads.chiPhiAds,
+    ads.doanhThuAds,
     ladi.doanhThuLadi,
-    tkqc.revenue_type
-  FROM ads_total_with_tkqc AS tkqc
-  LEFT JOIN ads_staff_level AS ads
-    ON tkqc.date_start = ads.date_start
-    AND tkqc.ma_nhan_vien = ads.ma_nhan_vien
-    AND tkqc.manager = ads.manager
-    AND tkqc.brand = ads.brand
-    AND tkqc.channel = ads.channel
-    AND tkqc.revenue_type = ads.revenue_type
-  LEFT JOIN {{ ref('t2_ladipage_facebook_total') }} AS ladi
-    ON ads.date_start = ladi.date_insert
-    AND ads.ma_nhan_vien = ladi.id_staff
+    ads.revenue_type
+  FROM ads_total_with_tkqc AS ads
+  LEFT JOIN {{ref("t2_ladipage_facebook_total")}} AS ladi
+    ON ads.date_start = ladi.date_insert 
+    AND ads.ma_nhan_vien = ladi.staff_id
     AND ads.manager = ladi.manager
     AND ads.brand = ladi.brand
     AND ads.channel = ladi.channel
