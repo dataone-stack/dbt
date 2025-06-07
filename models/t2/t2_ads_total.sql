@@ -8,6 +8,18 @@ SELECT
                 (
                     SELECT value
                     FROM UNNEST(action_values) AS value
+                    WHERE JSON_VALUE(value, '$.action_type') = 'purchase'
+                    LIMIT 1
+                ),
+                '$.value'
+            ) AS FLOAT64
+        ),
+        
+        CAST(
+            JSON_VALUE(
+                (
+                    SELECT value
+                    FROM UNNEST(action_values) AS value
                     WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
                     LIMIT 1
                 ),
@@ -15,7 +27,7 @@ SELECT
             ) AS FLOAT64
         ),
         0
-    ) AS doanhThuAds,
+    )AS doanhThuAds,
     'Facebook Ads' AS revenue_type
 FROM {{ ref('t1_facebook_ads_total') }}
 
