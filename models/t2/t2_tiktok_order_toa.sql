@@ -1,15 +1,15 @@
 SELECT
   brand,
-  Order_ID,
+  ma_don_hang,
   Order_Status,
   Order_Substatus,
   
   -- Tổng hợp thông tin sản phẩm
   COUNT(DISTINCT SKU_ID) AS Total_SKU_Count,
-  SUM(Quantity) AS Total_Quantity,
+  SUM(so_luong) AS Total_Quantity,
   SUM(Sku_Quantity_of_Return) AS Total_Quantity_of_Return,
-  STRING_AGG(DISTINCT Product_Name, '; ' ORDER BY Product_Name) AS Product_Names,
-  STRING_AGG(DISTINCT Seller_SKU, '; ' ORDER BY Seller_SKU) AS Seller_SKUs,
+  STRING_AGG(DISTINCT ten_san_pham, '; ' ORDER BY ten_san_pham) AS Product_Names,
+  STRING_AGG(DISTINCT sku_code, '; ' ORDER BY sku_code) AS Seller_SKUs,
   STRING_AGG(DISTINCT Variation, '; ' ORDER BY Variation) AS Variations,
   STRING_AGG(DISTINCT Normal_or_Preorder, '; ') AS Order_Types,
   STRING_AGG(DISTINCT Cancelation_Return_Type, '; ') AS Cancelation_Return_Types,
@@ -31,7 +31,7 @@ SELECT
   ANY_VALUE(Order_Amount) AS Order_Amount,
   
   -- Thời gian (lấy giá trị đầu tiên)
-  ANY_VALUE(Created_Time) AS Created_Time,
+  ANY_VALUE(ngay_tao_don) AS Created_Time,
   ANY_VALUE(Paid_Time) AS Paid_Time,
   ANY_VALUE(RTS_Time) AS RTS_Time,
   ANY_VALUE(Shipped_Time) AS Shipped_Time,
@@ -73,9 +73,9 @@ SELECT
 FROM {{ref('t2_tiktok_order_line_toa')}}
 GROUP BY 
   brand,
-  Order_ID,
+  ma_don_hang,
   Order_Status,
   Order_Substatus
 ORDER BY 
   brand,
-  Order_ID
+  ma_don_hang

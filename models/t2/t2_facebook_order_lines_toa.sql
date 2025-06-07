@@ -65,12 +65,12 @@ select
   brand,
   status_name,
   activated_promotion_advances,
-  sku,
-  ten_sp,
+  sku as sku_code,
+  ten_sp as ten_san_pham,
   color,
   size,
   so_luong,
-  gia_goc,
+  gia_goc as gia_san_pham_goc,
   khuyen_mai_dong_gia,
   giam_gia_don_hang,
   (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
@@ -82,12 +82,18 @@ select
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen,
-
-COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
-COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
-
-(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) AS tien_ban_daily_truoc_chiet_khau,
-(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
-(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu
+  CASE
+    WHEN status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
+    WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
+    WHEN status_name = 'canceled' THEN 'Đã hủy'
+    WHEN status_name = 'delivered' THEN 'Đã giao thành công'
+    WHEN status_name in ('new', 'packing', 'submitted','waitting', 'packing') THEN 'Đăng đơn'
+    ELSE 'Khác'
+  END AS status,
+  (gia_goc * so_luong) AS gia_san_pham_goc_total,
+  COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
+  COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
+  (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
+  (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan
 from order_line
 

@@ -1,5 +1,5 @@
 SELECT
-    create_time,
+    ngay_tao_don,
     brand,
     ten_nguoi_mua,
     hinh_thuc_thanh_toan,
@@ -7,7 +7,7 @@ SELECT
     ngay_ship,
     ly_do_huy_don,
     order_status,
-    order_id,
+    ma_don_hang,
     sum(voucher_from_seller) as voucher_from_seller,
     sum(day_to_ship) as day_to_ship,
     sum(test_doanh_thu) as test_doanh_thu,
@@ -29,7 +29,7 @@ SELECT
     sum(tro_gia_tu_shopee) as tro_gia_tu_shopee
 FROM {{ref("t2_shopee_order_lines_toa")}}
 GROUP BY
-    create_time,
+    ngay_tao_don,
     brand,
     ten_nguoi_mua,
     hinh_thuc_thanh_toan,
@@ -37,4 +37,4 @@ GROUP BY
     ngay_ship,
     ly_do_huy_don,
     order_status,
-    order_id
+    ma_don_hang

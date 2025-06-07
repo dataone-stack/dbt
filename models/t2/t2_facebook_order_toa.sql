@@ -4,7 +4,7 @@ select
   brand,
   status_name as trang_thai_don_hang,
   sum(so_luong) as so_luong,
-  sum(gia_goc) as gia_goc,
+  sum(gia_san_pham_goc) as gia_goc,
   sum(khuyen_mai_dong_gia) as khuyen_mai_dong_gia, 
   sum(giam_gia_don_hang) as giam_gia_don_hang,
   sum(tong_tien_sau_giam_gia) as tong_tien_sau_giam_gia,
