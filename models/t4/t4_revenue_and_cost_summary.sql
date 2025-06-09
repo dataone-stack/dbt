@@ -3,7 +3,10 @@ WITH revenue_daily AS (
     DATE(ngay_tao_don) AS date_start,
     brand,
     channel,
-    SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan
+    SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
+    SUM(tien_chiet_khau_sp ) AS tien_chiet_khau_sp,
+    SUM(gia_san_pham_goc_total ) AS gia_san_pham_goc_total,
+    SUM(gia_ban_daily_total ) AS gia_ban_daily_total,
   FROM {{ ref('t3_revenue_all_channel') }}
   WHERE status NOT IN  ('Đã hủy')
   GROUP BY DATE(ngay_tao_don), brand, channel
@@ -40,6 +43,9 @@ SELECT
   COALESCE(a.chi_phi_ads, 0) AS chi_phi_ads,
   COALESCE(a.doanh_thu_trinh_ads, 0) AS doanh_thu_trinh_ads,
   SAFE_DIVIDE(COALESCE(a.chi_phi_ads, 0), COALESCE(r.doanh_thu_ke_toan, 0)) AS cir,
+  COALESCE(r.tien_chiet_khau_sp, 0) AS tien_chiet_khau_sp,
+  COALESCE(r.gia_san_pham_goc_total, 0) AS gia_san_pham_goc_total,
+  COALESCE(r.gia_ban_daily_total, 0) AS gia_ban_daily_total,
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
