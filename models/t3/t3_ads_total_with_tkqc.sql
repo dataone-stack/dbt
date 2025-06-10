@@ -24,7 +24,8 @@ tkqc.staff,
 tkqc.manager,
 tkqc.brand,
 tkqc.channel,
-ads.revenue_type
+ads.revenue_type,
+ads.currency
 ),
 
 ads_ladipageFacebook_total_with_tkqc AS (
