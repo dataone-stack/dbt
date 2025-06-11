@@ -71,8 +71,13 @@ select
   size,
   so_luong,
   gia_goc as gia_san_pham_goc,
-  khuyen_mai_dong_gia,
-  giam_gia_don_hang,
+  khuyen_mai_dong_gia as giam_gia_seller,
+  giam_gia_don_hang as giam_gia_san,
+  0 as seller_tro_gia,
+  0 as san_tro_gia,
+  (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
+  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+  0 as tong_phi_san,
   (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
   case
   when tra_truoc > 0
@@ -81,7 +86,7 @@ select
   end as cod,
   tra_truoc,
   cuoc_vc,
-  phi_van_chuyen,
+  phi_van_chuyen as phi_ship,
   CASE
     WHEN status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
     WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
