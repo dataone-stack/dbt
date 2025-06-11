@@ -87,6 +87,16 @@ select
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen as phi_ship,
+  0 AS phi_van_chuyen_thuc_te,
+  0 AS phi_van_chuyen_tro_gia_tu_san,
+  0 AS phi_thanh_toan,
+  0 AS phi_hoa_hong_shop,
+  0 AS phi_hoa_hong_tiep_thi_lien_ket,
+  0 AS phi_hoa_hong_quang_cao_cua_hang,
+  0 AS phi_dich_vu,
+  0 as phi_xtra,
+  0 as voucher_from_seller,
+  0 as phi_co_dinh,
   CASE
     WHEN status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
     WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
