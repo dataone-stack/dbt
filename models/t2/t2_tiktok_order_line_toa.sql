@@ -277,16 +277,8 @@ SELECT
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) AS phi_dich_vu,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS phi_ship,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as phi_xtra,
-    
-    abs(phi_van_chuyen_nguoi_mua_tra) as phi_ship,
-  abs(phi_van_chuyen_thuc_te) * -1 as phi_van_chuyen_thuc_te,
-  abs(phi_van_chuyen_tro_gia_tu_shopee) as phi_van_chuyen_tro_gia_tu_shopee,
-  abs(phi_co_dinh) * -1 as phi_co_dinh,
-  abs(phi_dich_vu) * -1 as phi_dich_vu,
-  abs(phi_thanh_toan) * -1 as phi_thanh_toan,
-  abs(phi_hoa_hong_tiep_thi_lien_ket)*-1 as phi_hoa_hong_tiep_thi_lien_ket,
-  abs(tro_gia_tu_shopee) as san_tro_gia,
-  abs(voucher_from_seller) * -1 as voucher_from_seller,
+    0 as voucher_from_seller,
+    0 as phi_co_dinh,
     gia_san_pham_goc_total - seller_tro_gia - san_tro_gia -  COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
 
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0)+
