@@ -200,8 +200,10 @@ SELECT
   Sku_Quantity_of_Return,
   SKU_Unit_Original_Price,
   SKU_Subtotal_Before_Discount,
-  SKU_Platform_Discount,
-  SKU_Seller_Discount,
+  SKU_Platform_Discount as san_tro_gia,
+  SKU_Seller_Discount as seller_tro_gia,
+  0 as giam_gia_seller,
+  0 as giam_gia_san,
   SKU_Subtotal_After_Discount,
   Shipping_Fee_After_Discount,
   Original_Shipping_Fee,
@@ -245,7 +247,8 @@ SELECT
   Gia_Ban_Daily * Quantity AS gia_ban_daily_total,
   COALESCE(SKU_Unit_Original_Price, 0) AS gia_san_pham_goc,
   COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0) AS gia_san_pham_goc_total,
-  (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_giam_gia,
+  (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_tro_gia,
+  
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
   CASE
@@ -266,23 +269,26 @@ ORDER BY Order_ID, SKU_ID
 SELECT
     ord.*,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0) AS phi_van_chuyen_thuc_te,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) AS phi_van_chuyen_tro_gia_tu_tiktok,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) AS phi_van_chuyen_tro_gia_tu_san,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0) AS phi_thanh_toan,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) AS phi_hoa_hong_tiktok_shop,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) AS phi_hoa_hong_shop,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0) AS phi_hoa_hong_tiep_thi_lien_ket,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0) AS phi_hoa_hong_quang_cao_cua_hang,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) AS phi_dich_vu,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS phi_ship,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as phi_xtra,
+    0 as voucher_from_seller,
+    0 as phi_co_dinh,
+    gia_san_pham_goc_total - seller_tro_gia - san_tro_gia -  COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
 
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0)-
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0)-
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0)-
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0)-
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as tong_phi_san
 
 FROM orderLine ord

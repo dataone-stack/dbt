@@ -15,7 +15,7 @@ SELECT
     SUM(so_tien_hoan_tra) AS so_tien_hoan_tra,
     sum(phi_ship) as phi_van_chuyen_nguoi_mua_tra,
     SUM(phi_van_chuyen_thuc_te) AS phi_van_chuyen_thuc_te,
-    SUM(phi_van_chuyen_tro_gia_tu_shopee) AS phi_van_chuyen_tro_gia_tu_shopee,
+    SUM(phi_van_chuyen_tro_gia_tu_san) AS phi_van_chuyen_tro_gia_tu_shopee,
     SUM(phi_co_dinh) AS phi_co_dinh,
     SUM(phi_dich_vu) AS phi_dich_vu,
     SUM(phi_thanh_toan) AS phi_thanh_toan,

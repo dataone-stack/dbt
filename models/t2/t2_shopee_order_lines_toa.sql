@@ -1,5 +1,3 @@
-
-
 WITH return_detail AS (
   SELECT 
     order_id,
@@ -139,21 +137,27 @@ SELECT
   discounted_price,
   tong_tien_san_pham,
   so_tien_hoan_tra,
-  phi_van_chuyen_nguoi_mua_tra as phi_ship,
-  phi_van_chuyen_thuc_te,
-  phi_van_chuyen_tro_gia_tu_shopee,
-  phi_co_dinh,
-  phi_dich_vu,
-  phi_thanh_toan,
-  phi_hoa_hong_tiep_thi_lien_ket,
-  tro_gia_tu_shopee as san_tro_gia,
-  voucher_from_seller,
+
+  abs(phi_van_chuyen_nguoi_mua_tra) as phi_ship,
+  abs(phi_van_chuyen_thuc_te) * -1 as phi_van_chuyen_thuc_te,
+  abs(phi_van_chuyen_tro_gia_tu_shopee) as phi_van_chuyen_tro_gia_tu_san,
+  abs(phi_co_dinh) * -1 as phi_co_dinh,
+  abs(phi_dich_vu) * -1 as phi_dich_vu,
+  abs(phi_thanh_toan) * -1 as phi_thanh_toan,
+  abs(phi_hoa_hong_tiep_thi_lien_ket)*-1 as phi_hoa_hong_tiep_thi_lien_ket,
+  abs(tro_gia_tu_shopee) as san_tro_gia,
+  abs(voucher_from_seller) * -1 as voucher_from_seller,
+  0 as phi_hoa_hong_shop,
+  0 as phi_hoa_hong_quang_cao_cua_hang,
+  0 as phi_xtra,
+
 COALESCE(tong_tien_san_pham, 0) - COALESCE(so_tien_hoan_tra, 0) - COALESCE(voucher_from_seller, 0) + COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) - COALESCE(phi_van_chuyen_thuc_te, 0) + COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) + COALESCE(tro_gia_tu_shopee, 0) - COALESCE(phi_co_dinh, 0) - COALESCE(phi_dich_vu, 0) - COALESCE(phi_thanh_toan, 0) - COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) AS doanh_thu_don_hang_uoc_tinh,
+
 COALESCE(shopee_voucher, 0) AS giam_gia_san,
 COALESCE(discount_from_coin, 0) AS discount_from_coin,
 COALESCE(discount_from_voucher_seller, 0) AS giam_gia_seller,
 COALESCE(khuyen_mai_cho_the_tin_dung, 0) AS khuyen_mai_cho_the_tin_dung,
-COALESCE(tong_tien_san_pham, 0) - COALESCE(shopee_voucher, 0) - COALESCE(discount_from_coin, 0) - COALESCE(discount_from_voucher_seller, 0) - COALESCE(khuyen_mai_cho_the_tin_dung, 0) AS tien_khach_hang_thanh_toan,
+COALESCE(tong_tien_san_pham, 0) - COALESCE(shopee_voucher, 0) - COALESCE(discount_from_coin, 0) - COALESCE(discount_from_voucher_seller, 0) - COALESCE(khuyen_mai_cho_the_tin_dung, 0) - phi_van_chuyen_nguoi_mua_tra AS tien_khach_hang_thanh_toan,
 return_status,
 COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) AS gia_san_pham_goc_total,
 COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
@@ -172,9 +176,6 @@ CASE
 END AS status,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
 
-COALESCE(phi_co_dinh, 0) + COALESCE(phi_dich_vu, 0) + COALESCE(phi_thanh_toan, 0)+COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) + phi_van_chuyen_thuc_te - phi_van_chuyen_tro_gia_tu_shopee as tong_phi_san
-
-
-
+COALESCE(voucher_from_seller, 0) - COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0) - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) - COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0) + COALESCE(phi_dich_vu, 0) + COALESCE(phi_thanh_toan, 0) + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as tong_phi_san
 FROM sale_order_detail
 --- tổng tiền sản phẩm là lấy (gia_san_pham_goc- chiết khấu người bán) * quantity 

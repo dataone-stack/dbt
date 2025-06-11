@@ -16,8 +16,8 @@ SELECT
   
   -- Tổng hợp giá trị đơn hàng
   SUM(SKU_Subtotal_Before_Discount) AS Total_Subtotal_Before_Discount,
-  SUM(SKU_Platform_Discount) AS Total_SKU_Platform_Discount,
-  SUM(SKU_Seller_Discount) AS Total_SKU_Seller_Discount,
+  SUM(san_tro_gia) AS Total_SKU_Platform_Discount,
+  SUM(seller_tro_gia) AS Total_SKU_Seller_Discount,
   SUM(SKU_Subtotal_After_Discount) AS Total_Subtotal_After_Discount,
   SUM(COALESCE(Order_Refund_Amount, 0)) AS Total_Refund_Amount,
   
