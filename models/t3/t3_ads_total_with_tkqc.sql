@@ -9,6 +9,7 @@ tkqc.staff,
 tkqc.manager,
 tkqc.brand,
 tkqc.channel,
+ads.currency,
 SUM(ads.spend) AS chiPhiAds,
 SUM(ads.doanhThuAds) AS doanhThuAds
 FROM {{ ref('t2_ads_total')}} AS ads
@@ -23,7 +24,8 @@ tkqc.staff,
 tkqc.manager,
 tkqc.brand,
 tkqc.channel,
-ads.revenue_type
+ads.revenue_type,
+ads.currency
 ),
 
 ads_ladipageFacebook_total_with_tkqc AS (
@@ -47,6 +49,7 @@ AND ads.channel = ladi.channel
 
 SELECT
 ads.date_start,
+ads.currency,
 ads.idtkqc,
 ads.nametkqc,
 ads.ma_nhan_vien,

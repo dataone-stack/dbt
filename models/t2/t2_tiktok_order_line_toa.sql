@@ -43,6 +43,7 @@ WITH LineItems AS (
 ReturnLineItems AS (
   SELECT
     r.order_id,
+    r.brand,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     COALESCE(CAST(JSON_VALUE(li, '$.quantity') AS INT64), 1) AS Sku_Quantity_of_Return,
     CAST(JSON_VALUE(r.refund_amount, '$.refund_total') AS FLOAT64) AS Order_Refund_Amount,
@@ -52,6 +53,7 @@ ReturnLineItems AS (
     END AS Cancelation_Return_Type
   FROM {{ref("t1_tiktok_order_return")}} r
   CROSS JOIN UNNEST(r.return_line_items) AS li
+  where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
 
 OrderData AS (
@@ -168,7 +170,21 @@ OrderData AS (
   LEFT JOIN ReturnLineItems r
     ON li.order_id = r.order_id
     AND li.SKU_ID = r.SKU_ID
-)
+    and li.brand = r.brand
+),
+
+OrderTotal as (
+SELECT
+    brand,
+    Order_ID,
+    sum(SKU_Subtotal_After_Discount) as tong_tien_sau_giam_gia
+FROM  OrderData
+GROUP BY
+    brand,
+    Order_ID
+),
+
+orderLine as(
 SELECT
   brand,
   Order_ID as ma_don_hang,
@@ -245,3 +261,30 @@ SELECT
 END AS status,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
+)
+
+SELECT
+    ord.*,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0) AS phi_van_chuyen_thuc_te,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) AS phi_van_chuyen_tro_gia_tu_tiktok,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0) AS phi_thanh_toan,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) AS phi_hoa_hong_tiktok_shop,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0) AS phi_hoa_hong_tiep_thi_lien_ket,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0) AS phi_hoa_hong_quang_cao_cua_hang,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) AS phi_dich_vu,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS phi_ship,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as phi_xtra,
+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as tong_phi_san
+
+FROM orderLine ord
+LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
+LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id

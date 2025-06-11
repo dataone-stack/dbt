@@ -13,7 +13,7 @@ SELECT
     sum(test_doanh_thu) as test_doanh_thu,
     SUM(tong_tien_san_pham) AS tong_tien_san_pham,
     SUM(so_tien_hoan_tra) AS so_tien_hoan_tra,
-    sum(phi_van_chuyen_nguoi_mua_tra) as phi_van_chuyen_nguoi_mua_tra,
+    sum(phi_ship) as phi_van_chuyen_nguoi_mua_tra,
     SUM(phi_van_chuyen_thuc_te) AS phi_van_chuyen_thuc_te,
     SUM(phi_van_chuyen_tro_gia_tu_shopee) AS phi_van_chuyen_tro_gia_tu_shopee,
     SUM(phi_co_dinh) AS phi_co_dinh,
@@ -21,12 +21,12 @@ SELECT
     SUM(phi_thanh_toan) AS phi_thanh_toan,
     SUM(phi_hoa_hong_tiep_thi_lien_ket) AS phi_hoa_hong_tiep_thi_lien_ket,
     SUM(doanh_thu_don_hang_uoc_tinh) AS doanh_thu_don_hang_uoc_tinh,
-    SUM(shopee_voucher) AS shopee_voucher,
+    SUM(giam_gia_san) AS shopee_voucher,
     SUM(discount_from_coin) AS discount_from_coin,
-    SUM(discount_from_voucher_seller) AS discount_from_voucher_seller,
+    SUM(giam_gia_seller) AS discount_from_voucher_seller,
     SUM(khuyen_mai_cho_the_tin_dung) AS khuyen_mai_cho_the_tin_dung,
-    SUM(tong_tien_thanh_toan) AS tong_tien_thanh_toan,
-    sum(tro_gia_tu_shopee) as tro_gia_tu_shopee
+    SUM(tien_khach_hang_thanh_toan) AS tong_tien_thanh_toan,
+    sum(san_tro_gia) as tro_gia_tu_shopee
 FROM {{ref("t2_shopee_order_lines_toa")}}
 GROUP BY
     ngay_tao_don,

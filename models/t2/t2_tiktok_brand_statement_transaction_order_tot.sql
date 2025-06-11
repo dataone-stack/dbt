@@ -1,3 +1,4 @@
+with transactions as(
 SELECT
     brand AS `brand`,
     COALESCE(order_id, adjustment_id) AS `order_adjustment_id`,
@@ -53,3 +54,21 @@ SELECT
     NULL AS `estimated_package_weight`,
     NULL AS `actual_package_weight`
 FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 
+)
+
+SELECT 
+    brand,
+    order_adjustment_id,
+    SUM(COALESCE(actual_shipping_fee, 0)) AS actual_shipping_fee,
+    SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
+    SUM(COALESCE(transaction_fee, 0)) AS transaction_fee,
+    SUM(COALESCE(tiktok_shop_commission_fee, 0)) AS tiktok_shop_commission_fee,
+    SUM(COALESCE(affiliate_commission, 0)) AS affiliate_commission,
+    SUM(COALESCE(affiliate_shop_ads_commission, 0)) AS affiliate_shop_ads_commission,
+    SUM(COALESCE(sfp_service_fee, 0)) AS sfp_service_fee,
+    SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
+    SUM(COALESCE(voucher_xtra_service_fee, 0)) AS voucher_xtra_service_fee
+FROM transactions
+GROUP BY 
+    brand,
+    order_adjustment_id

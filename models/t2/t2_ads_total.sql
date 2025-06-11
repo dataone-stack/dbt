@@ -28,7 +28,8 @@ SELECT
         ),
         0
     )AS doanhThuAds,
-    'Facebook Ads' AS revenue_type
+    'Facebook Ads' AS revenue_type,
+    account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }}
 
 UNION ALL
@@ -38,7 +39,8 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     spend,
     CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
-    'TikTok Ads' AS revenue_type
+    'TikTok Ads' AS revenue_type,
+    '-' as currency
 FROM {{ ref('t1_tiktok_ads_total') }}
 
 UNION ALL
@@ -48,7 +50,8 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     cost AS spend,
     gross_revenue AS doanhThuAds,
-    'TikTok GMVmax' AS revenue_type
+    'TikTok GMVmax' AS revenue_type,
+    '-' as currency
 FROM {{ ref('t1_tiktokGMV_ads_total') }}
 
 UNION ALL
@@ -58,7 +61,8 @@ SELECT
     CAST(idtkqc AS STRING) AS account_id,
     expense AS spend,
     broad_gmv AS doanhThuAds,
-    'Shopee Ads' AS revenue_type
+    'Shopee Ads' AS revenue_type,
+    '-' as currency
 FROM {{ ref('t1_shopee_ads_total') }}
 
 UNION ALL
@@ -68,5 +72,6 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     chiphi AS spend,
     doanhThuAds AS doanhThuAds,
-    'Shopee Search' AS revenue_type
+    'Shopee Search' AS revenue_type,
+    '-' as currency
 FROM {{ ref('t1_shopee_search_ads_total') }}
