@@ -37,7 +37,7 @@ ads_daily AS (
     date_start,
     brand,
     channel,
-     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads,
+    SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads,
     SUM(COALESCE(doanhThuAds, 0)) + SUM(COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads,
     SUM(COALESCE(doanhThuAds, 0)) AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0)) AS doanhThuLadi,
