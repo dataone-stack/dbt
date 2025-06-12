@@ -37,10 +37,10 @@ ads_daily AS (
     date_start,
     brand,
     channel,
-    SUM(chiPhiAds) AS chi_phi_ads,
-    SUM(doanhThuAds) + SUM(doanhThuLadi) as doanh_thu_trinh_ads,
-    SUM(doanhThuAds) AS doanhThuAds,
-    SUM(doanhThuLadi) AS doanhThuLadi,
+     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads,
+    SUM(COALESCE(doanhThuAds, 0)) + SUM(COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads,
+    SUM(COALESCE(doanhThuAds, 0)) AS doanhThuAds,
+    SUM(COALESCE(doanhThuLadi, 0)) AS doanhThuLadi,
   FROM {{ ref('t3_ads_total_with_tkqc') }}
   WHERE chiPhiAds IS NOT NULL
   GROUP BY date_start, brand, channel
