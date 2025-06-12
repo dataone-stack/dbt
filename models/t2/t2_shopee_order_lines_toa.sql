@@ -71,6 +71,7 @@ sale_detail AS (
         WHEN i.model_sku = ""
         THEN i.item_sku
     ELSE i.model_sku
+  END = mapping.ma_sku
   LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
   LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'

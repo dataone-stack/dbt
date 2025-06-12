@@ -56,7 +56,7 @@ order_line as (
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake') and ord.status_name not in ('removed')
+  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
 
 select
