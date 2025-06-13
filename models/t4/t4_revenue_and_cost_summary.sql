@@ -28,7 +28,7 @@ WITH revenue_daily AS (
     SUM(gia_san_pham_goc_total ) AS gia_san_pham_goc_total,
     SUM(gia_ban_daily_total ) AS gia_ban_daily_total,
   FROM {{ ref('t3_revenue_all_channel') }}
-  WHERE status NOT IN  ('Đã hủy')
+  WHERE status IN  ('Đã giao thành công')
   GROUP BY DATE(ngay_tao_don), brand, channel
 ),
 
