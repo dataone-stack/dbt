@@ -1,6 +1,6 @@
 WITH LineItems AS (
   SELECT
-    mapping.brand,
+    o.brand,
     o.order_id,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     JSON_VALUE(li, '$.seller_sku') AS Seller_SKU,
@@ -22,9 +22,9 @@ WITH LineItems AS (
   FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
-    ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
+    ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku and o.brand = mapping.brand
   GROUP BY
-    mapping.brand,
+    o.brand,
     o.order_id,
     JSON_VALUE(li, '$.sku_id'),
     JSON_VALUE(li, '$.seller_sku'),
