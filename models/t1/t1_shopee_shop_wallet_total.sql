@@ -14,7 +14,7 @@ SELECT *, 'Team A Tiến' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
 FROM `ancung_shopee_shop_dwh.shopee_payment_wallet_transaction_ancung_brand`
 UNION ALL
 SELECT *, 'Team A Tiến' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop
-FROM `ancung_shopee_shop_dwh.shopee_payment_wallet_transaction_omazo_vietnam`
+FROM `omazo_shopee_shop_dwh.shopee_payment_wallet_transaction_omazo_vietnam`
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'BE20(kẹo ngậm)' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_dau_tam_trang_da`
