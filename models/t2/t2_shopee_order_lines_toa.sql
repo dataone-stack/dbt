@@ -171,7 +171,7 @@ COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS tien_chiet_khau_sp,
 CASE
     WHEN LOWER(return_status) = 'accepted' THEN 'Đã hoàn'
-    WHEN LOWER(order_status) = 'cancelled' THEN 'Đã hủy'
+    WHEN LOWER(order_status) IN ('cancelled', 'in_cancel') THEN 'Đã hủy'
     WHEN LOWER(order_status) IN ('ready_to_ship', 'processed') THEN 'Đăng đơn'
     WHEN LOWER(order_status) = 'to_confirm_receive' THEN 'Đăng đơn'
     WHEN LOWER(order_status) = 'to_return' THEN 'Đã hoàn'
