@@ -12,6 +12,7 @@ order_line as (
     ord.brand,
     ord.inserted_at,
     ord.status_name,
+    ord.note_print,
     ord.activated_promotion_advances,
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp,
@@ -98,7 +99,7 @@ select
   0 as voucher_from_seller,
   0 as phi_co_dinh,
   CASE
-    WHEN status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
+    WHEN LOWER(ord.note_print) LIKE '%ds%' OR LOWER(ord.note_print) LIKE '%đổi size%' OR LOWER(ord.note_print) like "%thu hồi%" or status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
     WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
     WHEN status_name = 'canceled' THEN 'Đã hủy'
     WHEN status_name = 'delivered' THEN 'Đã giao thành công'
