@@ -13,7 +13,7 @@ ads.currency,
 SUM(ads.spend) AS chiPhiAds,
 SUM(ads.doanhThuAds) AS doanhThuAds
 FROM {{ ref('t2_ads_total')}} AS ads
-RIGHT JOIN {{ ref('t1_tkqc') }} AS tkqc
+RIGHT JOIN {{ ref('t2_tkqc_total') }} AS tkqc
 ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
 GROUP BY
 ads.date_start,
