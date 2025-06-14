@@ -12,8 +12,9 @@ select
     tkqc.status,
     tkqc.start_date,
     tkqc.end_date,
+    tkqc.company,
     case
-        when tkqc.sku is not null
+        when tkqc.sku != ""
         then sp.brand
         else tkqc.brand
     end as brand
