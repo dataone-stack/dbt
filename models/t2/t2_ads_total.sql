@@ -4,7 +4,7 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     spend,
     case
-    when tk.ma_quan_ly IN ('LB000141', 'LB000210', 'LB000085')
+    when tk.ma_quan_ly IN ('LB000141', 'LB000085')
     then COALESCE(
         CAST(
             JSON_VALUE(
