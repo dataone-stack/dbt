@@ -10,5 +10,5 @@ SELECT
     t2.ad_id,
     t1.clicks,
     t1.impressions
-FROM me_qa_phuong_tiktok_ads_dwh.tiktok_ads_a05e4f02 t1
-LEFT JOIN me_qa_phuong_tiktok_ads_dwh.tiktok_ads_a05e4f02_ad t2 ON t1.ad_id = t2.ad_id
+FROM me_qa_phuong_tiktok_ads_dwh.me_qa_phuong_tiktok_ads t1
+LEFT JOIN me_qa_phuong_tiktok_ads_dwh.me_qa_phuong_tiktok_ads_ad t2 ON t1.ad_id = t2.ad_id

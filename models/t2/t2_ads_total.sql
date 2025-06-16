@@ -8,7 +8,7 @@ SELECT
                 (
                     SELECT value
                     FROM UNNEST(action_values) AS value
-                    WHERE JSON_VALUE(value, '$.action_type') = 'purchase'
+                    WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
                     LIMIT 1
                 ),
                 '$.value'
