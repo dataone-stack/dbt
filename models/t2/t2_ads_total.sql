@@ -4,7 +4,7 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     spend,
     case
-    when tk.ma_quan_ly = 'LB000141'
+    when tk.ma_quan_ly = 'LB000141' or tk.ma_quan_ly = 'LB000210' or tk.ma_quan_ly = 'LB000085'
     then COALESCE(
         CAST(
             JSON_VALUE(
@@ -37,7 +37,7 @@ SELECT
     'Facebook Ads' AS revenue_type,
     account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }} fb 
-left join {{ref("t1_tkqc")}} tk on fb.account_id and tk.idtkqc
+left join {{ref("t1_tkqc")}} tk on cast(fb.account_id as string) = tk.idtkqc
 
 UNION ALL
 
