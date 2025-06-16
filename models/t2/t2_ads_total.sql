@@ -3,41 +3,41 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     spend,
-    case
-    when tk.ma_quan_ly IN ('LB000141')
-    then COALESCE(
-        CAST(
-            JSON_VALUE(
-                (
-                    SELECT value
-                    FROM UNNEST(action_values) AS value
-                    WHERE JSON_VALUE(value, '$.action_type') = 'purchase'
-                    LIMIT 1
-                ),
-                '$.value'
-            ) AS FLOAT64
-        ),
-        0
-    )
-    else COALESCE(
-        CAST(
-            JSON_VALUE(
-                (
-                    SELECT value
-                    FROM UNNEST(action_values) AS value
-                    WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
-                    LIMIT 1
-                ),
-                '$.value'
-            ) AS FLOAT64
-        ),
-        0
-    )
-    end AS doanhThuAds,
+    CASE
+        WHEN tk.ma_quan_ly IN ('LB000141')
+        THEN COALESCE(
+            CAST(
+                JSON_VALUE(
+                    (
+                        SELECT value
+                        FROM UNNEST(action_values) AS value
+                        WHERE JSON_VALUE(value, '$.action_type') = 'purchase'
+                        LIMIT 1
+                    ),
+                    '$.value'
+                ) AS FLOAT64
+            ),
+            0
+        )
+        ELSE COALESCE(
+            CAST(
+                JSON_VALUE(
+                    (
+                        SELECT value
+                        FROM UNNEST(action_values) AS value
+                        WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
+                        LIMIT 1
+                    ),
+                    '$.value'
+                ) AS FLOAT64
+            ),
+            0
+        )
+    END AS doanhThuAds,
     'Facebook Ads' AS revenue_type,
     account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }} fb 
-left join {{ref("t1_tkqc")}} tk on cast(fb.account_id as string) = tk.idtkqc
+LEFT JOIN {{ref("t1_tkqc")}} tk ON cast(fb.account_id as string) = tk.idtkqc
 
 UNION ALL
 
