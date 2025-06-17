@@ -13,11 +13,12 @@ select
     tkqc.start_date,
     tkqc.end_date,
     tkqc.company,
-    case
-        when tkqc.sku != ""
-        then sp.brand
-        else tkqc.brand
-    end as brand
+    tkqc.brand
+    -- case
+    --     when tkqc.sku != ""
+    --     then sp.brand
+    --     else tkqc.brand
+    -- end as brand
 from {{(ref("t1_tkqc"))}} tkqc
-left join {{ref("t1_bang_gia_san_pham")}} sp
-on tkqc.sku = sp.ma_sku
+-- left join {{ref("t1_bang_gia_san_pham")}} sp
+-- on tkqc.sku = sp.ma_sku
