@@ -3,7 +3,23 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     spend,
-    COALESCE(
+    CASE
+        WHEN tk.ma_quan_ly IN ('LB000210')
+        THEN COALESCE(
+            CAST(
+                JSON_VALUE(
+                    (
+                        SELECT value
+                        FROM UNNEST(action_values) AS value
+                        WHERE JSON_VALUE(value, '$.action_type') = 'purchase'
+                        LIMIT 1
+                    ),
+                    '$.value'
+                ) AS FLOAT64
+            ),
+            0
+        )
+        ELSE COALESCE(
             CAST(
                 JSON_VALUE(
                     (
@@ -16,7 +32,8 @@ SELECT
                 ) AS FLOAT64
             ),
             0
-        ) AS doanhThuAds,
+        )
+    END AS doanhThuAds,
     'Facebook Ads' AS revenue_type,
     account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }} fb 
