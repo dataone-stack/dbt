@@ -49,26 +49,26 @@ AND ads.ma_nhan_vien = ladi.id_staff
 AND ads.ma_quan_ly = ladi.ma_quan_ly
 AND ads.brand = ladi.brand
 AND ads.channel = ladi.channel
-),
-
-ads_organic_total_with_tkqc AS (
-SELECT
-ads.*,
-CASE
-WHEN ROW_NUMBER() OVER (
-PARTITION BY ads.date_start, ads.ma_nhan_vien, ads.ma_quan_ly, ads.brand, ads.channel
-ORDER BY org.date_start
-) = 1 THEN org.doanhThuOrganic
-ELSE 0
-END AS doanhThuOrganic,
-FROM ads_ladipageFacebook_total_with_tkqc AS ads
-LEFT JOIN {{ref("t2_organic_total")}} AS org
-ON ads.date_start = org.date_start
-AND ads.ma_nhan_vien = org.ma_nhan_vien
-AND ads.ma_quan_ly = org.ma_quan_ly
-AND ads.brand = org.brand
-AND ads.channel = org.channel
 )
+
+-- ads_organic_total_with_tkqc AS (
+-- SELECT
+-- ads.*,
+-- CASE
+-- WHEN ROW_NUMBER() OVER (
+-- PARTITION BY ads.date_start, ads.ma_nhan_vien, ads.ma_quan_ly, ads.brand, ads.channel
+-- ORDER BY org.date_start
+-- ) = 1 THEN org.doanhThuOrganic
+-- ELSE 0
+-- END AS doanhThuOrganic,
+-- FROM ads_ladipageFacebook_total_with_tkqc AS ads
+-- LEFT JOIN {{ref("t2_organic_total")}} AS org
+-- ON ads.date_start = org.date_start
+-- AND ads.ma_nhan_vien = org.ma_nhan_vien
+-- AND ads.ma_quan_ly = org.ma_quan_ly
+-- AND ads.brand = org.brand
+-- AND ads.channel = org.channel
+-- )
 
 SELECT
 ads.date_start,
@@ -84,10 +84,10 @@ ads.channel,
 ads.chiPhiAds,
 ads.doanhThuAds,
 ads.doanhThuLadi,
-ads.doanhThuOrganic,
+-- ads.doanhThuOrganic,
 ads.revenue_type AS loaiDoanhThu,
 ads.company
-FROM ads_organic_total_with_tkqc AS ads
+FROM ads_ladipageFacebook_total_with_tkqc AS ads
 -- LEFT JOIN {{ ref('t1_tiktokGMV_ads_total') }} AS gmv
 -- ON DATE(DATETIME_ADD(DATETIME(gmv.stat_time_day), INTERVAL 7 HOUR)) = ads.date_start
 -- AND CAST(gmv.account_id AS STRING) = CAST(ads.idtkqc AS STRING)
