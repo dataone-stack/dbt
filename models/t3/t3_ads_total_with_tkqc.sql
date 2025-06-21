@@ -12,6 +12,7 @@ tkqc.brand,
 tkqc.channel,
 ads.currency,
 tkqc.company,
+tkqc.ben_thue,
 SUM(ads.spend) AS chiPhiAds,
 SUM(ads.doanhThuAds) AS doanhThuAds
 FROM {{ ref('t2_ads_total')}} AS ads
@@ -29,7 +30,8 @@ tkqc.brand,
 tkqc.channel,
 ads.revenue_type,
 ads.currency,
-tkqc.company
+tkqc.company,
+tkqc.ben_thue
 ),
 
 ads_ladipageFacebook_total_with_tkqc AS (
@@ -86,7 +88,8 @@ ads.doanhThuAds,
 ads.doanhThuLadi,
 -- ads.doanhThuOrganic,
 ads.revenue_type AS loaiDoanhThu,
-ads.company
+ads.company,
+ads.ben_thue
 FROM ads_ladipageFacebook_total_with_tkqc AS ads
 -- LEFT JOIN {{ ref('t1_tiktokGMV_ads_total') }} AS gmv
 -- ON DATE(DATETIME_ADD(DATETIME(gmv.stat_time_day), INTERVAL 7 HOUR)) = ads.date_start
