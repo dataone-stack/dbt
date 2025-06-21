@@ -1,0 +1,1 @@
+select * from crypto-arcade-453509-i8.google_sheet.ty_le_cap_ngan_sach where id is not null
