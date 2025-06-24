@@ -2,7 +2,6 @@ with transactions as(
 SELECT
     brand AS `brand`,
     COALESCE(order_id, adjustment_id) AS `order_adjustment_id`,
-    type AS `type`,
     FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(order_create_time)) AS `order_created_time`,
     FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(statement_create_time)) AS `order_settled_time`,
     statement_currency AS `currency`,
@@ -58,6 +57,7 @@ FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIM
 
 SELECT 
     brand,
+    order_settled_time,
     order_adjustment_id,
     SUM(COALESCE(actual_shipping_fee, 0)) AS actual_shipping_fee,
     SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
