@@ -71,4 +71,5 @@ SELECT
 FROM transactions
 GROUP BY 
     brand,
-    order_adjustment_id
+    order_adjustment_id,
+    order_settled_time
