@@ -1,4 +1,4 @@
-WITH vietfull_orderline AS (
+WITH vietful_orderline AS (
   SELECT 
     ord.brand,
     ord.or_code AS ma_or,
@@ -146,6 +146,18 @@ SELECT
     THEN 'Đã hoàn'
     WHEN trang_thai in ('New') 
     THEN 'Đăng đơn'
+    when trang_thai in ('Delivering')
+    then 'Đang giao hàng'
+    when trang_thai in ('FailDelivery','Cancelled','Error')
+    then 'Đã hủy'
+    when trang_thai in ('Shipped')
+    then 'Đã bàn giao vận chuyển'
+    when trang_thai in ('ReadyToShip','TPLConfirmed')
+    then 'Sẫn sàng bàn giao'
+    when trang_thai in ('Processing','TPLTransit')
+    then 'Đang bàn giao vận chuyển'
+    when trang_thai in ('Delay')
+    then 'Hoãn lại'
     else trang_thai
   end as trang_thai,
   sku,
@@ -207,4 +219,4 @@ SELECT
   '-' AS so_xe,
   '-' AS so_container,
   '-' AS phi_dich_vu
-FROM vietfull_orderline
+FROM vietful_orderline
