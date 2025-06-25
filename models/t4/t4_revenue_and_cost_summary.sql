@@ -60,6 +60,16 @@ cir_max_monthly AS (
   GROUP BY year, month, brand, channel
 )
 
+revenue_tot AS (
+  SELECT
+    brand, 
+    date_create as date_start, 
+    tong_tien_da_thanh_toan as total_amount, 
+    channel
+  FROM {{ ref('t3_revenue_all_channel_tot') }}
+  WHERE date_create IS NOT NULL
+  GROUP BY date_start, brand, channel
+),
 SELECT
   COALESCE(r.date_start, a.date_start) AS date_start,
   COALESCE(r.brand, a.brand) AS brand,
@@ -102,12 +112,17 @@ SELECT
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
+  r_tot.total_amount as total_amount_paid
 
 FROM revenue_daily r
 FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start
   AND r.brand = a.brand
   AND r.channel = a.channel
+FULL OUTER JOIN revenue_tot r_tot
+  ON r.date_start = r_tot.date_start
+  AND r.brand = r_tot.brand
+  AND r.channel = r_tot.channel
 LEFT JOIN cir_max_monthly AS cir_max
   ON EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max.year AS INT64)
   AND EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max.month AS INT64)

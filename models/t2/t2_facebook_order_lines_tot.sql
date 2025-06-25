@@ -1,4 +1,11 @@
-WITH vietful_orderline AS (
+WITH totalGiamGiaSp as(
+    select or_code,brand,
+    sum(CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)) as total_dis
+    from {{ref("t1_vietful_xuatkho_total")}}
+    CROSS JOIN UNNEST(details) AS i
+    group by or_code,brand
+),
+vietful_orderline AS (
   SELECT 
     ord.brand,
     ord.or_code AS ma_or,
@@ -112,7 +119,7 @@ WITH vietful_orderline AS (
         CAST(JSON_VALUE(i, '$.orderQty') AS INT64) *
         (CAST(JSON_VALUE(i, '$.price') AS FLOAT64) - CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)),
         NULLIF(ord.total_amount, 0)
-      ) * ord.discount_amount, 0) as giam_gia_don_hang,
+      ) * (ord.discount_amount - dis.total_dis ), 0) as giam_gia_don_hang,
     
 
     ord.tracking_code AS ma_van_don,
@@ -131,7 +138,9 @@ WITH vietful_orderline AS (
   CROSS JOIN UNNEST(ord.details) AS i
   LEFT JOIN {{ref("t1_vietful_product_total")}} AS prd
   ON JSON_VALUE(i, '$.sku') = prd.sku AND ord.brand = prd.brand
-  WHERE ord.sale_channel_code = 'PANCAKE'
+  left join totalGiamGiaSp as dis 
+  on ord.brand = dis.brand and ord.or_code = dis.or_code
+  WHERE ord.sale_channel_code = 'PANCAKE' and ord.status = 'Delivered'
 )
 SELECT
   brand,
@@ -147,27 +156,28 @@ SELECT
     LOWER(SUBSTR(ma_kbh, 2))   
   ) AS ten_kbh,
   'Đặt hàng' AS loai,
-  case
-    WHEN trang_thai = 'Delivered'
-    THEN 'Đã giao thành công'
-    WHEN LOWER(ghi_chu) LIKE '%ds%' OR LOWER(ghi_chu) LIKE '%đổi size%' OR LOWER(ghi_chu) like "%thu hồi%" or ghi_chu in ('Returned','OnReturn', 'ReturnReceived') 
-    THEN 'Đã hoàn'
-    WHEN trang_thai in ('New') 
-    THEN 'Đăng đơn'
-    when trang_thai in ('Delivering')
-    then 'Đang giao hàng'
-    when trang_thai in ('FailDelivery','Cancelled','Error')
-    then 'Đã hủy'
-    when trang_thai in ('Shipped')
-    then 'Đã bàn giao vận chuyển'
-    when trang_thai in ('ReadyToShip','TPLConfirmed')
-    then 'Sẫn sàng bàn giao'
-    when trang_thai in ('Processing','TPLTransit')
-    then 'Đang bàn giao vận chuyển'
-    when trang_thai in ('Delay')
-    then 'Hoãn lại'
-    else trang_thai
-  end as trang_thai,
+  trang_thai,
+--   case
+--     WHEN trang_thai = 'Delivered'
+--     THEN 'Đã giao thành công'
+--     WHEN LOWER(ghi_chu) LIKE '%ds%' OR LOWER(ghi_chu) LIKE '%đổi size%' OR LOWER(ghi_chu) like "%thu hồi%" or ghi_chu in ('Returned','OnReturn', 'ReturnReceived') 
+--     THEN 'Đã hoàn'
+--     WHEN trang_thai in ('New') 
+--     THEN 'Đăng đơn'
+--     when trang_thai in ('Delivering')
+--     then 'Đang giao hàng'
+--     when trang_thai in ('FailDelivery','Cancelled','Error')
+--     then 'Đã hủy'
+--     when trang_thai in ('Shipped')
+--     then 'Đã bàn giao vận chuyển'
+--     when trang_thai in ('ReadyToShip','TPLConfirmed')
+--     then 'Sẫn sàng bàn giao'
+--     when trang_thai in ('Processing','TPLTransit')
+--     then 'Đang bàn giao vận chuyển'
+--     when trang_thai in ('Delay')
+--     then 'Hoãn lại'
+--     else trang_thai
+--   end as trang_thai,
   sku,
   ma_sku_doi_tac,
   so_luong_cua_don,
