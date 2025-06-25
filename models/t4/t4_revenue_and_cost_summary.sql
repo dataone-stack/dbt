@@ -58,7 +58,7 @@ cir_max_monthly AS (
     AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max  -- Lấy trung bình cir_max
   FROM {{ ref('t1_cir_max') }}
   GROUP BY year, month, brand, channel
-)
+),
 
 revenue_tot AS (
   SELECT
