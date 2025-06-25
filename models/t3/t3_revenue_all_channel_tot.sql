@@ -7,7 +7,8 @@ SELECT
     ten_san_pham as product_name, 
     doanh_thu_don_hang as total_amount, 
     ngay_tao as date_create_order, 
-    'Facebook' AS channel
+    'Facebook' AS channel,
+    
 FROM {{ ref('t2_facebook_order_lines_tot') }}
 
 UNION ALL

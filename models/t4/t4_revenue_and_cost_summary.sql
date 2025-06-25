@@ -64,7 +64,7 @@ revenue_tot AS (
   SELECT
     brand, 
     date_create as date_start, 
-    tong_tien_da_thanh_toan as total_amount, 
+    sum(total_amount) as total_amount, 
     channel
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
@@ -120,7 +120,7 @@ FULL OUTER JOIN ads_daily a
   AND r.brand = a.brand
   AND r.channel = a.channel
 FULL OUTER JOIN revenue_tot r_tot
-  ON r.date_start = r_tot.date_start
+  ON r.date_start =  Cast(r_tot.date_start as date)
   AND r.brand = r_tot.brand
   AND r.channel = r_tot.channel
 LEFT JOIN cir_max_monthly AS cir_max
