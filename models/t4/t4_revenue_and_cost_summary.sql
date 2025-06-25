@@ -61,10 +61,10 @@ cir_max_monthly AS (
 ),
 
 revenue_tot AS (
-  SELECT
+  SELECT DISTINCT
     brand, 
-    date_create as date_start, 
-    sum(total_amount) as total_amount, 
+    FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
+    SUM(total_amount) as total_amount,
     channel
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
@@ -112,8 +112,7 @@ SELECT
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
-  r_tot.total_amount as total_amount_paid
-
+ r_tot.total_amount as total_amount_paid
 FROM revenue_daily r
 FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start

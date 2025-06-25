@@ -1,6 +1,6 @@
 SELECT 
     brand, 
-    CAST(ngay_hoan_thanh_nhan_don_hang AS TIMESTAMP) as date_create, 
+    CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
     ref_code as order_id, 
     trang_thai as status, 
     sku as sku_code, 
@@ -8,8 +8,8 @@ SELECT
     doanh_thu_don_hang as total_amount, 
     ngay_tao as date_create_order, 
     'Facebook' AS channel,
-    
 FROM {{ ref('t2_facebook_order_lines_tot') }}
+where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
 UNION ALL
 
