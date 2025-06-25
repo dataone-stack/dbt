@@ -5,7 +5,7 @@ WITH vietful_orderline AS (
     ord.partner_or_code AS ma_or_doi_tac,
     ord.status AS trang_thai,
     ord.warehouse_code AS kho,
-    ord.sale_channel_code AS ma_kbh,
+    ord.sale_channel_code AS ma_kbh, 
     ord.created_date AS ngay_tao,
     (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
      FROM UNNEST(ord.status_trackings) AS status
@@ -47,37 +47,38 @@ WITH vietful_orderline AS (
     prd.product_name AS ten_san_pham,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.length') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.length') AS float64)
         ELSE NULL
       END,
       0
     ) AS L,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.width') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.width') AS float64)
         ELSE NULL
       END,
       0
     ) AS W,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.height') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.height') AS float64)
         ELSE NULL
       END,
       0
     ) AS H,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.weight') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.weight') AS float64)
         ELSE NULL
       END,
       0
     ) AS khoi_luong,
     CASE
-      WHEN prd.product_bundles IS NOT NULL THEN 'Bundle'
+      WHEN ARRAY_LENGTH(prd.product_bundles) = 0 
+      THEN 'Bundle'
       ELSE 'Hàng lẻ'
     END AS loai_san_pham,
-    COALESCE(
+    COALESCE(   
       CASE 
         WHEN ARRAY_LENGTH(prd.categories) > 0 THEN JSON_VALUE(prd.categories[OFFSET(0)], '$.categoryName')
         ELSE NULL
@@ -94,7 +95,6 @@ WITH vietful_orderline AS (
     ord.note AS ghi_chu,
     ord.packing_note AS ghi_chu_don_hang,
     ord.shipping_service_name AS dich_vu_giao_hang,
-    ord.cod_amount AS cod,
     CASE
       WHEN ord.shipping_service_name = 'Standard' THEN 'Lấy hàng tại kho'
       ELSE 'Dịch vụ vận chuyển'
@@ -106,8 +106,15 @@ WITH vietful_orderline AS (
     CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64) AS giam_gia,
     CAST(JSON_VALUE(i, '$.orderQty') AS INT64) *
     (CAST(JSON_VALUE(i, '$.price') AS FLOAT64) - CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)) AS thanh_tien,
-    CAST(JSON_VALUE(i, '$.orderQty') AS INT64) *
-    (CAST(JSON_VALUE(i, '$.price') AS FLOAT64) - CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)) AS doanh_thu_don_hang,
+
+     COALESCE(
+      SAFE_DIVIDE(
+        CAST(JSON_VALUE(i, '$.orderQty') AS INT64) *
+        (CAST(JSON_VALUE(i, '$.price') AS FLOAT64) - CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)),
+        NULLIF(ord.total_amount, 0)
+      ) * ord.discount_amount, 0) as giam_gia_don_hang,
+    
+
     ord.tracking_code AS ma_van_don,
     ord.ref_code,
     COALESCE(
@@ -185,11 +192,13 @@ SELECT
   '-' AS ghi_chu_sp,
   hinh_thuc_nhan_hang,
   dich_vu_giao_hang,
-  cod,
+  round(thanh_tien - giam_gia_don_hang) as cod,
   0 AS khai_gia,
   gia_ban_san_pham,
   giam_gia,
+  round(giam_gia_don_hang) as giam_gia_don_hang ,
   thanh_tien,
+  round(thanh_tien - giam_gia_don_hang) as doanh_thu_don_hang,
   0 AS phi_xu_ly_don_hang,
   0 AS phi_van_chuyen_dich_vu,
   'New' AS tinh_trang_hang_hoa,
