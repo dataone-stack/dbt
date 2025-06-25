@@ -47,28 +47,28 @@ WITH vietful_orderline AS (
     prd.product_name AS ten_san_pham,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[OFFSET(0)], '$.length') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.length') AS INT64)
         ELSE NULL
       END,
       0
     ) AS L,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[OFFSET(0)], '$.width') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.width') AS INT64)
         ELSE NULL
       END,
       0
     ) AS W,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[OFFSET(0)], '$.height') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.height') AS INT64)
         ELSE NULL
       END,
       0
     ) AS H,
     COALESCE(
       CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[OFFSET(0)], '$.weight') AS INT64)
+        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.weight') AS INT64)
         ELSE NULL
       END,
       0
@@ -126,7 +126,8 @@ WITH vietful_orderline AS (
   ON JSON_VALUE(i, '$.sku') = prd.sku AND ord.brand = prd.brand
   WHERE ord.sale_channel_code = 'PANCAKE'
 )
-SELECT 
+SELECT
+  brand,
   ngay_tao,
   '-' AS ngay_phat_sinh_don,
   kho,
@@ -193,7 +194,7 @@ SELECT
   0 AS phi_van_chuyen_dich_vu,
   'New' AS tinh_trang_hang_hoa,
   khoi_luong * so_luong_cua_don AS tong_khoi_luong,
-  0 AS tong_dung_tich,
+  L * W * H * so_luong_cua_don AS tong_dung_tich,
   ma_kien_hang,
   ma_van_don,
   '-' AS ma_van_don_thu_hoi,
