@@ -69,7 +69,7 @@ revenue_tot AS (
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
   GROUP BY date_start, brand, channel
-),
+)
 SELECT
   COALESCE(r.date_start, a.date_start) AS date_start,
   COALESCE(r.brand, a.brand) AS brand,
@@ -119,7 +119,7 @@ FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start
   AND r.brand = a.brand
   AND r.channel = a.channel
-FULL OUTER JOIN revenue_tot r_tot
+LEFT JOIN revenue_tot r_tot
   ON r.date_start =  Cast(r_tot.date_start as date)
   AND r.brand = r_tot.brand
   AND r.channel = r_tot.channel
