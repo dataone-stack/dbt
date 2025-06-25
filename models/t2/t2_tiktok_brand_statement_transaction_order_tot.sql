@@ -1,11 +1,11 @@
-with transactions as(
+ with transactions as(
 SELECT
     brand AS `brand`,
     COALESCE(order_id, adjustment_id) AS `order_adjustment_id`,
-    type AS `type`,
     FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(order_create_time)) AS `order_created_time`,
-    FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(statement_create_time)) AS `order_settled_time`,
+    FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(statement_create_time)) AS `order_statement_time`,
     statement_currency AS `currency`,
+    type,
     SAFE_CAST(settlement_amount AS FLOAT64) AS `total_settlement_amount`,
     SAFE_CAST(revenue_amount AS FLOAT64) AS `total_revenue`,
     (SAFE_CAST(JSON_EXTRACT_SCALAR(revenue_breakdown, '$.subtotal_before_discount_amount') AS FLOAT64) + 
@@ -58,7 +58,13 @@ FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIM
 
 SELECT 
     brand,
+    order_statement_time,
     order_adjustment_id,
+    currency,
+    type,
+    SUM(COALESCE(total_settlement_amount, 0)) as total_settlement_amount,
+    SUM(COALESCE(total_revenue,0)) as total_revenue,
+
     SUM(COALESCE(actual_shipping_fee, 0)) AS actual_shipping_fee,
     SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
     SUM(COALESCE(transaction_fee, 0)) AS transaction_fee,
@@ -71,4 +77,7 @@ SELECT
 FROM transactions
 GROUP BY 
     brand,
-    order_adjustment_id
+    order_statement_time,
+    order_adjustment_id,
+    currency,
+    type

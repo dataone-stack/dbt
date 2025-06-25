@@ -3,6 +3,9 @@ WITH revenue_daily AS (
     DATE(ngay_tao_don) AS date_start,
     brand,
     channel,
+    ten_san_pham,
+    sku_code,
+    SUM(so_luong) as so_luong,
     SUM(tien_khach_hang_thanh_toan) AS tien_khach_hang_thanh_toan,
     SUM(tien_sp_sau_tro_gia) AS tien_sp_sau_tro_gia,
     SUM(phi_ship) AS phi_ship,
@@ -29,7 +32,7 @@ WITH revenue_daily AS (
     SUM(gia_ban_daily_total ) AS gia_ban_daily_total,
   FROM {{ ref('t3_revenue_all_channel') }}
   WHERE status NOT IN  ('Đã hủy')
-  GROUP BY DATE(ngay_tao_don), brand, channel
+  GROUP BY DATE(ngay_tao_don), brand, channel,ten_san_pham,sku_code
 ),
 
 ads_daily AS (
@@ -61,7 +64,10 @@ SELECT
   COALESCE(r.date_start, a.date_start) AS date_start,
   COALESCE(r.brand, a.brand) AS brand,
   COALESCE(r.channel, a.channel) AS channel,
-
+  COALESCE(r.so_luong) AS so_luong,
+  COALESCE(r.ten_san_pham) AS ten_san_pham,
+  COALESCE(r.sku_code) AS sku_code,
+  
   COALESCE(r.tien_khach_hang_thanh_toan, 0) AS tien_khach_hang_thanh_toan,
   COALESCE(r.tien_sp_sau_tro_gia, 0) AS tien_sp_sau_tro_gia,
   COALESCE(r.phi_ship, 0) AS phi_ship,
