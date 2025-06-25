@@ -2,8 +2,8 @@
 SELECT
     brand AS `brand`,
     COALESCE(order_id, adjustment_id) AS `order_adjustment_id`,
-    FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(order_create_time)) AS `order_created_time`,
-    FORMAT_TIMESTAMP('%Y/%m/%d', TIMESTAMP(statement_create_time)) AS `order_statement_time`,
+    FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(order_create_time)) AS `order_created_time`,
+    FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(statement_create_time)) AS `order_statement_time`,
     statement_currency AS `currency`,
     type,
     SAFE_CAST(settlement_amount AS FLOAT64) AS `total_settlement_amount`,
