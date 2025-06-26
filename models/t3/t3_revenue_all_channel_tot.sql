@@ -1,12 +1,12 @@
 SELECT 
     brand, 
     CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
-    ref_code as order_id, 
+    id as order_id, 
     trang_thai as status, 
-    sku as sku_code, 
+    sku_code, 
     ten_san_pham as product_name, 
-    doanh_thu_don_hang as total_amount, 
-    ngay_tao as date_create_order, 
+    tien_khach_hang_thanh_toan as total_amount, 
+    ngay_tao_don as date_create_order, 
     gia_ban_daily_total,
     'Facebook' AS channel,
 FROM {{ ref('t2_facebook_order_lines_tot') }}
