@@ -1,247 +1,127 @@
-WITH totalGiamGiaSp as(
-    select or_code,brand,
-    sum(CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)) as total_dis
-    from {{ref("t1_vietful_xuatkho_total")}}
-    CROSS JOIN UNNEST(details) AS i
-    group by or_code,brand
+with total_price as (
+  select
+    id,
+    brand,
+    sum(total_price) as total_amount
+  from {{ ref('t1_pancake_pos_order_total') }}
+  group by id,brand
 ),
-vietful_orderline AS (
-  SELECT 
-    ord.brand,
-    ord.or_code AS ma_or,
-    ord.partner_or_code AS ma_or_doi_tac,
-    ord.status AS trang_thai,
-    ord.warehouse_code AS kho,
-    ord.sale_channel_code AS ma_kbh, 
-    ord.created_date AS ngay_tao,
+vietful_delivery_date as (
+  select 
+    brand,
+    ref_code,
     (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '41'
-     LIMIT 1) AS ngay_bat_dau_xu_ly,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '42'
-     LIMIT 1) AS ngay_lay_hang,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '60'
-     LIMIT 1) AS ngay_dong_goi,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '63'
-     LIMIT 1) AS ngay_ban_giao_van_chuyen,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
+     FROM UNNEST(status_trackings) AS status
      WHERE JSON_VALUE(status, '$.statusCode') = '71'
-     LIMIT 1) AS ngay_da_giao,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '20'
-     LIMIT 1) AS ngay_huy_don,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '80'
-     LIMIT 1) AS ngay_hoan_don,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '81'
-     LIMIT 1) AS ngay_hoan_toi_kho,
-    (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
-     FROM UNNEST(ord.status_trackings) AS status
-     WHERE JSON_VALUE(status, '$.statusCode') = '83'
-     LIMIT 1) AS ngay_hoan_thanh_nhan_don_hang,
-    prd.sku,
-    prd.product_name AS ten_san_pham,
+     LIMIT 1) AS ngay_da_giao
+  from {{ ref('t1_vietful_xuatkho_total') }}
+  where sale_channel_code = 'PANCAKE'
+),
+order_line as (
+  select
+    ord.id,
+    ord.brand,
+    ord.inserted_at,
+    ord.status_name,
+    ord.note_print,
+    ord.activated_promotion_advances,
+    json_value(item, '$.variation_info.display_id')  as sku,
+    json_value(item, '$.variation_info.name')  as ten_sp,
+    json_value(item, '$.variation_info.fields[0].value') as color,
+    json_value(item, '$.variation_info.fields[1].value') as size,
+    safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
     COALESCE(
-      CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.length') AS float64)
-        ELSE NULL
-      END,
-      0
-    ) AS L,
-    COALESCE(
-      CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.width') AS float64)
-        ELSE NULL
-      END,
-      0
-    ) AS W,
-    COALESCE(
-      CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.height') AS float64)
-        ELSE NULL
-      END,
-      0
-    ) AS H,
-    COALESCE(
-      CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN SAFE_CAST(JSON_VALUE(prd.units[0], '$.weight') AS float64)
-        ELSE NULL
-      END,
-      0
-    ) AS khoi_luong,
-    CASE
-      WHEN ARRAY_LENGTH(prd.product_bundles) = 0 
-      THEN 'Bundle'
-      ELSE 'Hàng lẻ'
-    END AS loai_san_pham,
-    COALESCE(   
-      CASE 
-        WHEN ARRAY_LENGTH(prd.categories) > 0 THEN JSON_VALUE(prd.categories[OFFSET(0)], '$.categoryName')
-        ELSE NULL
-      END,
-      '-'
-    ) AS danh_muc,
-    COALESCE(
-      CASE 
-        WHEN ARRAY_LENGTH(prd.units) > 0 THEN JSON_VALUE(prd.units[OFFSET(0)], '$.unitName')
-        ELSE NULL
-      END,
-      '-'
-    ) AS don_vi_tinh,
-    ord.note AS ghi_chu,
-    ord.packing_note AS ghi_chu_don_hang,
-    ord.shipping_service_name AS dich_vu_giao_hang,
-    CASE
-      WHEN ord.shipping_service_name = 'Standard' THEN 'Lấy hàng tại kho'
-      ELSE 'Dịch vụ vận chuyển'
-    END AS hinh_thuc_nhan_hang,
-    JSON_VALUE(i, '$.partnerSKU') AS ma_sku_doi_tac,
-    CAST(JSON_VALUE(i, '$.orderQty') AS INT64) AS so_luong_cua_don,
-    CAST(JSON_VALUE(i, '$.packedQty') AS INT64) AS so_luong_dong_goi,
-    CAST(JSON_VALUE(i, '$.price') AS FLOAT64) AS gia_ban_san_pham,
-    CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64) AS giam_gia,
-    CAST(JSON_VALUE(i, '$.orderQty') AS INT64) *
-    (CAST(JSON_VALUE(i, '$.price') AS FLOAT64) - CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)) AS thanh_tien,
-
-     COALESCE(
       SAFE_DIVIDE(
-        CAST(JSON_VALUE(i, '$.orderQty') AS INT64) *
-        (CAST(JSON_VALUE(i, '$.price') AS FLOAT64) - CAST(JSON_VALUE(i, '$.discountValue') AS FLOAT64)),
-        NULLIF(ord.total_amount, 0)
-      ) * (ord.discount_amount - dis.total_dis ), 0) as giam_gia_don_hang,
-    
-
-    ord.tracking_code AS ma_van_don,
-    ord.ref_code,
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64) + 
+        safe_cast(json_value(item, '$.total_discount') as int64),
+        safe_cast(json_value(item, '$.quantity') as int64)
+      ), 0) as gia_goc,
+    safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
-      CASE 
-        WHEN ARRAY_LENGTH(ord.packages) > 0 THEN JSON_VALUE(ord.packages[OFFSET(0)], '$.packageNo')
-        ELSE NULL
-      END,
-      '-'
-    ) AS ma_kien_hang,
-    ord.customer_name AS ten_nguoi_mua,
-    ord.customer_phone_number AS sdt,
-    ord.shipping_full_address AS dia_chi,
+      SAFE_DIVIDE(
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
+        NULLIF(tt.total_amount, 0)
+      ) * ord.total_discount, 0) as giam_gia_don_hang,
+    COALESCE(
+      SAFE_DIVIDE(
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
+        NULLIF(tt.total_amount, 0)
+      ) * ord.shipping_fee, 0) as phi_van_chuyen,
+    COALESCE(
+      SAFE_DIVIDE(
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
+        NULLIF(tt.total_amount, 0)
+      ) * ord.partner_fee, 0) as cuoc_vc,
+    COALESCE(
+      SAFE_DIVIDE(
+        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64),
+        NULLIF(tt.total_amount, 0)
+      ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
-  FROM {{ref("t1_vietful_xuatkho_total")}} AS ord
-  CROSS JOIN UNNEST(ord.details) AS i
-  LEFT JOIN {{ref("t1_vietful_product_total")}} AS prd
-  ON JSON_VALUE(i, '$.sku') = prd.sku AND ord.brand = prd.brand
-  left join totalGiamGiaSp as dis 
-  on ord.brand = dis.brand and ord.or_code = dis.or_code
-  left join {{ref("t1_bang_gia_san_pham")}}  as mapBangGia on JSON_VALUE(i, '$.sku') = mapBangGia.ma_sku and ord.brand = mapBangGia.brand
-  WHERE ord.sale_channel_code = 'PANCAKE' and ord.status = 'Delivered'
+    vietful.ngay_da_giao
+  from {{ ref('t1_pancake_pos_order_total') }} as ord,
+  unnest (items) as item
+  left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
+  left join {{ ref('t1_bang_gia_san_pham') }} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku and ord.brand = mapBangGia.brand
+  left join vietful_delivery_date as vietful on ord.id = vietful.ref_code 
+  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
-SELECT
+
+select
+  id as ma_don_hang,
+  DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
-  ngay_tao,
-  '-' AS ngay_phat_sinh_don,
-  kho,
-  'CHA - HỘ KINH DOANH NGUYỄN THỊ NHUNG' AS doi_tac,
-  ma_or,
-  ma_or_doi_tac,
-  ma_kbh,
-  CONCAT(
-    UPPER(SUBSTR(ma_kbh, 1, 1)),  
-    LOWER(SUBSTR(ma_kbh, 2))   
-  ) AS ten_kbh,
-  'Đặt hàng' AS loai,
-  trang_thai,
---   case
---     WHEN trang_thai = 'Delivered'
---     THEN 'Đã giao thành công'
---     WHEN LOWER(ghi_chu) LIKE '%ds%' OR LOWER(ghi_chu) LIKE '%đổi size%' OR LOWER(ghi_chu) like "%thu hồi%" or ghi_chu in ('Returned','OnReturn', 'ReturnReceived') 
---     THEN 'Đã hoàn'
---     WHEN trang_thai in ('New') 
---     THEN 'Đăng đơn'
---     when trang_thai in ('Delivering')
---     then 'Đang giao hàng'
---     when trang_thai in ('FailDelivery','Cancelled','Error')
---     then 'Đã hủy'
---     when trang_thai in ('Shipped')
---     then 'Đã bàn giao vận chuyển'
---     when trang_thai in ('ReadyToShip','TPLConfirmed')
---     then 'Sẫn sàng bàn giao'
---     when trang_thai in ('Processing','TPLTransit')
---     then 'Đang bàn giao vận chuyển'
---     when trang_thai in ('Delay')
---     then 'Hoãn lại'
---     else trang_thai
---   end as trang_thai,
-  sku,
-  ma_sku_doi_tac,
-  so_luong_cua_don,
-  so_luong_dong_goi,
-  ten_san_pham,
-  'Hàng quản lý theo số lượng' AS loai_luu_tru,
-  CONCAT(
-    CAST(L AS STRING), 'x',
-    CAST(W AS STRING), 'x',
-    CAST(H AS STRING)
-  ) AS LWH,
-  L,
-  W,
-  H,
-  khoi_luong,
-  loai_san_pham,
-  '-' AS quy_cach,
-  danh_muc,
-  don_vi_tinh,
-  ghi_chu,
-  ghi_chu_don_hang,
-  '-' AS ghi_chu_sp,
-  hinh_thuc_nhan_hang,
-  dich_vu_giao_hang,
-  round(thanh_tien - giam_gia_don_hang) as cod,
-  0 AS khai_gia,
-  gia_ban_san_pham,
-  giam_gia,
-  round(giam_gia_don_hang) as giam_gia_don_hang ,
-  thanh_tien,
-  round(thanh_tien - giam_gia_don_hang) as doanh_thu_don_hang,
-  0 AS phi_xu_ly_don_hang,
-  0 AS phi_van_chuyen_dich_vu,
-  'New' AS tinh_trang_hang_hoa,
-  khoi_luong * so_luong_cua_don AS tong_khoi_luong,
-  L * W * H * so_luong_cua_don AS tong_dung_tich,
-  ma_kien_hang,
-  ma_van_don,
-  '-' AS ma_van_don_thu_hoi,
-  '-' AS sla_xu_ly_kbh,
-  ngay_bat_dau_xu_ly,
-  '-' AS sla_dong_goi,
-  ngay_lay_hang,
-  ngay_dong_goi,
-  ngay_ban_giao_van_chuyen,
-  ngay_da_giao,
-  ngay_huy_don,
-  ngay_hoan_don,
-  ngay_hoan_toi_kho,
-  ngay_hoan_thanh_nhan_don_hang,
-  '-' AS sla_don_vi_van_chuyen,
-  ref_code,
-  ten_nguoi_mua,
-  sdt,
-  dia_chi,
-  'B2C' AS loai_hinh,
-  '-' AS do_uu_tien,
-  '-' AS tai_xe,
-  '-' AS so_xe,
-  '-' AS so_container,
-  '-' AS phi_dich_vu,
-   COALESCE(gia_ban_daily, 0) * COALESCE(so_luong_cua_don, 0) AS gia_ban_daily_total,
-  -- COALESCE(gia_ban_san_pham, 0) * COALESCE(so_luong_cua_don, 0) AS gia_san_pham_goc_total,
-  -- ( COALESCE(gia_ban_daily, 0) * COALESCE(so_luong_cua_don, 0)) - round(thanh_tien - giam_gia_don_hang)AS tien_chiet_khau_sp,
-FROM vietful_orderline
+  status_name,
+  activated_promotion_advances,
+  sku as sku_code,
+  ten_sp as ten_san_pham,
+  color,
+  size,
+  so_luong,
+  gia_goc as gia_san_pham_goc,
+  khuyen_mai_dong_gia as giam_gia_seller,
+  giam_gia_don_hang as giam_gia_san,
+  0 as seller_tro_gia,
+  0 as san_tro_gia,
+  (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
+  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+  0 as tong_phi_san,
+  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+  case
+  when tra_truoc > 0
+  then 0
+  else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
+  end as cod,
+  tra_truoc,
+  cuoc_vc,
+  phi_van_chuyen as phi_ship,
+  0 AS phi_van_chuyen_thuc_te,
+  0 AS phi_van_chuyen_tro_gia_tu_san,
+  0 AS phi_thanh_toan,
+  0 AS phi_hoa_hong_shop,
+  0 AS phi_hoa_hong_tiep_thi_lien_ket,
+  0 AS phi_hoa_hong_quang_cao_cua_hang,
+  0 AS phi_dich_vu,
+  0 as phi_xtra,
+  0 as voucher_from_seller,
+  0 as phi_co_dinh,
+  CASE
+    WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
+    WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
+    WHEN status_name = 'canceled' THEN 'Đã hủy'
+    WHEN status_name = 'delivered' THEN 'Đã giao thành công'
+    WHEN status_name in ('new', 'packing', 'submitted','waitting', 'packing') THEN 'Đăng đơn'
+    ELSE 'Khác'
+  END AS status,
+  (gia_goc * so_luong) AS gia_san_pham_goc_total,
+  COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
+  COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
+  (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
+  (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan,
+  ngay_da_giao
+from order_line
