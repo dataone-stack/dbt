@@ -133,13 +133,15 @@ vietful_orderline AS (
     ) AS ma_kien_hang,
     ord.customer_name AS ten_nguoi_mua,
     ord.customer_phone_number AS sdt,
-    ord.shipping_full_address AS dia_chi
+    ord.shipping_full_address AS dia_chi,
+    mapBangGia.gia_ban_daily,
   FROM {{ref("t1_vietful_xuatkho_total")}} AS ord
   CROSS JOIN UNNEST(ord.details) AS i
   LEFT JOIN {{ref("t1_vietful_product_total")}} AS prd
   ON JSON_VALUE(i, '$.sku') = prd.sku AND ord.brand = prd.brand
   left join totalGiamGiaSp as dis 
   on ord.brand = dis.brand and ord.or_code = dis.or_code
+  left join {{ref("t1_bang_gia_san_pham")}}  as mapBangGia on JSON_VALUE(i, '$.sku') = mapBangGia.ma_sku and ord.brand = mapBangGia.brand
   WHERE ord.sale_channel_code = 'PANCAKE' and ord.status = 'Delivered'
 )
 SELECT
@@ -238,5 +240,8 @@ SELECT
   '-' AS tai_xe,
   '-' AS so_xe,
   '-' AS so_container,
-  '-' AS phi_dich_vu
+  '-' AS phi_dich_vu,
+   COALESCE(gia_ban_daily, 0) * COALESCE(so_luong_cua_don, 0) AS gia_ban_daily_total,
+  -- COALESCE(gia_ban_san_pham, 0) * COALESCE(so_luong_cua_don, 0) AS gia_san_pham_goc_total,
+  -- ( COALESCE(gia_ban_daily, 0) * COALESCE(so_luong_cua_don, 0)) - round(thanh_tien - giam_gia_don_hang)AS tien_chiet_khau_sp,
 FROM vietful_orderline
