@@ -65,15 +65,17 @@ revenue_tot AS (
     brand, 
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
     SUM(total_amount) as total_amount,
+    SUM(gia_ban_daily_total) as gia_ban_daily_total,
+    SUM(doanh_thu_ke_toan) as doanh_thu_ke_toan,
     channel
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
   GROUP BY date_start, brand, channel
 )
 SELECT
-  COALESCE(r.date_start, a.date_start) AS date_start,
-  COALESCE(r.brand, a.brand) AS brand,
-  COALESCE(r.channel, a.channel) AS channel,
+  COALESCE(r.date_start, a.date_start, Cast(r_tot.date_start as date)) AS date_start,
+  COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
+  COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
@@ -98,21 +100,21 @@ SELECT
 --     COALESCE(r.voucher_from_seller, 0) AS voucher_from_seller,
 --     COALESCE(r.phi_co_dinh, 0) AS phi_co_dinh,
 
-  COALESCE(r.doanh_thu_ke_toan, 0) AS doanh_thu_ke_toan,
+  COALESCE(r.doanh_thu_ke_toan, 0) AS doanh_thu_ke_toan_toa,
   COALESCE(a.chi_phi_ads, 0) AS chi_phi_ads,
   COALESCE(a.doanh_thu_trinh_ads, 0) AS doanh_thu_trinh_ads,
-  SAFE_DIVIDE(COALESCE(a.chi_phi_ads, 0), COALESCE(r.doanh_thu_ke_toan, 0)) AS cir,
-  SAFE_DIVIDE(COALESCE(a.chi_phi_ads, 0), COALESCE(r.gia_ban_daily_total, 0)) AS cir_doanh_so,
-  SAFE_DIVIDE(COALESCE(a.chi_phi_ads, 0), COALESCE(a.doanh_thu_trinh_ads, 0)) AS cir_trinh_ads,
   COALESCE(r.tien_chiet_khau_sp, 0) AS tien_chiet_khau_sp,
-  COALESCE(r.gia_san_pham_goc_total, 0) AS gia_san_pham_goc_total,
-  COALESCE(r.gia_ban_daily_total, 0) AS gia_ban_daily_total,
+  COALESCE(r.gia_san_pham_goc_total, 0) AS gia_san_pham_goc_total_toa,
+  COALESCE(r.gia_ban_daily_total, 0) AS gia_ban_daily_total_toa,
   COALESCE(a.doanhThuAds, 0) AS doanhThuAds,
   COALESCE(a.doanhThuLadi, 0) AS doanhThuLadi,
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
- r_tot.total_amount as total_amount_paid
+  r_tot.total_amount as total_amount_paid_tot,
+  r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
+  r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot
+
 FROM revenue_daily r
 FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start

@@ -293,8 +293,8 @@ SELECT
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as tong_phi_san
-
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as tong_phi_san,
+    
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
 LEFT JOIN {{ ref('t2_tiktok_brand_statement_transaction_order_tot') }} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id

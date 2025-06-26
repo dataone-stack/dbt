@@ -48,7 +48,8 @@ SELECT
     --SUM(shopee_voucher) AS shopee_voucher,
     0 AS shopee_voucher,
     SUM(ngan_hang_khuyen_mai_the_tin_dung) AS ngan_hang_khuyen_mai_the_tin_dung,
-    SUM(shopee_khuyen_mai_the_tin_dung) AS shopee_khuyen_mai_the_tin_dung
+    SUM(shopee_khuyen_mai_the_tin_dung) AS shopee_khuyen_mai_the_tin_dung,
+    0 AS gia_ban_daily_total
 FROM {{ref("t2_shopee_order_lines_tot")}}
 GROUP BY 
     order_id, 

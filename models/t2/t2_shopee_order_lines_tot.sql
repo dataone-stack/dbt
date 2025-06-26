@@ -69,6 +69,7 @@ sale_detail AS (
     i.quantity_purchased,
     (i.original_price / i.quantity_purchased) AS gia_san_pham_goc,
     i.discounted_price,
+    i.seller_discount,
     rd.update_time AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
     CASE
@@ -138,7 +139,8 @@ sale_detail AS (
     CASE
       WHEN rd.return_id IS NOT NULL THEN 0
       ELSE i.shopee_discount
-    END AS tro_gia_tu_shopee
+    END AS tro_gia_tu_shopee,
+    mapping.gia_ban_daily,
     
   FROM {{ref("t1_shopee_shop_fee_total")}} AS detail,
   UNNEST(items) AS i
@@ -148,6 +150,12 @@ sale_detail AS (
   -- Join với bảng order_detail để lấy create_time
   LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} ord ON detail.order_id = ord.order_id and detail.brand = ord.brand
   -- Join với bảng phí config để lấy tỷ lệ phí hiệu lực dựa trên create_time từ bảng order_detail
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
+  CASE 
+        WHEN i.model_sku = ""
+        THEN i.item_sku
+    ELSE i.model_sku
+  END = mapping.ma_sku and detail.brand = mapping.brand
   LEFT JOIN fee_config fc ON fc.effective_date = (
     SELECT MAX(fc2.effective_date) 
     FROM fee_config fc2 
@@ -236,5 +244,7 @@ SELECT
     discount_from_coin as shopee_xu,
     0 as shopee_voucher,
     credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
-    0 as shopee_khuyen_mai_the_tin_dung
+    0 as shopee_khuyen_mai_the_tin_dung,
+    COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0) AS gia_ban_daily_total,
+    (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(seller_discount, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
 FROM sale_order_detail
