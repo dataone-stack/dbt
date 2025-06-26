@@ -69,6 +69,7 @@ sale_detail AS (
     i.quantity_purchased,
     (i.original_price / i.quantity_purchased) AS gia_san_pham_goc,
     i.discounted_price,
+    i.seller_discount,
     rd.update_time AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
     CASE
@@ -245,4 +246,5 @@ SELECT
     credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
     0 as shopee_khuyen_mai_the_tin_dung,
     COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0) AS gia_ban_daily_total,
+    (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(seller_discount, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
 FROM sale_order_detail

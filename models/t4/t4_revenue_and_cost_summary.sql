@@ -72,10 +72,9 @@ revenue_tot AS (
   GROUP BY date_start, brand, channel
 )
 SELECT
-  COALESCE(r.date_start, a.date_start) AS date_start,
-  Cast(r_tot.date_start as date) AS date_paid,
-  COALESCE(r.brand, a.brand) AS brand,
-  COALESCE(r.channel, a.channel) AS channel,
+  COALESCE(r.date_start, a.date_start, r_tot.date_start) AS date_start,
+  COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
+  COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
@@ -114,8 +113,10 @@ SELECT
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
- r_tot.total_amount as total_amount_paid,
- r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
+  r_tot.total_amount as total_amount_paid,
+  r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
+
+
 FROM revenue_daily r
 FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start
