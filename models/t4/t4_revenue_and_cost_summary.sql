@@ -65,6 +65,7 @@ revenue_tot AS (
     brand, 
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
     SUM(total_amount) as total_amount,
+    SUM(gia_ban_daily_total) as gia_ban_daily_total,
     channel
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
@@ -112,7 +113,8 @@ SELECT
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
- r_tot.total_amount as total_amount_paid
+ r_tot.total_amount as total_amount_paid,
+ r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
 FROM revenue_daily r
 FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start
