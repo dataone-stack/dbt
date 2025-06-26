@@ -73,6 +73,7 @@ revenue_tot AS (
 )
 SELECT
   COALESCE(r.date_start, a.date_start) AS date_start,
+  Cast(r_tot.date_start as date) AS date_paid,
   COALESCE(r.brand, a.brand) AS brand,
   COALESCE(r.channel, a.channel) AS channel,
 --   COALESCE(r.so_luong) AS so_luong,

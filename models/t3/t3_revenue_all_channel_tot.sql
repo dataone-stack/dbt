@@ -1,8 +1,8 @@
 SELECT 
     brand, 
     CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
-    id as order_id, 
-    trang_thai as status, 
+    ma_don_hang as order_id, 
+    status, 
     sku_code, 
     ten_san_pham as product_name, 
     tien_khach_hang_thanh_toan as total_amount, 
