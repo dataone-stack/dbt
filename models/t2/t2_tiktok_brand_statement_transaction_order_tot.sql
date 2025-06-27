@@ -58,7 +58,7 @@ FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIM
 
 SELECT 
     brand,
-    order_statement_time,
+    datetime_add(safe_cast(order_statement_time as datetime), INTERVAL 7 HOUR) as order_statement_time,
     order_adjustment_id,
     currency,
     type,

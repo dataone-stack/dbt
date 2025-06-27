@@ -79,7 +79,6 @@ SELECT
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
-  
 --   COALESCE(r.tien_khach_hang_thanh_toan, 0) AS tien_khach_hang_thanh_toan,
 --   COALESCE(r.tien_sp_sau_tro_gia, 0) AS tien_sp_sau_tro_gia,
 --   COALESCE(r.phi_ship, 0) AS phi_ship,
