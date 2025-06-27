@@ -83,9 +83,9 @@ order_product_summary AS (
       ((COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)) - 
        (COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0)))
     ) AS doanh_thu_ke_toan
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,
+  FROM {{ ref('t1_shopee_shop_fee_total') }} f,
   UNNEST(items) AS i
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping ON 
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
     CASE 
       WHEN i.model_sku = "" THEN i.item_sku
       ELSE i.model_sku
@@ -135,12 +135,12 @@ SELECT
     -- f.instalment_plan as installment_plan,
     -- f.seller_voucher_code as voucher_code
 
-FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi 
+FROM {{ ref('t1_shopee_shop_fee_total') }} f
+LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi 
     ON f.order_id = vi.order_id 
     AND f.brand = vi.brand 
     AND vi.transaction_tab_type = 'wallet_order_income'
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` ord 
+LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} ord 
     ON f.order_id = ord.order_id 
     AND f.brand = ord.brand
 LEFT JOIN order_product_summary ops 

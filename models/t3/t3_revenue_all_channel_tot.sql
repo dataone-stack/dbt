@@ -23,7 +23,7 @@ SELECT
     gia_ban_daily_total,
     doanh_thu_ke_toan,
     'Shopee' AS channel
-FROM {{ ref('t2_tiktok_order_tot') }}
+FROM {{ ref('t2_shopee_order_tot') }}
 
 UNION ALL
 
