@@ -277,10 +277,10 @@ a AS (
         trans.total_settlement_amount,
         trans.order_statement_time,
         order_adjustment_id
-    FROM {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} AS trans
-    LEFT JOIN  order_total AS ord
-        ON trans.order_adjustment_id = ord.ma_don_hang
-        AND trans.brand = ord.brand
+    FROM order_total AS ord 
+    LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} AS trans
+        ON ord.ma_don_hang = trans.order_adjustment_id
+        AND ord.brand = trans.brand
 )
 
 SELECT * 
