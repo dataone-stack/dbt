@@ -262,7 +262,8 @@ order_total AS (
         Order_Status,
         ngay_tao_don,
         SUM(gia_ban_daily_total) AS gia_ban_daily_total,
-        SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan
+        SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
+        SUM(tien_chiet_khau_sp) AS tien_chiet_khau_sp,
     FROM orderLine
     GROUP BY
         brand,

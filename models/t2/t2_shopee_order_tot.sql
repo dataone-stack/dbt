@@ -72,6 +72,7 @@ SELECT
     -- Lấy từ order summary
     ops.gia_ban_daily_total,
     ops.doanh_thu_ke_toan,
+    (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) as tien_chiet_khau_sp_tot,
     ops.gia_goc,
     ops.seller_tro_gia,
     ops.so_tien_hoan_tra,
