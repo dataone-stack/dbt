@@ -25,10 +25,9 @@ UNION ALL
 SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_order_detail_belle_beauty_vietnam`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
-FROM `
-3`
-UNION ALL
+-- SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
+-- FROM `3`
+-- UNION ALL
 SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Cà phê gừng' AS brand, 'tong_cong_ty_ca_phe_giam_can' AS shop
 FROM `tongcongtycaphegiamcan_shopee_shop_dwh.shopee_order_detail_tong_cong_ty_ca_phe_giam_can`
 UNION ALL
