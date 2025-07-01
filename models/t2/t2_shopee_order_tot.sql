@@ -72,13 +72,13 @@ SELECT
     -- Lấy từ order summary
     ops.gia_ban_daily_total,
     ops.doanh_thu_ke_toan,
-    (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) as tien_chiet_khau_sp_tot,
+    (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) as tien_chiet_khau_sp,
     ops.gia_goc,
     ops.seller_tro_gia,
     ops.so_tien_hoan_tra,
     ops.tro_gia_shopee,
     (ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu)) as doanh_thu_shopee,
-    ( f.commission_fee + f.service_fee + f.seller_transaction_fee + f.order_ams_commission_fee) AS phu_phi
+    (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi
 
 FROM {{ ref('t1_shopee_shop_fee_total') }} f
 LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi 
