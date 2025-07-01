@@ -88,6 +88,7 @@ SELECT
   COALESCE(r.date_start, a.date_start, Cast(r_tot.date_start as date)) AS date_start,
   COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
   COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
+  a.company
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,

@@ -54,3 +54,6 @@ FROM `nhatdangnhidastore_shopee_shop_dwh.shopee_payment_escrow_detail_nhat_dang_
 UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
 FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_payment_escrow_detail_ca_phe_mam_xoi_chinh_hang`
+UNION ALL
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'Dr Diva' AS brand, 'dr_diva_beauty_store' AS shop
+FROM `drdivabeautystore_shopee_shop_dwh.shopee_payment_escrow_detail_dr_diva_beauty_store`

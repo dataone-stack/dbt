@@ -54,3 +54,6 @@ FROM `nhatdangnhidastore_shopee_shop_dwh.shopee_order_detail_nhat_dang_nhi_da_st
 UNION ALL
 SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
 FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_order_detail_ca_phe_mam_xoi_chinh_hang`
+UNION ALL
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Dr Diva' AS brand, 'dr_diva_beauty_store' AS shop
+FROM `drdivabeautystore_shopee_shop_dwh.shopee_order_detail_dr_diva_beauty_store`
