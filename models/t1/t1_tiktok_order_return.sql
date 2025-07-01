@@ -10,14 +10,14 @@ SELECT 'Team A Tiến' as company, 'UME' AS brand, 'ume_viet_nam' AS shop, * FRO
 UNION ALL
 SELECT 'Team A Tiến' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop, * FROM `omazo_tiktok_shop_dwh.tiktok_shop_omazo_vietnam_return_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'Cà phê mâm xôi' AS brand, 'cafe_mam_xoi_chinh_hang_store' AS shop, * FROM `caphemamxoichinhhangstore_tiktok_shop_dwh.tiktok_shop_cafe_mam_xoi_chinh_hang_store_return_order`
+SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'cafe_mam_xoi_chinh_hang_store' AS shop, * FROM `caphemamxoichinhhangstore_tiktok_shop_dwh.tiktok_shop_cafe_mam_xoi_chinh_hang_store_return_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'Cà phê mâm xôi' AS brand, 'raspberry_coffee_store' AS shop, * FROM `raspberrycoffeestore_tiktok_shop_dwh.tiktok_shop_raspberry_coffee_store_return_order`
+SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'raspberry_coffee_store' AS shop, * FROM `raspberrycoffeestore_tiktok_shop_dwh.tiktok_shop_raspberry_coffee_store_return_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_beauty' AS shop, * FROM `lybbeauty_tiktok_shop_dwh.tiktok_shop_lyb_beauty_return_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'BE20(kẹo ngậm)' AS brand, 'be20_viet_nam_store' AS shop, * FROM `be20vietnamstore_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_return_order`
+SELECT 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_viet_nam_store' AS shop, * FROM `be20vietnamstore_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_return_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'BE20(kẹo ngậm)' AS brand, 'be20_viet_nam' AS shop, * FROM `be20vietnam3_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_return_order`
+SELECT 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_viet_nam' AS shop, * FROM `be20vietnam3_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_return_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'BE20(kẹo ngậm)' AS brand, 'be20_viet_nam_store_2' AS shop, * FROM `be20vietnam2_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_return_order`
+SELECT 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_viet_nam_store_2' AS shop, * FROM `be20vietnam2_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_return_order`

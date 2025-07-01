@@ -67,7 +67,9 @@ revenue_tot AS (
     SUM(total_amount) as total_amount,
     SUM(gia_ban_daily_total) as gia_ban_daily_total,
     SUM(doanh_thu_ke_toan) as doanh_thu_ke_toan,
-    channel
+    channel,
+    SUM(tien_chiet_khau_sp_tot) as tien_chiet_khau_sp_tot,
+    SUM(phu_phi) as phu_phi
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
   GROUP BY date_start, brand, channel
@@ -112,8 +114,9 @@ SELECT
   cir_max.avg_cir_max AS cir_max,
   r_tot.total_amount as total_amount_paid_tot,
   r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
-  r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot
-
+  r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot,
+  r_tot.tien_chiet_khau_sp_tot,
+  r_tot.phu_phi
 FROM revenue_daily r
 FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start

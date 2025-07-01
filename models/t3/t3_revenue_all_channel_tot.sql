@@ -6,6 +6,8 @@ SELECT
     tien_khach_hang_thanh_toan as total_amount, 
     ngay_tao_don as date_create_order, 
     gia_ban_daily_total,
+    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
+    phu_phi,
     doanh_thu_ke_toan,
     'Facebook' AS channel,
 FROM {{ ref('t2_facebook_order_lines_tot') }}
@@ -21,7 +23,9 @@ SELECT
     tong_tien_da_thanh_toan as total_amount, 
     ngay_dat_hang as date_create_order, 
     gia_ban_daily_total,
-    doanh_thu_ke_toan,
+    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
+    phu_phi,
+    doanh_thu_shopee as doanh_thu_ke_toan,
     'Shopee' AS channel
 FROM {{ ref('t2_shopee_order_tot') }}
 
@@ -35,6 +39,8 @@ SELECT
     total_settlement_amount as total_amount, 
     ngay_tao_don as date_create_order, 
     gia_ban_daily_total,
+    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
+    phu_phi,
     doanh_thu_ke_toan,
     'Tiktok' AS channel
 FROM {{ ref('t2_tiktok_order_tot') }}

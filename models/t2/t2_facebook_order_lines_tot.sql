@@ -67,7 +67,7 @@ order_line as (
   from {{ ref('t1_pancake_pos_order_total') }} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join {{ ref('t1_bang_gia_san_pham') }} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku and ord.brand = mapBangGia.brand
+  left join {{ ref('t1_bang_gia_san_pham') }} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_date as vietful on ord.id = vietful.ref_code 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
@@ -123,5 +123,6 @@ select
   COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan,
-  ngay_da_giao
+  ngay_da_giao,
+  0 AS phu_phi
 from order_line

@@ -16,7 +16,7 @@ UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Team A Tiến' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop
 FROM `omazo_shopee_shop_dwh.shopee_return_omazo_vietnam`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'BE20(kẹo ngậm)' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_return_be20_keo_ngam_dau_tam_trang_da`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà phê gừng' AS brand, 'ca_phe_giam_can_store' AS shop
@@ -25,14 +25,14 @@ UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà phê gừng' AS brand, 'ca_phe_gung_mat_ong_giam_can' AS shop
 FROM `caphegungmatonggiamcan_shopee_shop_dwh.shopee_return_ca_phe_gung_mat_ong_giam_can`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà phê mâm xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
 FROM `caphemamxoichinhhang_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà phê mâm xôi' AS brand, 'raspberry_coffee_offlclal' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'raspberry_coffee_offlclal' AS shop
 FROM `raspberrycoffeeofficial_shopee_shop_dwh.shopee_return_raspberry_coffee_offlclal`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'UME' AS brand, 'nhat_dang_nhi_da_store' AS shop
 FROM `nhatdangnhidastore_shopee_shop_dwh.shopee_return_nhat_dang_nhi_da_store`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà phê mâm xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
 FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`
