@@ -13,6 +13,7 @@ tkqc.channel,
 ads.currency,
 tkqc.company,
 tkqc.ben_thue,
+tkqc.phi_thue,
 SUM(ads.spend) AS chiPhiAds,
 SUM(ads.doanhThuAds) AS doanhThuAds
 FROM {{ ref('t2_ads_total')}} AS ads
@@ -89,5 +90,6 @@ ads.doanhThuLadi,
 -- ads.doanhThuOrganic,
 ads.revenue_type AS loaiDoanhThu,
 ads.company,
-ads.ben_thue
+ads.ben_thue,
+tkqc.phi_thue
 FROM ads_ladipageFacebook_total_with_tkqc AS ads
