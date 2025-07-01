@@ -73,6 +73,7 @@ SELECT
     ops.gia_ban_daily_total,
     ops.doanh_thu_ke_toan,
     (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) as tien_chiet_khau_sp,
+    (ops.gia_ban_daily_total -(ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu))) as tien_chiet_khau_sp_shopee,
     ops.gia_goc,
     ops.seller_tro_gia,
     ops.so_tien_hoan_tra,
