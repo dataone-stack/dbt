@@ -22,6 +22,9 @@ union all
 select * from `team_maxeagle_facebook_ads_2_dwh.facebook_ads_ads_insights_default` 
 union all
 select * from `team_maxeagle_facebook_ads_1_dwh.facebook_ads_ads_insights_default`
+union all
+select * from `team_maxeagle_facebook_ads_3_dwh.facebook_ads_ads_insights_default`
+
 
 
 
