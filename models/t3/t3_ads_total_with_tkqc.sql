@@ -13,11 +13,15 @@ tkqc.channel,
 ads.currency,
 tkqc.company,
 tkqc.ben_thue,
+Max(tkqc.phi_thue) as phi_thue,
 SUM(ads.spend) AS chiPhiAds,
-SUM(ads.doanhThuAds) AS doanhThuAds
+SUM(ads.doanhThuAds) AS doanhThuAds,
+SUM(ads.spend)* (1+ COALESCE(Max(tkqc.phi_thue),0)) as chi_phi_agency
 FROM {{ ref('t2_ads_total')}} AS ads
 RIGHT JOIN {{ ref('t2_tkqc_total') }} AS tkqc
 ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
+AND DATE(ads.date_start) >= DATE(tkqc.start_date)
+AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
 GROUP BY
 ads.date_start,
 tkqc.idtkqc,
@@ -89,5 +93,7 @@ ads.doanhThuLadi,
 -- ads.doanhThuOrganic,
 ads.revenue_type AS loaiDoanhThu,
 ads.company,
-ads.ben_thue
+ads.ben_thue,
+ads.phi_thue,
+ads.chi_phi_agency
 FROM ads_ladipageFacebook_total_with_tkqc AS ads

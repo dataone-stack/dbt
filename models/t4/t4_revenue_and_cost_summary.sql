@@ -40,13 +40,14 @@ ads_daily AS (
     date_start,
     brand,
     channel,
+    company,
     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads,
     SUM(COALESCE(doanhThuAds, 0)) + SUM(COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads,
     SUM(COALESCE(doanhThuAds, 0)) AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0)) AS doanhThuLadi,
   FROM {{ ref('t3_ads_total_with_tkqc') }}
   WHERE chiPhiAds IS NOT NULL
-  GROUP BY date_start, brand, channel
+  GROUP BY date_start, brand, channel,company
 ),
 
 cir_max_monthly AS (
@@ -57,6 +58,16 @@ cir_max_monthly AS (
     channel,
     AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max  -- Lấy trung bình cir_max
   FROM {{ ref('t1_cir_max') }}
+  GROUP BY year, month, brand, channel
+),
+cir_max_ads_monthly AS (
+  SELECT
+    year,
+    month,
+    brand,
+    channel,
+    AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max  -- Lấy trung bình cir_max
+  FROM {{ ref('t1_cir_max_ads') }}
   GROUP BY year, month, brand, channel
 ),
 
@@ -78,6 +89,7 @@ SELECT
   COALESCE(r.date_start, a.date_start, Cast(r_tot.date_start as date)) AS date_start,
   COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
   COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
+  a.company,
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
@@ -112,6 +124,7 @@ SELECT
   EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) AS year,
   EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) AS month,
   cir_max.avg_cir_max AS cir_max,
+  cir_max_ads.avg_cir_max AS cir_max_ads,
   r_tot.total_amount as total_amount_paid_tot,
   r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
   r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot,
@@ -131,4 +144,9 @@ LEFT JOIN cir_max_monthly AS cir_max
   AND EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max.month AS INT64)
   AND COALESCE(r.brand, a.brand) = cir_max.brand
   AND COALESCE(r.channel, a.channel) = cir_max.channel
+LEFT JOIN cir_max_ads_monthly AS cir_max_ads
+  ON EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max_ads.year AS INT64)
+  AND EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max_ads.month AS INT64)
+  AND COALESCE(r.brand, a.brand) = cir_max_ads.brand
+  AND COALESCE(r.channel, a.channel) = cir_max_ads.channel
 ORDER BY date_start DESC, brand, channel

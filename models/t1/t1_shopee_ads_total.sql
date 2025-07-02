@@ -7,3 +7,19 @@ union all
 select *,'4' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
 union all
 select * ,'5' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
+union all
+select * ,'be20keongamtrangda' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_keo_ngam_trang_da`
+union all
+select * ,'be20store' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20store`
+union all
+select * ,'be20vietnamstore' as idtkqc from `be20vietnamstore_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_viet_nam_store`
+union all
+select * ,'bellebeautyvietnam' as idtkqc from `bellebeautyvietnam_shopee_ads_dwh.shopee_cpc_ads_daily_performance_belle_beauty_vietnam`
+union all
+select * ,'caphegiamcanchinhhangvn' as idtkqc from `caphegiamcanchinhhangvn_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_giam_can_chinh_hang_vn`
+union all
+select * ,'caphemamxoichinhhang' as idtkqc from `caphemamxoichinhhang_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_mam_xoi_chinh_hang`
+union all
+select * ,'drdivabeautystore' as idtkqc from `drdivabeautystore_shopee_ads_dwh.shopee_cpc_ads_daily_performance_dr_diva_beauty_store`
+union all
+select * ,'keongamtrangdadautamde20' as idtkqc from `keongamtrangdadautambe20_shopee_ads_dwh.shopee_cpc_ads_daily_performance_keo_ngam_trang_da_dau_tam_be20`
