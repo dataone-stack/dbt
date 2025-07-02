@@ -2,6 +2,7 @@ with total_price as (
   select
     id,
     brand,
+    company,
     sum(total_price) as total_amount
   from {{ ref('t1_pancake_pos_order_total') }}
   group by id,brand
@@ -21,6 +22,7 @@ order_line as (
   select
     ord.id,
     ord.brand,
+    ord.company,
     ord.inserted_at,
     ord.status_name,
     ord.note_print,
@@ -76,6 +78,7 @@ select
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
+  company,
   status_name,
   activated_promotion_advances,
   sku as sku_code,

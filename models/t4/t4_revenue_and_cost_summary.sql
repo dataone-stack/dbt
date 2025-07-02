@@ -74,6 +74,7 @@ cir_max_ads_monthly AS (
 revenue_tot AS (
   SELECT DISTINCT
     brand, 
+    company,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
     SUM(total_amount) as total_amount,
     SUM(gia_ban_daily_total) as gia_ban_daily_total,
@@ -89,7 +90,7 @@ SELECT
   COALESCE(r.date_start, a.date_start, Cast(r_tot.date_start as date)) AS date_start,
   COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
   COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
-  a.company,
+  COALESCE(a.company,) AS company
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
