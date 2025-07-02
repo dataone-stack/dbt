@@ -3,6 +3,7 @@ WITH revenue_daily AS (
     DATE(ngay_tao_don) AS date_start,
     brand,
     channel,
+    company,
     -- ten_san_pham,
     -- sku_code,
     -- SUM(so_luong) as so_luong,
@@ -32,7 +33,7 @@ WITH revenue_daily AS (
     SUM(gia_ban_daily_total ) AS gia_ban_daily_total,
   FROM {{ ref('t3_revenue_all_channel') }}
   WHERE status NOT IN  ('Đã hủy')
-  GROUP BY DATE(ngay_tao_don), brand, channel --,ten_san_pham,sku_code
+  GROUP BY DATE(ngay_tao_don), brand, channel, company --,ten_san_pham,sku_code
 ),
 
 ads_daily AS (
@@ -84,13 +85,13 @@ revenue_tot AS (
     SUM(phu_phi) as phu_phi
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
-  GROUP BY date_start, brand, channel
+  GROUP BY date_start, brand, channel, company
 )
 SELECT
   COALESCE(r.date_start, a.date_start, Cast(r_tot.date_start as date)) AS date_start,
-  COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
+  COALESCE(r.brand, a.brand, r_tot.brand) AS brand,
   COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
-  COALESCE(a.company,) AS company
+  COALESCE(r.company, a.company, r_tot.company) AS company,
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
@@ -136,18 +137,20 @@ FULL OUTER JOIN ads_daily a
   ON r.date_start = a.date_start
   AND r.brand = a.brand
   AND r.channel = a.channel
+  AND r.company = a.company
 LEFT JOIN revenue_tot r_tot
   ON r.date_start =  Cast(r_tot.date_start as date)
   AND r.brand = r_tot.brand
   AND r.channel = r_tot.channel
+  AND r.company = r_tot.company
 LEFT JOIN cir_max_monthly AS cir_max
   ON EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max.year AS INT64)
   AND EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max.month AS INT64)
-  AND COALESCE(r.brand, a.brand) = cir_max.brand
-  AND COALESCE(r.channel, a.channel) = cir_max.channel
+  AND COALESCE(r.brand, a.brand, r_tot.brand) = cir_max.brand
+  AND COALESCE(r.channel, a.channel, r_tot.brand) = cir_max.channel
 LEFT JOIN cir_max_ads_monthly AS cir_max_ads
   ON EXTRACT(YEAR FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max_ads.year AS INT64)
   AND EXTRACT(MONTH FROM COALESCE(r.date_start, a.date_start)) = CAST(cir_max_ads.month AS INT64)
-  AND COALESCE(r.brand, a.brand) = cir_max_ads.brand
-  AND COALESCE(r.channel, a.channel) = cir_max_ads.channel
+  AND COALESCE(r.brand, a.brand, r_tot.brand) = cir_max_ads.brand
+  AND COALESCE(r.channel, a.channel, r_tot.brand) = cir_max_ads.channel
 ORDER BY date_start DESC, brand, channel

@@ -85,7 +85,7 @@ SELECT
 FROM {{ ref('t1_shopee_shop_fee_total') }} f
 LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi 
     ON f.order_id = vi.order_id 
-    AND f.brand = vi.brand s
+    AND f.brand = vi.brand
     AND vi.transaction_tab_type = 'wallet_order_income'
 LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} ord 
     ON f.order_id = ord.order_id 

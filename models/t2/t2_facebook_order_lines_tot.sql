@@ -2,7 +2,6 @@ with total_price as (
   select
     id,
     brand,
-    company,
     sum(total_price) as total_amount
   from {{ ref('t1_pancake_pos_order_total') }}
   group by id,brand
