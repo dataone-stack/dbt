@@ -44,6 +44,6 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     phu_phi,
-    doanh_thu_ke_toan,
+    total_revenue as doanh_thu_ke_toan,
     'Tiktok' AS channel
 FROM {{ ref('t2_tiktok_order_tot') }}

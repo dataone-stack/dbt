@@ -282,9 +282,11 @@ a AS (
     SELECT 
         ord.*,
         trans.total_settlement_amount,
+        trans.total_revenue,
         trans.order_statement_time,
         order_adjustment_id,
-        (trans.transaction_fee + trans.tiktok_shop_commission_fee  + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.customer_shipping_fee + trans.voucher_xtra_service_fee) as phu_phi
+        -- (trans.transaction_fee + trans.tiktok_shop_commission_fee  + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.customer_shipping_fee + trans.voucher_xtra_service_fee) as phu_phi
+        trans.total_revenue - trans.total_settlement_amount as phu_phi
     FROM order_total AS ord 
     LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} AS trans
         ON ord.ma_don_hang = trans.order_adjustment_id
