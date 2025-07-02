@@ -1,5 +1,6 @@
 SELECT 
     brand, 
+    company,
     CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
     ma_don_hang as order_id, 
     status, 
@@ -17,6 +18,7 @@ UNION ALL
 
 SELECT 
     brand, 
+    company,
     ngay_tien_ve_vi as date_create, 
     order_id,
     "" as status, 
@@ -33,6 +35,7 @@ UNION ALL
 
 SELECT 
     brand, 
+    company,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
     CAST(ma_don_hang AS STRING) as order_id, 
     Order_Status as status, 

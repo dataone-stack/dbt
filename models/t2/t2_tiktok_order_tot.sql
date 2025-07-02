@@ -2,6 +2,7 @@ WITH LineItems AS (
   SELECT
     o.brand,
     o.order_id,
+    o.company,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     JSON_VALUE(li, '$.seller_sku') AS Seller_SKU,
     JSON_VALUE(li, '$.product_name') AS Product_Name,
@@ -25,6 +26,7 @@ WITH LineItems AS (
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.brand,
+    o.company,
     o.order_id,
     JSON_VALUE(li, '$.sku_id'),
     JSON_VALUE(li, '$.seller_sku'),
@@ -59,6 +61,7 @@ ReturnLineItems AS (
 OrderData AS (
   SELECT
     li.brand,
+    li.company,
     li.order_id AS Order_ID,
     CASE o.order_status
       WHEN 'CANCELLED' THEN 'Canceled'
@@ -176,6 +179,7 @@ OrderData AS (
 orderLine as(
 SELECT
   brand,
+  company,
   Order_ID as ma_don_hang,
   Order_Status,
   Order_Substatus,
@@ -258,6 +262,7 @@ ORDER BY Order_ID, SKU_ID
 order_total AS (
     SELECT
         brand,
+        company,
         ma_don_hang,
         Order_Status,
         ngay_tao_don,
@@ -267,6 +272,7 @@ order_total AS (
     FROM orderLine
     GROUP BY
         brand,
+        company,
         ma_don_hang,
         Order_Status,
         ngay_tao_don
