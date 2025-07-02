@@ -40,13 +40,14 @@ ads_daily AS (
     date_start,
     brand,
     channel,
+    company,
     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads,
     SUM(COALESCE(doanhThuAds, 0)) + SUM(COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads,
     SUM(COALESCE(doanhThuAds, 0)) AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0)) AS doanhThuLadi,
   FROM {{ ref('t3_ads_total_with_tkqc') }}
   WHERE chiPhiAds IS NOT NULL
-  GROUP BY date_start, brand, channel
+  GROUP BY date_start, brand, channel,company
 ),
 
 cir_max_monthly AS (
@@ -88,7 +89,7 @@ SELECT
   COALESCE(r.date_start, a.date_start, Cast(r_tot.date_start as date)) AS date_start,
   COALESCE(r.brand, a.brand,r_tot.brand) AS brand,
   COALESCE(r.channel, a.channel, r_tot.channel) AS channel,
-  a.company
+  a.company,
 --   COALESCE(r.so_luong) AS so_luong,
 --   COALESCE(r.ten_san_pham) AS ten_san_pham,
 --   COALESCE(r.sku_code) AS sku_code,
