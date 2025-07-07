@@ -13,7 +13,7 @@ SELECT
     status, 
     start_date, 
     end_date, 
-    'Team A Tiến' AS company 
+    'One5' AS company 
 FROM `google_sheet.tkqc` 
 WHERE idtkqc IS NOT NULL
 
@@ -36,4 +36,4 @@ SELECT
     end_date,
     'Max Eagle' AS company 
 FROM `google_sheet.tkqc_me` 
-WHERE idtkqc IS NOT NULL
+WHERE idtkqc IS NOT NULL and channel not in ('Google Ads','Marketplcae','Shopee','Tiktok shop')

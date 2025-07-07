@@ -8,6 +8,8 @@ select *,'4' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performa
 union all
 select * ,'5' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
 union all
+select * ,'6' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
+union all
 select * ,'be20keongamtrangda' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_keo_ngam_trang_da`
 union all
 select * ,'be20store' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20store`

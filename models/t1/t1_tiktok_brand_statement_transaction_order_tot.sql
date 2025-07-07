@@ -1,19 +1,19 @@
-SELECT 'Team A Tiến' as company, 'An Cung' AS brand, 'an_cung_brand' AS shop, * 
+SELECT 'One5' as company, 'An Cung' AS brand, 'an_cung_brand' AS shop, * 
 FROM `ancung_tiktok_shop_dwh.tiktok_shop_an_cung_brand_statement_transaction_order`
 UNION ALL
-SELECT 'Team A Tiến' as company, 'Chaching' AS brand, 'chaching_brand' AS shop, * 
+SELECT 'One5' as company, 'Chaching' AS brand, 'chaching_brand' AS shop, * 
 FROM `chaching_tiktok_shop_dwh.tiktok_shop_chaching_brand_statement_transaction_order`
 UNION ALL
-SELECT 'Team A Tiến' as company, 'LYB' AS brand, 'lyb_brand' AS shop, * 
+SELECT 'One5' as company, 'LYB' AS brand, 'lyb_brand' AS shop, * 
 FROM `lyb_tiktok_shop_dwh.tiktok_shop_lyb_brand_statement_transaction_order`
 UNION ALL
-SELECT 'Team A Tiến' as company, 'UME' AS brand, 'ume_viet_nam' AS shop, * 
+SELECT 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop, * 
 FROM `ume_tiktok_shop_dwh.tiktok_shop_ume_viet_nam_statement_transaction_order`
 UNION ALL
-SELECT 'Team A Tiến' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop, * 
+SELECT 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop, * 
 FROM `lybcosmetic_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_statement_transaction_order`
 UNION ALL
-SELECT 'Team A Tiến' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop, * 
+SELECT 'One5' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop, * 
 FROM `omazo_tiktok_shop_dwh.tiktok_shop_omazo_vietnam_statement_transaction_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_viet_nam_store' AS shop, * 

@@ -1,23 +1,26 @@
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'Chaching' AS brand, 'chaching_brand' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'Chaching' AS brand, 'chaching_brand' AS shop
 FROM `chaching_shopee_shop_dwh.shopee_order_detail_chaching_brand`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'LYB' AS brand, 'lyb_official' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'LYB' AS brand, 'lyb_official' AS shop
 FROM `lyb_shopee_shop_dwh.shopee_order_detail_lyb_official`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
 FROM `ancung_shopee_shop_dwh.shopee_order_detail_ancung_brand`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
 FROM `lybcosmetic_shopee_shop_dwh.shopee_order_detail_lyb_cosmetic`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
 FROM `ume_shopee_shop_dwh.shopee_order_detail_ume_viet_nam`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop
 FROM `omazo_shopee_shop_dwh.shopee_order_detail_omazo_vietnam`
 UNION ALL
-SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Team A Tiến' as company, 'Dr Diva' AS brand, 'dr_diva_viet_nam' AS shop
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'Dr Diva' AS brand, 'dr_diva_viet_nam' AS shop
 FROM `drdiva_shopee_shop_dwh.shopee_order_detail_dr_diva_viet_nam`
+UNION ALL
+SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop
+FROM `chaching_beauty_shopee_shop_dwh.shopee_order_detail_chaching_beauty`
 UNION ALL
 SELECT order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_order_detail_be20_keo_ngam_dau_tam_trang_da`
