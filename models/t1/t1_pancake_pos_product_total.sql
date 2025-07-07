@@ -7,3 +7,5 @@ union all
 select *, 'An Cung' as brand from `ancung_pancake_pos_dwh.pancake_product`
 union all
 select *, 'LYB Cosmetics' as brand from `lybcosmetics_pancake_pos_dwh.pancake_product`
+union all
+select *, 'Chaching Beauty' as brand from `chaching_beauty_pancake_pos_dwh.pancake_product`

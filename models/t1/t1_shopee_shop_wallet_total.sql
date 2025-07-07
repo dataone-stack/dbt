@@ -1,19 +1,19 @@
-SELECT *,'Team A Tiến' as company, 'Chaching' AS brand, 'chaching_brand' AS shop
+SELECT *,'One5' as company, 'Chaching' AS brand, 'chaching_brand' AS shop
 FROM `chaching_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching_brand`
 UNION ALL
-SELECT *, 'Team A Tiến' as company, 'LYB' AS brand, 'lyb_official' AS shop
+SELECT *, 'One5' as company, 'LYB' AS brand, 'lyb_official' AS shop
 FROM `lyb_shopee_shop_dwh.shopee_payment_wallet_transaction_lyb_official`
 UNION ALL
-SELECT *, 'Team A Tiến' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
+SELECT *, 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
 FROM `lybcosmetic_shopee_shop_dwh.shopee_payment_wallet_transaction_lyb_cosmetic`
 UNION ALL
-SELECT *, 'Team A Tiến' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
+SELECT *, 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
 FROM `ume_shopee_shop_dwh.shopee_payment_wallet_transaction_ume_viet_nam`
 UNION ALL
-SELECT *, 'Team A Tiến' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
+SELECT *, 'One5' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
 FROM `ancung_shopee_shop_dwh.shopee_payment_wallet_transaction_ancung_brand`
 UNION ALL
-SELECT *, 'Team A Tiến' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop
+SELECT *, 'One5' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop
 FROM `omazo_shopee_shop_dwh.shopee_payment_wallet_transaction_omazo_vietnam`
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop

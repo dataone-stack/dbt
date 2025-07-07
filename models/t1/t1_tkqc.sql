@@ -13,7 +13,7 @@ SELECT
     status, 
     start_date, 
     end_date, 
-    'Team A Tiến' AS company 
+    'One5' AS company 
 FROM `google_sheet.tkqc` 
 WHERE idtkqc IS NOT NULL
 
