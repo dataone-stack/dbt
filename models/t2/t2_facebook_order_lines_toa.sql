@@ -3,9 +3,10 @@ with total_price as (
     id,
     brand,
     company,
-    sum(total_price) as total_amount
+    sum(total_price) as total_amount,
+    json_value(customer, '$.name')  as customer_name,
   from {{ref("t1_pancake_pos_order_total")}}
-  group by id,brand,company
+  group by id,brand,company,json_value(customer, '$.name')
 ),
 order_line as (
   select
@@ -53,7 +54,7 @@ order_line as (
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
-
+    tt.customer_name,
     mapBangGia.gia_ban_daily
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
@@ -67,6 +68,7 @@ select
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
   company,
+  customer_name,
   status_name,
   activated_promotion_advances,
   sku as sku_code,

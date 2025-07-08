@@ -54,3 +54,6 @@ FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_payment_wallet_transaction_ca
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'Dr Diva' AS brand, 'dr_diva_beauty_store' AS shop
 FROM `drdivabeautystore_shopee_shop_dwh.shopee_payment_wallet_transaction_dr_diva_beauty_store`
+UNION ALL
+SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'the_ume_lab' AS shop
+FROM `theumelab_shopee_shop_dwh.shopee_payment_wallet_transaction_the_ume_lab`

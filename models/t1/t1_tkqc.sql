@@ -36,4 +36,4 @@ SELECT
     end_date,
     'Max Eagle' AS company 
 FROM `google_sheet.tkqc_me` 
-WHERE idtkqc IS NOT NULL and channel not in ('Google Ads','Marketplcae','Shopee','Tiktok shop')
+WHERE idtkqc IS NOT NULL and channel not in ('Google Ads','Marketplcae','Tiktok shop')
