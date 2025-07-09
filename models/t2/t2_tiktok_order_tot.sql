@@ -11,6 +11,7 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.is_gift') AS BOOL) AS is_gift,
     JSON_VALUE(li, '$.cancel_reason') AS SKU_Cancel_Reason,
     JSON_VALUE(li, '$.display_status') AS SKU_Display_Status,
+
     COUNT(*) AS Quantity,
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64) AS SKU_Unit_Original_Price,
     SUM(CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64)) AS SKU_Subtotal_Before_Discount,
@@ -80,6 +81,7 @@ OrderData AS (
         ELSE NULL
       END) AS Cancelation_Return_Type,
     li.Normal_or_Preorder,
+    li.is_gift,
     li.SKU_ID,
     li.Seller_SKU,
     li.Product_Name,
@@ -91,12 +93,28 @@ OrderData AS (
         WHEN li.SKU_Cancel_Reason IS NOT NULL AND li.is_gift = FALSE AND li.SKU_Display_Status = 'CANCELLED' THEN li.Quantity
         ELSE 0
       END) AS Sku_Quantity_of_Return,
-    li.SKU_Unit_Original_Price,
+    case
+        when li.is_gift = TRUE
+        then 0
+        else li.SKU_Unit_Original_Price
+    end as SKU_Unit_Original_Price,
     li.SKU_Subtotal_Before_Discount,
     li.SKU_Platform_Discount,
-    li.SKU_Seller_Discount,
+
+    case
+        when li.is_gift = TRUE
+        then 0
+        else li.SKU_Seller_Discount
+    end as SKU_Seller_Discount,
+    
     li.SKU_Subtotal_After_Discount,
-    li.Gia_Ban_Daily,
+
+    CASE
+        when li.is_gift = TRUE
+        then 0
+        else li.Gia_Ban_Daily
+    end as Gia_Ban_Daily,
+
     CAST(JSON_VALUE(o.payment, '$.shipping_fee') AS FLOAT64) AS Shipping_Fee_After_Discount,
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
