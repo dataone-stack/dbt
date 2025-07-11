@@ -1,6 +1,7 @@
  with transactions as(
 SELECT
     brand AS `brand`,
+    company,
     case
     when order_id is null and adjustment_id is not null
     then adjustment_order_id
@@ -62,6 +63,7 @@ FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIM
 
 SELECT 
     brand,
+    company,
     datetime_add(safe_cast(order_statement_time as datetime), INTERVAL 7 HOUR) as order_statement_time,
     order_adjustment_id,
     currency,
@@ -81,6 +83,7 @@ SELECT
 FROM transactions
 GROUP BY 
     brand,
+    company,
     order_statement_time,
     order_adjustment_id,
     currency,

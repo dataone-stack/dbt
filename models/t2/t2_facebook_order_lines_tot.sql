@@ -192,27 +192,37 @@ select
   --   WHEN status_name in ('new', 'packing', 'submitted','waitting', 'packing') THEN 'Đăng đơn'
   --   ELSE 'Khác'
   -- END AS status,
-  case 
+  case
+    when gia_goc = 0
+    then 0
     when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
     then 0
     else (gia_goc * so_luong)
   end as gia_san_pham_goc_total,
-   case 
+   case
+    when gia_goc = 0
+    then 0
     when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
     then 0
     else COALESCE(gia_ban_daily, 0)
   end as gia_ban_daily,
-  case 
+  case
+    when gia_goc = 0
+    then 0
     when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
     then 0
     else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)
   end as gia_ban_daily_total,
-  case 
+  case
+    when gia_goc = 0
+    then 0
     when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
     then 0
     else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
   end as tien_chiet_khau_sp,
-  case 
+  case
+    when gia_goc = 0
+    then 0
     when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
     then 0
     else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
@@ -264,17 +274,49 @@ select
   0 as voucher_from_seller,
   0 as phi_co_dinh,
   'Hoàn tất trả hàng' as status,
-  (gia_goc * so_luong) AS gia_san_pham_goc_total,
-  COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
-  COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
-  (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
-  -1 * (((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)) AS doanh_thu_ke_toan,
+
+
+  case
+    when gia_goc = 0
+    then 0
+    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
+    then 0
+    else (gia_goc * so_luong)
+  end as gia_san_pham_goc_total,
+   case
+    when gia_goc = 0
+    then 0
+    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
+    then 0
+    else COALESCE(gia_ban_daily, 0)
+  end as gia_ban_daily,
+  case
+    when gia_goc = 0
+    then 0
+    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
+    then 0
+    else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) * -1
+  end as gia_ban_daily_total,
+  case
+    when gia_goc = 0
+    then 0
+    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
+    then 0
+    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
+  end as tien_chiet_khau_sp,
+  case
+    when gia_goc = 0
+    then 0
+    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
+    then 0
+    else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) * -1
+  end as doanh_thu_ke_toan,
   ngay_da_giao,
   0 AS phu_phi
 from order_line_returned
 ),
 a as (
-select * from order_delivered where ngay_da_giao is not null
+select * from order_delivered
 union all
 select * from order_returned where ngay_da_giao is not null
 )

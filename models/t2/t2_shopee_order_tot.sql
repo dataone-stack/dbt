@@ -13,21 +13,44 @@ WITH return_detail AS (
   FROM {{ ref('t1_shopee_shop_order_retrurn_total') }},
   UNNEST(item) AS i
 ),
+order_detail as (
+    select order_id,
+     CASE 
+        WHEN i.model_sku = "" THEN i.item_sku
+        ELSE i.model_sku  
+    END as model_sku,
+
+    i.promotion_type,
+    brand,
+    shop,
+    company
+    from {{ref("t1_shopee_shop_order_detail_total")}}
+    cross join unnest (item_list) as i
+),
 
 -- Tính tổng giá daily và doanh thu kế toán theo order
 order_product_summary AS (
   SELECT 
     f.order_id,
     f.brand,
-    SUM(COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)) AS gia_ban_daily_total,
-    SUM(
-       (COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0))
-    ) AS doanh_thu_ke_toan,
+    CASE
+        when ord.promotion_type = 'add_on_free_gift_sub'
+        then 0
+        else SUM(COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0))
+    end as gia_ban_daily_total,
+     CASE
+        when ord.promotion_type = 'add_on_free_gift_sub'
+        then 0
+        else  
+        SUM((COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0)))
+    end as doanh_thu_ke_toan,
+
      CASE
       WHEN sum(rd.refund_amount) = 0
       THEN sum(rd.so_tien_hoan_tra) * -1
       ELSE 0
     END AS so_tien_hoan_tra,
+
     0 as nguoi_ban_hoan_xu,
     sum(shopee_discount) as tro_gia_shopee,
     sum(COALESCE(i.original_price, 0)) as gia_goc,
@@ -40,7 +63,15 @@ order_product_summary AS (
       ELSE i.model_sku  
     END = mapping.ma_sku AND f.brand = mapping.brand
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
-  GROUP BY f.order_id, f.brand
+
+  LEFT JOIN order_detail ord on f.order_id = ord.order_id  and
+    CASE 
+        WHEN i.model_sku = "" THEN i.item_sku
+        ELSE i.model_sku  
+    END = ord.model_sku
+    and f.brand = ord.brand
+
+  GROUP BY f.order_id, f.brand,ord.promotion_type
 )
 
 SELECT 
