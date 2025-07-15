@@ -16,6 +16,7 @@ order_line as (
   select
     ord.id,
     ord.brand,
+    ord.order_sources_name,
     ord.company,
     ord.inserted_at,
     ord.status_name,
@@ -36,25 +37,49 @@ order_line as (
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
+        COALESCE(
+      SAFE_DIVIDE(
         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64) + 
+        safe_cast(json_value(item, '$.total_discount') as int64),
+        safe_cast(json_value(item, '$.quantity') as int64)
+      ), 0)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
     COALESCE(
       SAFE_DIVIDE(
+        COALESCE(
+      SAFE_DIVIDE(
         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64) + 
+        safe_cast(json_value(item, '$.total_discount') as int64),
+        safe_cast(json_value(item, '$.quantity') as int64)
+      ), 0)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
     COALESCE(
       SAFE_DIVIDE(
+        COALESCE(
+      SAFE_DIVIDE(
         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64) + 
+        safe_cast(json_value(item, '$.total_discount') as int64),
+        safe_cast(json_value(item, '$.quantity') as int64)
+      ), 0)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
     COALESCE(
       SAFE_DIVIDE(
+        COALESCE(
+      SAFE_DIVIDE(
         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.quantity') as int64) + 
+        safe_cast(json_value(item, '$.total_discount') as int64),
+        safe_cast(json_value(item, '$.quantity') as int64)
+      ), 0)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
@@ -82,6 +107,7 @@ select
   brand,
   company,
   customer_name,
+  order_sources_name as channel,
 
   con_thieu,
   nguoi_duoc_phan_cong,
@@ -90,9 +116,10 @@ select
   commune,
   DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) as so_ngay_no,
   CASE
-    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 1 AND 3 THEN 'Đơn nợ mới'
-    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 4 AND 7 THEN 'Đơn nợ lâu'
-    ELSE 'Đơn tồn đọng'
+    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 0 AND 2 THEN 'Dưới 3 ngày'
+    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 3 AND 5 THEN 'Từ 3 đến 5 ngày'
+    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 6 AND 7 THEN 'Từ 6 đến 7 ngày'
+    ELSE 'Trên 7 ngày'
   END AS trang_thai_don_no,
 
   status_name,
@@ -108,17 +135,26 @@ select
   0 as seller_tro_gia,
   0 as san_tro_gia,
   (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+  round((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen) as tien_khach_hang_thanh_toan,
   0 as tong_phi_san,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
-  case
-  when tra_truoc > 0
-  then 0
-  else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
-  end as cod,
-  tra_truoc,
+  round((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) as tong_tien_sau_giam_gia,
+
+  -- dieu kien tra truoc = tien khach hang thanh toan thi cod = 0 
+    CASE
+        WHEN (
+        SELECT SUM(tra_truoc)
+        FROM order_line ol2
+        WHERE ol2.id = order_line.id
+        ) = (
+        SELECT SUM(ROUND((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen))
+        FROM order_line ol3
+        WHERE ol3.id = order_line.id
+        ) THEN 0
+        ELSE ROUND((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)
+  END AS cod,
+  round(tra_truoc) as tra_truoc,
   cuoc_vc,
-  phi_van_chuyen as phi_ship,
+  round(phi_van_chuyen) as phi_ship,
   0 AS phi_van_chuyen_thuc_te,
   0 AS phi_van_chuyen_tro_gia_tu_san,
   0 AS phi_thanh_toan,
