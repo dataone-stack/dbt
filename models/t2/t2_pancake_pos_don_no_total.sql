@@ -33,7 +33,7 @@ order_line as (
         safe_cast(json_value(item, '$.quantity') as int64) + 
         safe_cast(json_value(item, '$.total_discount') as int64),
         safe_cast(json_value(item, '$.quantity') as int64)
-      ), 0) as gia_goc,
+    ), 0) as gia_goc,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
@@ -119,7 +119,8 @@ select
     WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 0 AND 2 THEN 'Dưới 3 ngày'
     WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 3 AND 5 THEN 'Từ 3 đến 5 ngày'
     WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 6 AND 7 THEN 'Từ 6 đến 7 ngày'
-    ELSE 'Trên 7 ngày'
+    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 8 AND 14 THEN 'Từ 8 đến 14 ngày'
+    ELSE 'Trên 14 ngày'
   END AS trang_thai_don_no,
 
   status_name,
