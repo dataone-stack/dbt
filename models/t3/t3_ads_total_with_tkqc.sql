@@ -14,6 +14,7 @@ WITH ads_total_with_tkqc AS (
         ads.currency,
         tkqc.company,
         tkqc.ben_thue,
+        tkqc.dau_the,
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
         SUM(ads.doanhThuAds) AS doanhThuAds,
@@ -46,7 +47,9 @@ WITH ads_total_with_tkqc AS (
         ads.revenue_type,
         ads.currency,
         tkqc.company,
-        tkqc.ben_thue
+        tkqc.ben_thue,
+        tkqc.phi_thue,
+        tkqc.dau_the
 ),
 
 ads_ladipageFacebook_total_with_tkqc AS (
@@ -86,6 +89,7 @@ SELECT
     ads.company,
     ads.ben_thue,
     ads.phi_thue,
+    ads.dau_the,
     ads.chi_phi_agency
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
 

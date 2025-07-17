@@ -12,6 +12,7 @@ with total_price as (
   from{{ref("t1_pancake_pos_order_total")}}
   group by id,brand,company,customer,assigning_seller,shipping_address
 ),
+-- Tách từng item trong đơn hàng + mapping giá bán từ bảng giá sản phẩm
 order_line as (
   select
     ord.id,
@@ -22,11 +23,13 @@ order_line as (
     ord.status_name,
     ord.note_print,
     ord.activated_promotion_advances,
+    -- Extract thông tin SKU, tên, màu, size từ JSON
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp,
     json_value(item, '$.variation_info.fields[0].value') as color,
     json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
+    -- Giá gốc sản phẩm trước khuyến mãi
     COALESCE(
       SAFE_DIVIDE(
         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
@@ -34,7 +37,9 @@ order_line as (
         safe_cast(json_value(item, '$.total_discount') as int64),
         safe_cast(json_value(item, '$.quantity') as int64)
     ), 0) as gia_goc,
+    -- Khuyến mãi đồng giá seller
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
+    -- Phân bổ chiết khấu đơn hàng xuống từng dòng sản phẩm theo tỷ trọng giá trị
     COALESCE(
       SAFE_DIVIDE(
         COALESCE(
@@ -47,6 +52,7 @@ order_line as (
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
+    -- Phân bổ phí vận chuyển xuống từng dòng sản phẩm
     COALESCE(
       SAFE_DIVIDE(
         COALESCE(
@@ -59,6 +65,7 @@ order_line as (
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
+    -- Cước vận chuyển
     COALESCE(
       SAFE_DIVIDE(
         COALESCE(
@@ -71,6 +78,7 @@ order_line as (
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
+    -- Trả trước
     COALESCE(
       SAFE_DIVIDE(
         COALESCE(
@@ -83,12 +91,14 @@ order_line as (
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
+    -- Join thêm thông tin từ bảng total_price và bảng giá bán hàng ngày
     tt.customer_name,
     tt.nguoi_duoc_phan_cong,
     tt.district,
     tt.province,
     tt.commune,
     mapBangGia.gia_ban_daily,
+    -- Flag thiếu hàng dựa trên added_to_cart_quantity
     case
       when json_value(item,'$.added_to_cart_quantity') = '0'
       then 'Thieu'
@@ -108,12 +118,12 @@ select
   company,
   customer_name,
   order_sources_name as channel,
-
   con_thieu,
   nguoi_duoc_phan_cong,
   district,
   province,
   commune,
+  -- Tính số ngày nợ kể từ ngày tạo đơn hàng (cộng 7h GMT+7)
   DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) as so_ngay_no,
   CASE
     WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 0 AND 2 THEN 'Dưới 3 ngày'
@@ -140,7 +150,7 @@ select
   0 as tong_phi_san,
   round((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) as tong_tien_sau_giam_gia,
 
-  -- dieu kien tra truoc = tien khach hang thanh toan thi cod = 0 
+  -- COD: nếu trả trước = số tiền khách thanh toán thì COD = 0; ngược lại = tổng tiền đơn hàng
     CASE
         WHEN (
         SELECT SUM(tra_truoc)
@@ -152,7 +162,7 @@ select
         WHERE ol3.id = order_line.id
         ) THEN 0
         ELSE ROUND((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)
-  END AS cod,
+    END AS cod,
   round(tra_truoc) as tra_truoc,
   cuoc_vc,
   round(phi_van_chuyen) as phi_ship,
@@ -166,6 +176,7 @@ select
   0 as phi_xtra,
   0 as voucher_from_seller,
   0 as phi_co_dinh,
+  -- Trạng thái đơn hàng chi tiết (mapping thủ công theo business rule)
   CASE
     WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
     WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
