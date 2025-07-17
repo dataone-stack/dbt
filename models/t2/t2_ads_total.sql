@@ -4,19 +4,23 @@ SELECT
     CAST(account_id AS STRING) AS account_id,
     spend,
     COALESCE(
-            CAST(
-                JSON_VALUE(
-                    (
-                        SELECT value
-                        FROM UNNEST(action_values) AS value
-                        WHERE JSON_VALUE(value, '$.action_type') = 'onsite_conversion.purchase'
-                        LIMIT 1
-                    ),
-                    '$.value'
-                ) AS FLOAT64
-            ),
-            0
-        ) AS doanhThuAds,
+        CAST(
+            JSON_VALUE(
+                (
+                    SELECT value
+                    FROM UNNEST(action_values) AS value
+                    WHERE JSON_VALUE(value, '$.action_type') = 
+                        CASE 
+                            WHEN objective = 'OUTCOME_SALES' THEN 'onsite_web_purchase'
+                            ELSE 'onsite_conversion.purchase'
+                        END
+                    LIMIT 1
+                ),
+                '$.value'
+            ) AS FLOAT64
+        ),
+        0
+    ) AS doanhThuAds,
     'Facebook Ads' AS revenue_type,
     account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }} fb 

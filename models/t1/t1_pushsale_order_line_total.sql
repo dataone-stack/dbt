@@ -1,0 +1,1 @@
+select * from `pushsale_maxeagle_dwh.maxeagle_pushsale_order_details`

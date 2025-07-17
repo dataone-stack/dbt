@@ -4,6 +4,9 @@ UNION ALL
 SELECT 'One5' as company, 'Chaching' AS brand, 'chaching_brand' AS shop, * 
 FROM `chaching_tiktok_shop_dwh.tiktok_shop_chaching_brand_statement_transaction_order`
 UNION ALL
+SELECT 'One5' as company, 'Chaching' AS brand, 'cha_ching_fashion' AS shop, * 
+FROM `chaching_2_tiktok_shop_dwh.tiktok_shop_cha_ching_fashion_statement_transaction_order`
+UNION ALL
 SELECT 'One5' as company, 'LYB' AS brand, 'lyb_brand' AS shop, * 
 FROM `lyb_tiktok_shop_dwh.tiktok_shop_lyb_brand_statement_transaction_order`
 UNION ALL
