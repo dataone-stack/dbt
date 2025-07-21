@@ -11,6 +11,8 @@ SELECT
   '-' as ghi_chu_ke_toan,
   datetime_add(ord.update_time, INTERVAL 7 hour) AS ngay_cap_nhat,
   case
+  when order_status_id = -1
+  then 'Hệ thống CRM đã xóa'
   when order_status_id = 0 
   then 'Chờ chốt đơn'
   when order_status_id = 1
@@ -27,8 +29,30 @@ SELECT
   then 'Đã đăng'
   when order_status_id = 21
   then 'Đã lấy hàng'
+  when order_status_id = 22
+  then 'Không lấy được hàng'
+  when order_status_id = 22
+  then 'Không lấy được hàng'
+  when order_status_id = 23
+  then 'Đang lấy hàng'
+  when order_status_id = 30
+  then 'Đang giao hàng'
+  when order_status_id = 31
+  then 'Đã giao hàng'
+  when order_status_id = 32
+  then 'Đã thanh toán'
+  when order_status_id = 33
+  then 'Không giao được'
+  when order_status_id = 34
+  then 'Yêu cầu giao lại'
+  when order_status_id = 35
+  then 'Giao hàng 1 phần'
+  when order_status_id = 50
+  then 'Bồi hoàn'
+   when order_status_id = 99
+  then 'Đã xóa'
+  else '-'
   end as trang_thai_giao_hang,
-
 
   datetime_add(ord.time_order_submit, INTERVAL 7 hour) as ngay_dang_don,
   ord.customer_name as ho_ten,

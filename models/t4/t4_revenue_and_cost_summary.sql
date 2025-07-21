@@ -56,11 +56,28 @@ revenue_tot AS (
     brand, 
     company,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
-    SUM(total_amount) as total_amount,
-    SUM(gia_ban_daily_total) as gia_ban_daily_total,
-    SUM(doanh_thu_ke_toan) as doanh_thu_ke_toan,
+
+    case
+        when SUM(total_amount) < 60000
+        then 0
+        else SUM(total_amount)
+    end as total_amount,
+    case
+        when SUM(total_amount) < 60000
+        then 0
+        else  SUM(gia_ban_daily_total)
+    end as gia_ban_daily_total,
+    case
+        when SUM(total_amount) < 60000
+        then 0
+        else  SUM(doanh_thu_ke_toan)
+    end as doanh_thu_ke_toan,
     channel,
-    SUM(tien_chiet_khau_sp_tot) as tien_chiet_khau_sp_tot,
+    case
+        when SUM(total_amount) < 60000
+        then 0
+        else SUM(tien_chiet_khau_sp_tot) 
+    end as tien_chiet_khau_sp_tot,
     SUM(phu_phi) as phu_phi
   FROM {{ ref('t3_revenue_all_channel_tot') }}
   WHERE date_create IS NOT NULL
