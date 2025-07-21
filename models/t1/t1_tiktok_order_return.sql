@@ -10,6 +10,8 @@ SELECT 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop, * FR
 UNION ALL
 SELECT 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop, * FROM `ume_tiktok_shop_dwh.tiktok_shop_ume_viet_nam_return_order`
 UNION ALL
+SELECT 'One5' as company, 'Chaching Beauty' AS brand, 'cha_ching_beauty' AS shop, * FROM `chaching_beauty_tiktok_shop_dwh.tiktok_shop_cha_ching_beauty_return_order`
+UNION ALL
 SELECT 'One5' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop, * FROM `omazo_tiktok_shop_dwh.tiktok_shop_omazo_vietnam_return_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'cafe_mam_xoi_chinh_hang_store' AS shop, * FROM `caphemamxoichinhhangstore_tiktok_shop_dwh.tiktok_shop_cafe_mam_xoi_chinh_hang_store_return_order`

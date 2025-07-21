@@ -21,9 +21,12 @@ SELECT
   then 'Hoãn giao' 
   when order_status_id = 4
   then 'Hủy vận đơn' 
-  when order_status_id = 1
-  then 'Chờ vận đơn'
-  else '-'
+  when order_status_id = 5
+  then 'Hủy đăng đơn'
+  when order_status_id = 20
+  then 'Đã đăng'
+  when order_status_id = 21
+  then 'Đã lấy hàng'
   end as trang_thai_giao_hang,
 
 
