@@ -10,7 +10,23 @@ SELECT
   '-' as care_don,
   '-' as ghi_chu_ke_toan,
   datetime_add(ord.update_time, INTERVAL 7 hour) AS ngay_cap_nhat,
-  '-' as trang_thai_giao_hang,
+  case
+  when order_status_id = 0 
+  then 'Chờ chốt đơn'
+  when order_status_id = 1
+  then 'Chờ vận đơn'
+  when order_status_id = 2
+  then 'Giao ngay' 
+  when order_status_id = 3
+  then 'Hoãn giao' 
+  when order_status_id = 4
+  then 'Hủy vận đơn' 
+  when order_status_id = 1
+  then 'Chờ vận đơn'
+  else '-'
+  end as trang_thai_giao_hang,
+
+
   datetime_add(ord.time_order_submit, INTERVAL 7 hour) as ngay_dang_don,
   ord.customer_name as ho_ten,
   ord.customer_phone as so_dien_thoai,
@@ -27,7 +43,12 @@ SELECT
     when ord.total_shipping_cost = 0
     then ord.total_cod
     else 0
-  end, 2) as phi_vc_ho_tro_khach
+  end, 2) as phi_vc_ho_tro_khach,
+  ord.marketing_display_name as marketing_name,
+  ord.marketing_user_name as marketing_user_name,
+  ord.sale_display_name as sale_name,
+  ord.sale_user_name as sale_user_name,
+  source_name as nguon_du_lieu
 FROM {{ref("t1_pushsale_order_line_total")}} dt
 LEFT JOIN {{ref("t1_pushsale_order_total")}} ord 
 ON dt.order_number = ord.order_number
