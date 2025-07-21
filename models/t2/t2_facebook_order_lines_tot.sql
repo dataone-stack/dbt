@@ -1,3 +1,4 @@
+-- -- select * from a
 -- with total_price as (
 --   select
 --     id,
@@ -55,60 +56,31 @@
 --     json_value(item, '$.variation_info.fields[1].value') as size,
 --     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
 --     COALESCE(
---       SAFE_DIVIDE(
---         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0) as gia_goc,
+--      safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc,
 
 --     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
 
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.total_discount, 0) as giam_gia_don_hang,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.shipping_fee, 0) as phi_van_chuyen,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.partner_fee, 0) as cuoc_vc,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.prepaid, 0) as tra_truoc,
@@ -136,59 +108,30 @@
 --     json_value(item, '$.variation_info.fields[1].value') as size,
 --     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
 --     COALESCE(
---       SAFE_DIVIDE(
---         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0) as gia_goc,
+--      safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc,
 
 --     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.total_discount, 0) as giam_gia_don_hang,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.shipping_fee, 0) as phi_van_chuyen,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.partner_fee, 0) as cuoc_vc,
 --     COALESCE(
 --       SAFE_DIVIDE(
---         COALESCE(
---       SAFE_DIVIDE(
 --         safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
---         safe_cast(json_value(item, '$.quantity') as int64) + 
---         safe_cast(json_value(item, '$.total_discount') as int64),
---         safe_cast(json_value(item, '$.quantity') as int64)
---       ), 0)*
 --         safe_cast(json_value(item, '$.quantity') as int64),
 --         NULLIF(tt.total_amount, 0)
 --       ) * ord.prepaid, 0) as tra_truoc,
@@ -216,8 +159,7 @@
 --   so_luong,
 --   gia_goc as gia_san_pham_goc,
 --   khuyen_mai_dong_gia as giam_gia_seller,
---   giam_gia_don_hang,
---   0 as giam_gia_san,
+--   giam_gia_don_hang as giam_gia_san,
 --   0 as seller_tro_gia,
 --   0 as san_tro_gia,
 --   (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
@@ -307,8 +249,7 @@
 --   so_luong,
 --   gia_goc as gia_san_pham_goc,
 --   khuyen_mai_dong_gia as giam_gia_seller,
---   giam_gia_don_hang,
---   0 as giam_gia_san,
+--   giam_gia_don_hang as giam_gia_san,
 --   0 as seller_tro_gia,
 --   0 as san_tro_gia,
 --   (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
@@ -382,12 +323,13 @@
 -- )
 
 -- select * from a
+
 with total_price as (
   select
     id,
     brand,
     sum(total_price) as total_amount
-  from {{ref("t1_pancake_pos_order_total")}}
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total`
   group by id,brand
 ),
 vietful_delivery_date as (
@@ -399,7 +341,7 @@ vietful_delivery_date as (
      FROM UNNEST(status_trackings) AS status
      WHERE JSON_VALUE(status, '$.statusCode') = '71'
      LIMIT 1) AS ngay_da_giao
-  from {{ref("t1_vietful_xuatkho_total")}}
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
   where sale_channel_code = 'PANCAKE'
 ),
 vietful_delivery_returned_date as (
@@ -411,7 +353,7 @@ vietful_delivery_returned_date as (
       FROM UNNEST(status_trackings) AS status
       WHERE JSON_VALUE(status, '$.statusCode') = '83'
       LIMIT 1) AS ngay_da_giao
-  FROM {{ref("t1_vietful_xuatkho_total")}}
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
   WHERE sale_channel_code = 'PANCAKE'
     AND EXISTS (
         SELECT 1
@@ -439,8 +381,9 @@ order_line as (
     json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
     COALESCE(
-     safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc,
-
+     safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64) , 0) as gia_goc,
+    COALESCE(
+     safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc_sau_giam_gia_san_pham,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
 
     COALESCE(
@@ -469,10 +412,10 @@ order_line as (
       ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
     vietful.ngay_da_giao
-  from {{ref("t1_pancake_pos_order_total")}} as ord,
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 ),
@@ -491,8 +434,9 @@ order_line_returned as (
     json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
     COALESCE(
-     safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc,
-
+     safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64) , 0) as gia_goc,
+    COALESCE(
+     safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc_sau_giam_gia_san_pham,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
@@ -520,10 +464,10 @@ order_line_returned as (
       ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
     vietful.ngay_da_giao
-  from {{ref("t1_pancake_pos_order_total")}} as ord,
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_returned_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
@@ -540,19 +484,19 @@ select
   color,
   size,
   so_luong,
-  gia_goc as gia_san_pham_goc,
+  gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
   khuyen_mai_dong_gia as giam_gia_seller,
   giam_gia_don_hang as giam_gia_san,
   0 as seller_tro_gia,
   0 as san_tro_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+  (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
+  (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
   0 as tong_phi_san,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+  (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
   case
   when tra_truoc > 0
   then 0
-  else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
+  else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
   end as cod,
   tra_truoc,
   cuoc_vc,
@@ -568,48 +512,45 @@ select
   0 as voucher_from_seller,
   0 as phi_co_dinh,
   'Đã giao hàng' as status,
-  -- CASE
-  --   WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned','pending', 'returning') THEN 'Đã hoàn'
-  --   WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
-  --   WHEN status_name = 'canceled' THEN 'Đã hủy'
-  --   WHEN status_name = 'delivered' THEN 'Đã giao thành công'
-  --   WHEN status_name in ('new', 'packing', 'submitted','waitting', 'packing') THEN 'Đăng đơn'
-  --   ELSE 'Khác'
-  -- END AS status,
-  case
-    when gia_goc = 0
+-------------------------------------------
+case
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
-    else (gia_goc * so_luong)
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
+    -- when gia_goc = 0
+    -- then (gia_goc_sau_giam_gia_san_pham * so_luong)
+    else (gia_goc_sau_giam_gia_san_pham * so_luong)
   end as gia_san_pham_goc_total,
+
    case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
     else COALESCE(gia_ban_daily, 0)
   end as gia_ban_daily,
+
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
     else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)
   end as gia_ban_daily_total,
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
-    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
+    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
   end as tien_chiet_khau_sp,
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
-    else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
+    else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
   end as doanh_thu_ke_toan,
 
   ngay_da_giao,
@@ -630,19 +571,19 @@ select
   color,
   size,
   so_luong,
-  gia_goc as gia_san_pham_goc,
+  gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
   khuyen_mai_dong_gia as giam_gia_seller,
   giam_gia_don_hang as giam_gia_san,
   0 as seller_tro_gia,
   0 as san_tro_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
-  -1* ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen) as tien_khach_hang_thanh_toan,
+  (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
+  -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen) as tien_khach_hang_thanh_toan,
   0 as tong_phi_san,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+  (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
   case
   when tra_truoc > 0
   then 0
-  else -1 * ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)
+  else -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
   end as cod,
   tra_truoc,
   cuoc_vc,
@@ -658,51 +599,62 @@ select
   0 as voucher_from_seller,
   0 as phi_co_dinh,
   'Hoàn tất trả hàng' as status,
-
+--------------------------------------------------------
 
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
-    else (gia_goc * so_luong)
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
+    -- when gia_goc = 0
+    -- then (gia_goc_sau_giam_gia_san_pham * so_luong)
+    else (gia_goc_sau_giam_gia_san_pham * so_luong)
   end as gia_san_pham_goc_total,
+
+
    case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
     else COALESCE(gia_ban_daily, 0)
   end as gia_ban_daily,
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
     else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) * -1
   end as gia_ban_daily_total,
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
-    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
+    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
   end as tien_chiet_khau_sp,
   case
-    when gia_goc = 0
+    when gia_goc_sau_giam_gia_san_pham = 0
     then 0
-    when (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen < 50000
-    then 0
-    else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) * -1
+    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+    -- then 0
+    else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang) * -1
   end as doanh_thu_ke_toan,
+
   ngay_da_giao,
   0 AS phu_phi
 from order_line_returned
 ),
+
 a as (
 select * from order_delivered
 union all
 select * from order_returned where ngay_da_giao is not null
 )
 
-select * from a
+select * from a --  where brand = "LYB" and date(ngay_da_giao) between "2025-07-10" and "2025-07-10"
+
+
+
+
+--select * from `dtm.t2_facebook_order_lines_tot_v2` where brand = "Chaching" and date(ngay_da_giao) between "2025-07-17" and "2025-07-20"
