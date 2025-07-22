@@ -84,22 +84,22 @@ SELECT
         WHEN 50 THEN 'Bồi hoàn'
         WHEN 99 THEN 'Đã xóa'
     ELSE 'Trạng thái khác'
-    END AS trang_thai_giao_hang,
-    
+    END AS order_status,
+        
     ord.operation_result_name AS ket_qua_tac_nghiep_telesale,
 
- -- Giá bán daily
-  COALESCE(bangGia.gia_ban_daily, 0) AS gia_ban_daily,
+-- -- Giá bán daily
+--   COALESCE(bangGia.gia_ban_daily, 0) AS gia_ban_daily,
 
 FROM {{ref("t1_pushsale_order_line_total")}} dt
 LEFT JOIN {{ref("t1_pushsale_order_total")}} ord ON dt.order_number = ord.order_number
-LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bangGia on dt.item_code = bangGia.ma_sku
+-- LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bangGia on dt.item_code = bangGia.ma_sku
 ORDER BY ngay_chot_don asc
 )
 select
   *,
   thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) as tien_khach_hang_thanh_toan,
-    COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
- (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - chiet_khau - giam_gia_san_pham ) AS tien_chiet_khau_sp,
-    (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien  - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))) AS doanh_thu_ke_toan
+--    COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
+--   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - chiet_khau - giam_gia_san_pham ) AS tien_chiet_khau_sp,
+--   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien  - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))) AS doanh_thu_ke_toan
 from orderline
