@@ -25,7 +25,11 @@ SELECT
       COALESCE(ord.delivery_province_name, '')
     ) AS dia_chi,
     ord.delivery_province_name as tinh_giao_hang,
-    ord.customer_type,
+    CASE 
+        WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
+        WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
+        ELSE 'Không xác định'
+    END AS loai_khach_hang,
 
 -- Sản phẩm cụ thể
     dt.item_name AS san_pham,
