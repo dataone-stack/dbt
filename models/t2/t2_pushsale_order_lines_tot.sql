@@ -101,7 +101,7 @@ FROM {{ref("t1_pushsale_order_line_total")}} dt
 LEFT JOIN {{ref("t1_pushsale_order_total")}} ord ON dt.order_number = ord.order_number
 LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bangGia on dt.item_code = bangGia.ma_sku
 LEFT JOIN deliveries de on dt.order_number = de.order_number
-where ord.order_status_id in (31,32,35,50)
+where ord.order_status_id in (31,32)
 ORDER BY ngay_chot_don asc
 )
 select
