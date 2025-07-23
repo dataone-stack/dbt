@@ -96,7 +96,9 @@ SELECT
 
 -- Giá bán daily
   COALESCE(bangGia.gia_ban_daily, 0) AS gia_ban_daily,
-
+  bangGia.brand,
+  'Max Eagle' as company,
+  0 as phu_phi
 FROM {{ref("t1_pushsale_order_line_total")}} dt
 LEFT JOIN {{ref("t1_pushsale_order_total")}} ord ON dt.order_number = ord.order_number
 LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bangGia on dt.item_code = bangGia.ma_sku
