@@ -22,7 +22,7 @@ WITH LineItems AS (
   FROM {{ ref('t1_tiktok_order_tot') }} o
   CROSS JOIN UNNEST(o.line_items) AS li
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
-    ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
+    ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku and o.brand = mapping.brand
   GROUP BY
     o.brand,
     o.order_id,
@@ -250,7 +250,7 @@ SELECT
   (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_tro_gia,
   
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
-  ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
+  (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
   CASE
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
     WHEN Order_Status = 'Shipped' THEN 'Đang giao'
@@ -294,13 +294,15 @@ SELECT
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as tong_phi_san,
-    
+    gia_ban_daily_total,
+
+
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
 LEFT JOIN {{ ref('t2_tiktok_brand_statement_transaction_order_tot') }} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 )
 
-select * from a where order_adjustment_id is not null  -- date(order_statement_time) = "2025-05-31" and brand = "Chaching"
+select * from a where order_adjustment_id is not null  -- date(order_statement_time) = "2025-05-31" and brand = "Chaching"  
 
 
 
