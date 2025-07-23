@@ -54,7 +54,7 @@ SELECT
     brand, 
     company,
     ngay_tien_ve_vi as date_create, 
-     COALESCE(ma_don_code,ma_don_so) as order_id, 
+    COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
     trang_thai_giao_hang as status, 
     tong_tien as total_amount, 
     ngay_data_ve as date_create_order, 

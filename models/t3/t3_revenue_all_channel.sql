@@ -126,18 +126,19 @@ SELECT
     phi_xtra,
     voucher_from_seller,
     phi_co_dinh,
+
     tien_khach_hang_thanh_toan,
     tien_sp_sau_tro_gia,
-    phi_ship,
-    giam_gia_seller,
-    giam_gia_san,
+    gia_dich_vu_vc as phi_ship,
+    giam_gia_san_pham as giam_gia_seller,
+    0 as giam_gia_san,
     seller_tro_gia,
     san_tro_gia,
     tong_phi_san,
 
 
     brand,
-    CAST(ma_don_hang AS string) AS ma_don_hang,
+    COALESCE(ma_don_code,CAST(ma_don_so AS STRING)) AS ma_don_hang,
     ngay_data_ve as ngay_tao_don,
     sku as sku_code,
     san_pham as ten_san_pham,
@@ -151,5 +152,5 @@ SELECT
     doanh_thu_ke_toan,
     'Pushsale' AS channel,
     company,
-    customer_name AS ten_khach_hang
+    ho_ten AS ten_khach_hang,
 FROM {{ ref("t2_pushsale_order_lines_toa") }}
