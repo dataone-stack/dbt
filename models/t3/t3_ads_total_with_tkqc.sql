@@ -95,7 +95,7 @@ SELECT
         WHEN lower(ads.ben_thue) = "build" THEN ads.chiPhiAds
         ELSE 0
     END AS ca_nhan
-FROM ads_ladipageFacebook_total_with_tkqc AS ads  where ads.company = 'One5'
+FROM ads_ladipageFacebook_total_with_tkqc AS ads -- where ads.company = 'One5'
 
 
 ----------------------------------------------------------------

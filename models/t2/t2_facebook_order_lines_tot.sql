@@ -329,7 +329,7 @@ with total_price as (
     id,
     brand,
     sum(total_price) as total_amount
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total`
+  from {{ref("t1_pancake_pos_order_total")}}
   group by id,brand
 ),
 vietful_delivery_date as (

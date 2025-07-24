@@ -1,19 +1,4 @@
-SELECT 
-    brand, 
-    company,
-    CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
-    ma_don_hang as order_id, 
-    status, 
-    tien_khach_hang_thanh_toan as total_amount, 
-    ngay_tao_don as date_create_order, 
-    gia_ban_daily_total,
-    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
-    phu_phi,
-    doanh_thu_ke_toan,
-    'Facebook' AS channel
-FROM {{ ref('t2_facebook_order_lines_tot') }}
-where CAST(ngay_da_giao AS TIMESTAMP) is not null and company = 'Max Eagle'
-UNION ALL
+
 
 SELECT 
     brand, 
@@ -61,7 +46,8 @@ SELECT
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     phu_phi,
     doanh_thu_ke_toan,
-    'Pushsale' AS channel
+    'Facebook' AS channel
 FROM {{ref("t2_pushsale_order_lines_tot")}}
+
 
 
