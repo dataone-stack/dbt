@@ -10,7 +10,7 @@ SELECT
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     phu_phi,
     doanh_thu_ke_toan,
-    'Facebook' AS channel,
+    'Facebook' AS channel
 FROM {{ ref('t2_facebook_order_lines_tot') }}
 where CAST(ngay_da_giao AS TIMESTAMP) is not null and company = 'Max Eagle'
 UNION ALL
@@ -63,4 +63,5 @@ SELECT
     doanh_thu_ke_toan,
     'Pushsale' AS channel
 FROM {{ref("t2_pushsale_order_lines_tot")}}
+
 
