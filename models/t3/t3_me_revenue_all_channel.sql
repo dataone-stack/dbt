@@ -143,7 +143,7 @@ SELECT
     sku as sku_code,
     san_pham as ten_san_pham,
     CAST(so_luong AS INT64) AS so_luong,
-    order_status as status,
+    trang_thai_don_hang as status,
     don_gia as gia_san_pham_goc,
     thanh_tien as gia_san_pham_goc_total,
     gia_ban_daily,
