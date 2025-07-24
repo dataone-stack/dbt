@@ -97,7 +97,7 @@ orderline AS (
             WHEN 99 THEN 'Đã xóa'
             ELSE 'Trạng thái khác'
         END AS trang_thai_don_hang,
-
+        de.delivery_status,
         CASE de.delivery_status
             WHEN -1 THEN 'Hệ thống CRM đã xóa'
             WHEN 0 THEN 'Chờ chốt đơn'
