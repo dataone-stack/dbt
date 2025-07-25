@@ -3,7 +3,10 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     spend,
-    COALESCE(
+    CASE
+        when tk.company = 'Max Eagle'
+        then 0
+        else COALESCE(
         CAST(
             JSON_VALUE(
                 (
@@ -20,7 +23,10 @@ SELECT
             ) AS FLOAT64
         ),
         0
-    ) AS doanhThuAds,
+    )
+
+    end as doanhThuAds,
+
     'Facebook Ads' AS revenue_type,
     account_currency as currency
 FROM {{ ref('t1_facebook_ads_total') }} fb 

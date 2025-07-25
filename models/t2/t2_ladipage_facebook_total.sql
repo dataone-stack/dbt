@@ -31,9 +31,9 @@ select
   b.ma_nhan_vien as id_staff,
   b.ma_quan_ly as ma_quan_ly,
   
-  sum (tien_khach_hang_thanh_toan) as doanhThuLadi
+  sum (total_amount) as doanhThuLadi
 from {{ref("t2_pushsale_order_lines_toa")}} a
 left join {{ref("t1_marketer_facebook_total")}} b on a.marketing_user_name = b.marketer_name and a.company = b.company
 
 where a.trang_thai_don_hang not in ('Chờ chốt đơn','Chờ vận đơn','Hệ thống CRM đã xóa','Hoãn giao hàng') and b.company = 'Max Eagle'
-group by ngay_chot_don,brand,ma_nhan_vien,ma_quan_ly,company
+group by date(a.ngay_chot_don),a.brand,b.ma_nhan_vien,b.ma_quan_ly,b.company

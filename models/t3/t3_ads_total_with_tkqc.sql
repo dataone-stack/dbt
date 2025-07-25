@@ -85,11 +85,8 @@ SELECT
     ads.brand,
     ads.channel,
     ads.chiPhiAds,
-    case
-    when ads.brand = 'Max Eagle' and ads.channel = 'Facebook'
-    then 0
-    else ads.doanhThuAds
-    end as doanhThuAds,
+    ads.doanhThuAds,
+   
     ads.doanhThuLadi,
     ads.revenue_type AS loaiDoanhThu,
     ads.company,

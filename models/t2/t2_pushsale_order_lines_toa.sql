@@ -55,6 +55,8 @@ orderline AS (
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 
             CASE WHEN ord.total_shipping_cost = 0 THEN ord.total_cod ELSE 0 END, 0) AS phi_vc_ho_tro_khach,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_deposit, 0) AS tra_truoc,
+        
+        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_amount, 0) AS total_amount,
 
         -- Ghi chú & notes
         ord.delivery_note AS ghi_chu_giao_hang,
