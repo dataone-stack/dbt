@@ -1,1 +1,3 @@
-select * from google_sheet.marketer
+select marketer_name, ma_nhan_vien , ma_quan_ly, brand,'One5' as company from google_sheet.marketer 
+union all
+select marketing_user_name as marketer_name, id_nhan_vien as ma_nhan_vien , id_quan_ly as ma_quan_ly, Brand as brand,'Max Eagle' as company from google_sheet.me_marketer 

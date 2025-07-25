@@ -15,6 +15,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.dau_the,
+        tkqc.company,
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
         SUM(ads.doanhThuAds) AS doanhThuAds,
@@ -49,7 +50,8 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.phi_thue,
-        tkqc.dau_the
+        tkqc.dau_the,
+        tkqc.company
 ),
 
 ads_ladipageFacebook_total_with_tkqc AS (
@@ -69,6 +71,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
         AND ads.ma_quan_ly = ladi.ma_quan_ly
         AND ads.brand = ladi.brand
         AND ads.channel = ladi.channel
+        and ads.company = ladi.company
 )
 
 SELECT
