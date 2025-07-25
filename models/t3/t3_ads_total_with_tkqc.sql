@@ -15,7 +15,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.dau_the,
-        tkqc.company,
+        
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
         SUM(ads.doanhThuAds) AS doanhThuAds,
@@ -50,8 +50,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.phi_thue,
-        tkqc.dau_the,
-        tkqc.company
+        tkqc.dau_the
 ),
 
 ads_ladipageFacebook_total_with_tkqc AS (
