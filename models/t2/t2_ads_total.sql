@@ -84,6 +84,6 @@ select
   CAST(account_id AS STRING) AS account_id,
   cast (safe_divide(metrics.costMicros,1000000) as float64)  as spend,
   0 as doanhThuAds,
-  'Google Ads'
+  'Google Ads' as revenue_type,
   customer.currencyCode as currency
 from {{ref("t1_google_ads_total")}}
