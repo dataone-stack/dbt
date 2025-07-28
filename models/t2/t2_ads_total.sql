@@ -75,3 +75,15 @@ SELECT
     'Shopee Search' AS revenue_type,
     '-' as currency
 FROM {{ ref('t1_shopee_search_ads_total') }}
+
+
+union all
+
+select 
+  segments_date as date_start,
+  CAST(account_id AS STRING) AS account_id,
+  cast (safe_divide(metrics.costMicros,1000000) as float64)  as spend,
+  0 as doanhThuAds,
+  'Google Ads'
+  customer.currencyCode as currency
+from {{ref("t1_google_ads_total")}}
