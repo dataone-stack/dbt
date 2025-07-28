@@ -144,11 +144,14 @@ orderline AS (
         0 AS phi_co_dinh,
         0 AS seller_tro_gia,
         0 AS san_tro_gia,
-        0 AS tong_phi_san
+        0 AS tong_phi_san,
+
+        mar.manager
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON dt.item_code = bangGia.ma_sku
     LEFT JOIN deliveries de on dt.order_number = de.order_number
+    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name
     ORDER BY ngay_chot_don ASC
 )
 SELECT
