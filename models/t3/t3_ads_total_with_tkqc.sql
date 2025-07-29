@@ -15,6 +15,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.dau_the,
+        
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
         SUM(ads.doanhThuAds) AS doanhThuAds,
@@ -69,6 +70,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
         AND ads.ma_quan_ly = ladi.ma_quan_ly
         AND ads.brand = ladi.brand
         AND ads.channel = ladi.channel
+        and ads.company = ladi.company
 )
 
 SELECT
@@ -84,6 +86,7 @@ SELECT
     ads.channel,
     ads.chiPhiAds,
     ads.doanhThuAds,
+   
     ads.doanhThuLadi,
     ads.revenue_type AS loaiDoanhThu,
     ads.company,
@@ -95,7 +98,7 @@ SELECT
         WHEN lower(ads.ben_thue) = "build" THEN ads.chiPhiAds
         ELSE 0
     END AS ca_nhan
-FROM ads_ladipageFacebook_total_with_tkqc AS ads  where ads.company = 'One5'
+FROM ads_ladipageFacebook_total_with_tkqc AS ads -- where ads.company = 'One5'
 
 
 ----------------------------------------------------------------

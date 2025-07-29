@@ -1,0 +1,1 @@
+select * from `crypto-arcade-453509-i8.team_maxeagle_google_ads_dwh.me_google_ads`

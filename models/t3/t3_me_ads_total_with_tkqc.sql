@@ -83,7 +83,12 @@ SELECT
     ads.brand,
     ads.channel,
     ads.chiPhiAds,
-    ads.doanhThuAds,
+    CASE
+        when ads.channel = 'Facebook'
+        then 0
+        else ads.doanhThuAds
+    end as doanhThuAds,
+    
     ads.doanhThuLadi,
     ads.revenue_type AS loaiDoanhThu,
     ads.company,

@@ -1,4 +1,14 @@
-WITH orderline AS (
+WITH  deliveries as (
+    SELECT t1.*
+FROM {{ref("t1_pushsale_deliveries_total")}} t1
+WHERE t1.update_date = (
+    SELECT MAX(t2.update_date)
+    FROM `pushsale_maxeagle_dwh.maxeagle_pushsale_deliveries` t2
+    WHERE t2.order_number = t1.order_number
+)
+),
+
+orderline AS (
     SELECT 
         -- Mã đơn hàng và mã giao vận
         COALESCE(ord.order_code, NULL) AS ma_don_code,
@@ -45,6 +55,8 @@ WITH orderline AS (
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 
             CASE WHEN ord.total_shipping_cost = 0 THEN ord.total_cod ELSE 0 END, 0) AS phi_vc_ho_tro_khach,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_deposit, 0) AS tra_truoc,
+        
+        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_amount, 0) AS total_amount,
 
         -- Ghi chú & notes
         ord.delivery_note AS ghi_chu_giao_hang,
@@ -86,7 +98,32 @@ WITH orderline AS (
             WHEN 50 THEN 'Bồi hoàn'
             WHEN 99 THEN 'Đã xóa'
             ELSE 'Trạng thái khác'
-        END AS order_status,
+        END AS trang_thai_don_hang,
+        de.delivery_status,
+        CASE de.delivery_status
+            WHEN -1 THEN 'Hệ thống CRM đã xóa'
+            WHEN 0 THEN 'Chờ chốt đơn'
+            WHEN 1 THEN 'Chờ vận đơn'
+            WHEN 2 THEN 'Giao ngay'
+            WHEN 3 THEN 'Hoãn giao hàng'
+            WHEN 4 THEN 'Hủy vận đơn'
+            WHEN 5 THEN 'Hủy đăng đơn'
+            WHEN 20 THEN 'Đã đăng'
+            WHEN 21 THEN 'Đã lấy hàng'
+            WHEN 22 THEN 'Không lấy được hàng'
+            WHEN 23 THEN 'Đang lấy hàng'
+            WHEN 30 THEN 'Đang giao hàng'
+            WHEN 31 THEN 'Đã giao hàng'
+            WHEN 32 THEN 'Đã thanh toán'
+            WHEN 33 THEN 'Không giao được'
+            WHEN 34 THEN 'Yêu cầu giao lại'
+            WHEN 35 THEN 'Giao hàng 1 phần'
+            WHEN 40 THEN 'Đang hoàn'
+            WHEN 41 THEN 'Đã hoàn'
+            WHEN 50 THEN 'Bồi hoàn'
+            WHEN 99 THEN 'Đã xóa'
+            ELSE 'Trạng thái khác'
+        END AS trang_thai_giao_hang,
 
         ord.operation_result_name AS ket_qua_tac_nghiep_telesale,
         bangGia.brand,
@@ -102,15 +139,19 @@ WITH orderline AS (
         0 AS phi_hoa_hong_quang_cao_cua_hang,
         0 AS phi_dich_vu,
         0 AS phi_xtra,
-        
+
         0 AS voucher_from_seller,
         0 AS phi_co_dinh,
         0 AS seller_tro_gia,
         0 AS san_tro_gia,
-        0 AS tong_phi_san
+        0 AS tong_phi_san,
+
+        mar.manager
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON dt.item_code = bangGia.ma_sku
+    LEFT JOIN deliveries de on dt.order_number = de.order_number
+    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name
     ORDER BY ngay_chot_don ASC
 )
 SELECT
