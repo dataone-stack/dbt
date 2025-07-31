@@ -56,7 +56,7 @@ orderline AS (
             CASE WHEN ord.total_shipping_cost = 0 THEN ord.total_cod ELSE 0 END, 0) AS phi_vc_ho_tro_khach,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_deposit, 0) AS tra_truoc,
         
-        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_amount, 0) AS total_amount,
+        --ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_amount, 0) AS total_amount,
 
         -- Ghi chú & notes
         ord.delivery_note AS ghi_chu_giao_hang,
@@ -160,8 +160,9 @@ SELECT
     thanh_tien - COALESCE(giam_gia_san_pham, 0) AS tien_sp_sau_tro_gia,
     COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) AS tien_chiet_khau_sp,
-    (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (
-        (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - 
-        (thanh_tien - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
-    ) AS doanh_thu_ke_toan
+    --(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - 
+    --(
+        --(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - 
+    (thanh_tien - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
+     AS doanh_thu_ke_toan
 FROM orderline
