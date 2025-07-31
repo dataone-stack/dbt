@@ -67,21 +67,28 @@ orderline AS (
 
         -- Nhân sự liên quan
         --ord.marketing_display_name AS marketing_name,
-
-        --viết tạm để ra MVP, fill những đơn không có marketing name bằng tên của manager, dựa theo mã đơn code
         CASE 
-            WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 
-                CASE 
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'KHANH'  THEN 'Phan Văn Khanh'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'SONN'   THEN 'Võ Công Sơn'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'DANH'   THEN 'Nguyễn Thành Danh'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'PHUONG' THEN 'Phạm Thục Phương'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'QUAN' THEN 'Nguyễn Khắc Quân'
-                    ELSE NULL
-                END
+            WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
             ELSE ord.marketing_display_name
         END AS marketing_name,
 
+        --viết tạm để ra MVP, fill những đơn không có marketing name bằng tên của manager, dựa theo mã đơn code
+        CASE 
+            WHEN (mar.manager IS NULL OR mar.manager = '') THEN 
+                CASE 
+                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'KHANH'  THEN 'PHAN VĂN KHANH'
+                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'SONN'   THEN 'VÕ CÔNG SƠN'
+                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'DANH'   THEN 'NGUYỄN THÀNH DANH'
+                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'PHUONG' THEN 'PHẠM THỤC PHƯƠNG'
+                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'QUAN' THEN 'NGUYỄN KHẮC QUÂN'
+                    ELSE NULL
+                END
+            ELSE mar.manager
+        END AS manager,
+
+        
+        --mar.manager
+        
         ord.marketing_user_name AS marketing_user_name,
         ord.sale_display_name AS sale_name,
         ord.sale_user_name AS sale_user_name,
@@ -161,7 +168,7 @@ orderline AS (
         0 AS san_tro_gia,
         0 AS tong_phi_san,
 
-        mar.manager
+        
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON dt.item_code = bangGia.ma_sku
