@@ -64,8 +64,8 @@ ads_ladipageFacebook_total_with_tkqc AS (
         ads.idtkqc,
         ads.nametkqc,
         COALESCE(ads.ma_nhan_vien, ladi.id_staff) as ma_nhan_vien,
-        ads.staff,
-        ads.manager,
+        COALESCE(ads.staff, ladi.staff_name) as staff,
+        COALESCE(ads.manager, ladi.manager_name) as manager,
         COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly) as ma_quan_ly,
         COALESCE(ads.brand, ladi.brand) as brand,
         COALESCE(ads.channel, ladi.channel) as channel,
@@ -88,7 +88,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
             ) = 1 THEN COALESCE(ladi.doanhThuLadi, 0)
             ELSE 0
         END AS doanhThuLadi,
-        COALESCE(ladi.doanhThuLadi, 0) as doanh_thu_ladi_new
+        -- COALESCE(ladi.doanhThuLadi, 0) as doanh_thu_ladi_new
     FROM {{ ref('t2_ladipage_facebook_total') }} AS ladi
     FULL OUTER JOIN ads_total_with_tkqc AS ads
         ON ladi.date_insert = ads.date_start
@@ -113,7 +113,7 @@ SELECT
     ads.chiPhiAds,
     ads.doanhThuAds,
     ads.doanhThuLadi,
-    ads.doanh_thu_ladi_new,
+    -- ads.doanh_thu_ladi_new,
     ads.revenue_type AS loaiDoanhThu,
     ads.company,
     ads.ben_thue,
