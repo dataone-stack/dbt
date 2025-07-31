@@ -1,7 +1,3 @@
-
-
-
-
 WITH ads_total_with_tkqc AS (
     SELECT
         ads.date_start,
@@ -52,6 +48,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.phi_thue,
+        
         tkqc.dau_the
 ),
 -- select * from ads_total_with_tkqc where date(date_start) between "2025-07-01" and "2025-07-28"
@@ -114,7 +111,11 @@ SELECT
     ads.doanhThuAds,
     ads.doanhThuLadi,
     -- ads.doanh_thu_ladi_new,
-    ads.revenue_type AS loaiDoanhThu,
+    CASE 
+        WHEN ads.revenue_type = "" THEN "Organic"
+        WHEN ads.revenue_type is null THEN "Organic"
+        ELSE ads.revenue_type
+    END AS loaiDoanhThu,
     ads.company,
     ads.ben_thue,
     ads.phi_thue,
