@@ -73,23 +73,27 @@ orderline AS (
         END AS marketing_name,
 
         --viết tạm để ra MVP, fill những đơn không có marketing name bằng tên của manager, dựa theo mã đơn code
-        CASE 
-            WHEN (mar.manager IS NULL OR mar.manager = '') THEN 
-                CASE 
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'KHANH'  THEN 'PHAN VĂN KHANH'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'SONN'   THEN 'VÕ CÔNG SƠN'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'DANH'   THEN 'NGUYỄN THÀNH DANH'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'PHUONG' THEN 'PHẠM THỤC PHƯƠNG'
-                    WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'QUAN' THEN 'NGUYỄN KHẮC QUÂN'
-                    ELSE NULL
-                END
-            ELSE mar.manager
-        END AS manager,
+        -- CASE 
+        --     WHEN (mar.manager IS NULL OR mar.manager = '') THEN 
+        --         CASE 
+        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'KHANH'  THEN 'PHAN VĂN KHANH'
+        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'SONN'   THEN 'VÕ CÔNG SƠN'
+        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'DANH'   THEN 'NGUYỄN THÀNH DANH'
+        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'PHUONG' THEN 'PHẠM THỤC PHƯƠNG'
+        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'QUAN' THEN 'NGUYỄN KHẮC QUÂN'
+        --             ELSE NULL
+        --         END
+        --     ELSE mar.manager
+        -- END AS manager,
+        COALESCE(mar.manager, mar2.manager) AS manager,
 
         
         --mar.manager
         
-        ord.marketing_user_name AS marketing_user_name,
+        -- case
+        --     when ord.marketing_user_name = ""
+        --      AS marketing_user_name,
+        ord.marketing_user_name,
         ord.sale_display_name AS sale_name,
         ord.sale_user_name AS sale_user_name,
 
@@ -173,7 +177,13 @@ orderline AS (
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON dt.item_code = bangGia.ma_sku
     LEFT JOIN deliveries de on dt.order_number = de.order_number
-    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name
+    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name-- and ord.team = mar.team_account
+    LEFT JOIN (
+        SELECT DISTINCT team_account, 
+                FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager
+        FROM {{ref("t1_marketer_facebook_total")}}
+    ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
+
     ORDER BY ngay_chot_don ASC
 )
 SELECT

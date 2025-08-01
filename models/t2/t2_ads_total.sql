@@ -2,6 +2,7 @@
 SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    ad_id,
     spend,
     CASE
         when tk.company = 'Max Eagle'
@@ -37,6 +38,7 @@ UNION ALL
 SELECT
     DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    ad_id,
     spend,
     CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     'TikTok Ads' AS revenue_type,
@@ -48,6 +50,7 @@ UNION ALL
 SELECT
     DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    0 as ad_id,
     cost AS spend,
     gross_revenue AS doanhThuAds,
     'TikTok GMVmax' AS revenue_type,
@@ -59,6 +62,7 @@ UNION ALL
 SELECT
     DATE(date) AS date_start,
     CAST(idtkqc AS STRING) AS account_id,
+    0 as ad_id,
     expense AS spend,
     broad_gmv AS doanhThuAds,
     'Shopee Ads' AS revenue_type,
@@ -70,6 +74,7 @@ UNION ALL
 SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    0 as ad_id,
     chiphi AS spend,
     doanhThuAds AS doanhThuAds,
     'Shopee Search' AS revenue_type,
@@ -82,6 +87,7 @@ union all
 select 
   segments_date as date_start,
   CAST(account_id AS STRING) AS account_id,
+  0 as ad_id,
   cast (safe_divide(metrics.costMicros,1000000) as float64)  as spend,
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
