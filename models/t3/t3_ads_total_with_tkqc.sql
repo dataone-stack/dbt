@@ -114,7 +114,7 @@ SELECT
     ads.ma_quan_ly,
     ads.manager,
     ads.brand,
-    ads.channel,
+    ads.channel, 
     ads.chiPhiAds,
     ads.doanhThuAds,
     ads.doanhThuLadi,
