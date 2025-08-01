@@ -24,6 +24,7 @@ WITH ads_total_with_tkqc AS (
             date_start,
             revenue_type,
             account_id,
+            ad_id,
             currency,
             spend,
             doanhThuAds
@@ -126,7 +127,7 @@ SELECT
         ELSE 0
     END AS ca_nhan
 FROM ads_ladipageFacebook_total_with_tkqc AS ads 
-
+-------------
 
 -- WITH ads_total_with_tkqc AS (
 --     SELECT
