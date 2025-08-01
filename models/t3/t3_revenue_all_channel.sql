@@ -148,7 +148,7 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
-    'Push Sale' AS channel,
+    channel,
     company,
     ho_ten AS ten_khach_hang,
 FROM {{ ref("t2_pushsale_order_lines_toa") }}
