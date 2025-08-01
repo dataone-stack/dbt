@@ -27,7 +27,7 @@ union all
 
 select
   date(a.ngay_chot_don) as date_insert,
-  'Facebook' AS channel,
+  a.channel,
   b.company,
   a.brand,
   b.marketing_name as staff_name,

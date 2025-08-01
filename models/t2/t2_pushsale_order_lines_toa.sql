@@ -132,6 +132,7 @@ orderline AS (
         ord.operation_result_name AS ket_qua_tac_nghiep_telesale,
         bangGia.brand,
         'Max Eagle' AS company,
+        source.channel AS channel,
 
         -- Giá bán daily
         COALESCE(bangGia.gia_ban_daily, 0) AS gia_ban_daily,
@@ -160,7 +161,8 @@ orderline AS (
         SELECT DISTINCT team_account, 
                 FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager
         FROM {{ref("t1_marketer_facebook_total")}}
-    ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
+    ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account,
+    LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON ord.source_name = source.source_name
 
     ORDER BY ngay_chot_don ASC
 )
