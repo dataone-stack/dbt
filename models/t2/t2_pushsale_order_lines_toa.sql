@@ -46,18 +46,16 @@ orderline AS (
         dt.item_name AS san_pham,
         dt.quantity AS so_luong,
         dt.price AS don_gia,
-        SAFE_MULTIPLY(dt.quantity, dt.price) AS thanh_tien,
+        dt.total_price AS thanh_tien,
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
-        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
+        ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
         dt.discount AS giam_gia_san_pham,
-        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
-        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 
+        ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
+        ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * 
             CASE WHEN ord.total_shipping_cost = 0 THEN ord.total_cod ELSE 0 END, 0) AS phi_vc_ho_tro_khach,
-        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_deposit, 0) AS tra_truoc,
+        ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_deposit, 0) AS tra_truoc,
         
-        --ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_amount, 0) AS total_amount,
-
         -- Ghi chú & notes
         ord.delivery_note AS ghi_chu_giao_hang,
         ord.time_take_care AS ngay_cap_nhat_care_don,
@@ -66,33 +64,13 @@ orderline AS (
         '-' AS ngay_muon_nhan_hang,
 
         -- Nhân sự liên quan
-        --ord.marketing_display_name AS marketing_name,
         CASE 
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
             ELSE ord.marketing_display_name
         END AS marketing_name,
 
-        --viết tạm để ra MVP, fill những đơn không có marketing name bằng tên của manager, dựa theo mã đơn code
-        -- CASE 
-        --     WHEN (mar.manager IS NULL OR mar.manager = '') THEN 
-        --         CASE 
-        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'KHANH'  THEN 'PHAN VĂN KHANH'
-        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'SONN'   THEN 'VÕ CÔNG SƠN'
-        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'DANH'   THEN 'NGUYỄN THÀNH DANH'
-        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'PHUONG' THEN 'PHẠM THỤC PHƯƠNG'
-        --             WHEN REGEXP_EXTRACT(ord.order_code, r'^([A-Za-z]+)') = 'QUAN' THEN 'NGUYỄN KHẮC QUÂN'
-        --             ELSE NULL
-        --         END
-        --     ELSE mar.manager
-        -- END AS manager,
         COALESCE(mar.manager, mar2.manager) AS manager,
 
-        
-        --mar.manager
-        
-        -- case
-        --     when ord.marketing_user_name = ""
-        --      AS marketing_user_name,
         ord.marketing_user_name,
         ord.sale_display_name AS sale_name,
         ord.sale_user_name AS sale_user_name,
@@ -154,6 +132,11 @@ orderline AS (
         ord.operation_result_name AS ket_qua_tac_nghiep_telesale,
         bangGia.brand,
         'Max Eagle' AS company,
+        CASE 
+            WHEN (source.channel IS NULL OR source.channel = '') THEN 'Facebook'
+            ELSE source.channel
+        END AS channel,
+        -- source.channel AS channel,
 
         -- Giá bán daily
         COALESCE(bangGia.gia_ban_daily, 0) AS gia_ban_daily,
@@ -183,6 +166,7 @@ orderline AS (
                 FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
+    LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
 
     ORDER BY ngay_chot_don ASC
 )
@@ -192,9 +176,7 @@ SELECT
     thanh_tien - COALESCE(giam_gia_san_pham, 0) AS tien_sp_sau_tro_gia,
     COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) AS tien_chiet_khau_sp,
-    --(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - 
-    --(
-        --(COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - 
-    (thanh_tien - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
+ 
+    (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
      AS doanh_thu_ke_toan
 FROM orderline

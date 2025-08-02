@@ -1,0 +1,1 @@
+select * from crypto-arcade-453509-i8.google_sheet.me_pushsale_source_name

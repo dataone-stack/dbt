@@ -27,7 +27,7 @@ union all
 
 select
   date(a.ngay_chot_don) as date_insert,
-  'Facebook' AS channel,
+  a.channel,
   b.company,
   a.brand,
   b.marketing_name as staff_name,
@@ -39,4 +39,4 @@ from {{ref("t2_pushsale_order_lines_toa")}} a
 left join {{ref("t1_marketer_facebook_total")}} b on a.marketing_user_name = b.marketer_name and a.company = b.company
 
 where a.trang_thai_don_hang not in ('Chờ chốt đơn','Hệ thống CRM đã xóa', 'Đã xóa' ) and b.company = 'Max Eagle'
-group by date(a.ngay_chot_don),a.brand,b.ma_nhan_vien,b.ma_quan_ly,b.company, b.marketing_name, b.manager
+group by date(a.ngay_chot_don),a.brand,b.ma_nhan_vien,b.ma_quan_ly,b.company, b.marketing_name, b.manager, a.channel
