@@ -21,6 +21,7 @@ GROUP BY
   od.brand,
   company,
   mar.manager,
+  mar.ma_nhan_vien,
   mar.marketing_name
 
 union all

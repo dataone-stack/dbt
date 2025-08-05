@@ -178,6 +178,8 @@ SELECT
     vi.refund_sn as ma_yeu_cau_hoan_tien,
     '' as ma_san_pham,
     '' as ten_san_pham,
+    
+    DATETIME_ADD(ord.ship_by_date, INTERVAL 7 HOUR) as ngay_ship,
     DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR) as ngay_dat_hang,
     DATETIME_ADD(vi.create_time, INTERVAL 7 HOUR) as ngay_tien_ve_vi,
     "Ví ShopeePay" as phuong_thuc_thanh_toan,

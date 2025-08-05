@@ -336,12 +336,13 @@ vietful_delivery_date as (
   select 
     brand,
     partner_or_code,
+    shipped_date,
     ref_code,
     (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
      FROM UNNEST(status_trackings) AS status
      WHERE JSON_VALUE(status, '$.statusCode') = '71'
      LIMIT 1) AS ngay_da_giao
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
+  from {{ref("t1_vietful_xuatkho_total")}}
   where sale_channel_code = 'PANCAKE'
 ),
 vietful_delivery_returned_date as (
@@ -349,11 +350,12 @@ vietful_delivery_returned_date as (
       brand,
       partner_or_code,
       ref_code,
+      shipped_date,
       (SELECT JSON_VALUE(status, '$.statusDate')
       FROM UNNEST(status_trackings) AS status
       WHERE JSON_VALUE(status, '$.statusCode') = '83'
       LIMIT 1) AS ngay_da_giao
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
+  FROM {{ref("t1_vietful_xuatkho_total")}}
   WHERE sale_channel_code = 'PANCAKE'
     AND EXISTS (
         SELECT 1
@@ -411,11 +413,12 @@ order_line as (
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
-    vietful.ngay_da_giao
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
+    vietful.ngay_da_giao,
+    vietful.shipped_date as ngay_ship,
+  from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 ),
@@ -463,11 +466,12 @@ order_line_returned as (
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
-    vietful.ngay_da_giao
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
+    vietful.ngay_da_giao,
+    vietful.shipped_date as ngay_ship,
+  from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_returned_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
@@ -475,6 +479,7 @@ order_line_returned as (
 select
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
+  DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
   brand,
   company,
   status_name,
@@ -562,6 +567,7 @@ from order_line
 select
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
+  DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
   brand,
   company,
   status_name,

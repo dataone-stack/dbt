@@ -12,7 +12,7 @@ select * ,'6' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_dail
 union all
 select * ,'12' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_keo_ngam_trang_da`
 union all
-select * ,'15' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20store`
+select * ,'15' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_beana_beauty_vietnam`
 union all
 select * ,'16' as idtkqc from `be20vietnamstore_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_viet_nam_store`
 union all
