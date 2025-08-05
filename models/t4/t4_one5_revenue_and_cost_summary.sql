@@ -24,7 +24,7 @@ with
             + sum(coalesce(doanhthuladi, 0)) as doanh_thu_trinh_ads,
             sum(coalesce(doanhthuads, 0)) as doanhthuads,
             sum(coalesce(doanhthuladi, 0)) as doanhthuladi,
-        from {{ ref("t3_ads_total_with_tkqc") }}
+        from {{ ref("t3_one5_ads_total_with_tkqc") }}
         where chiphiads is not null
         group by date_start, brand, channel, company
     ),
@@ -67,7 +67,7 @@ with
                 when sum(total_amount) < 60000 then 0 else sum(tien_chiet_khau_sp_tot)
             end as tien_chiet_khau_sp_tot,
             sum(phu_phi) as phu_phi
-        from {{ ref("t3_revenue_all_channel_tot") }}
+        from {{ ref("t3_one5_revenue_all_channel_tot") }}
         where date_create is not null
         group by date_start, brand, channel, company, date_create_order
     )

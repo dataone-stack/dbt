@@ -13,7 +13,7 @@ SELECT
     doanh_thu_ke_toan,
     'Facebook' AS channel,
 FROM {{ ref('t2_facebook_order_lines_tot') }}
-where CAST(ngay_da_giao AS TIMESTAMP) is not null
+where CAST(ngay_da_giao AS TIMESTAMP) is not null and company = 'One5'
 
 UNION ALL
 
@@ -32,7 +32,7 @@ SELECT
     phu_phi,
     doanh_thu_shopee as doanh_thu_ke_toan,
     'Shopee' AS channel
-FROM {{ ref('t2_shopee_order_tot') }}  
+FROM {{ ref('t2_shopee_order_tot') }}  where company = 'One5'
 
 UNION ALL
 
@@ -51,23 +51,6 @@ SELECT
     phu_phi,
     total_revenue as doanh_thu_ke_toan,
     'Tiktok' AS channel
-FROM {{ ref('t2_tiktok_order_tot') }}
+FROM {{ ref('t2_tiktok_order_tot') }}  where company = 'One5'
 
-union all
-
-SELECT 
-    brand, 
-    company,
-    cast (null as date) as ngay_ship,
-    ngay_tien_ve_vi as date_create, 
-    COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
-    trang_thai_don_hang as status, 
-    tien_khach_hang_thanh_toan as total_amount, 
-    ngay_data_ve as date_create_order, 
-    gia_ban_daily_total,
-    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
-    phu_phi,
-    doanh_thu_ke_toan,
-    'Facebook' AS channel
-FROM {{ref("t2_pushsale_order_lines_tot")}}
 

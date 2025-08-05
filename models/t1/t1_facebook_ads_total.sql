@@ -18,17 +18,17 @@
 -- union all
 -- select * from `ancung_facebook_ads_dwh.facebook_ads_ads_insights_default`
 -- union all
-select * from `team_a_tien_facebook_ads_dwh.facebook_ads_ads_insights_default`
+select *, 'One5' as company from `team_a_tien_facebook_ads_dwh.facebook_ads_ads_insights_default`
 union all
-select * from `team_maxeagle_facebook_ads_2_dwh.facebook_ads_ads_insights_default` 
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_2_dwh.facebook_ads_ads_insights_default` 
 union all
-select * from `team_maxeagle_facebook_ads_1_dwh.facebook_ads_ads_insights_default`
+select * ,'Max Eagle' as company from `team_maxeagle_facebook_ads_1_dwh.facebook_ads_ads_insights_default`
 union all
-select * from `team_maxeagle_facebook_ads_3_dwh.facebook_ads_ads_insights_default`
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_3_dwh.facebook_ads_ads_insights_default`
 union all
-select * from `team_maxeagle_facebook_ads_4_dwh.facebook_ads_ads_insights_default`
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_4_dwh.facebook_ads_ads_insights_default`
 union all
-select * from `team_maxeagle_facebook_ads_5_dwh.facebook_ads_ads_insights_default`
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_5_dwh.facebook_ads_ads_insights_default`
 
 
 

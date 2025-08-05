@@ -1,11 +1,17 @@
-WITH  deliveries as (
-    SELECT t1.*
-FROM {{ref("t1_pushsale_deliveries_total")}} t1
-WHERE t1.update_date = (
-    SELECT MAX(t2.update_date)
-    FROM `pushsale_maxeagle_dwh.maxeagle_pushsale_deliveries` t2
-    WHERE t2.order_number = t1.order_number
-)
+WITH  latest_delivery AS (
+  SELECT *
+  FROM {{ref("t1_pushsale_deliveries_total")}}
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY order_number ORDER BY update_date DESC, id DESC) = 1
+),
+
+deliveries as (
+SELECT t1.*
+FROM  {{ref("t1_pushsale_deliveries_total")}} t1
+JOIN latest_delivery t2
+  ON t1.order_number = t2.order_number
+  AND t1.update_date = t2.update_date
+  AND t1.id = t2.id
+
 ),
 
 orderline AS (
