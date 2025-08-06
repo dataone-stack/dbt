@@ -51,7 +51,7 @@ with
             brand,
             company,
             format_timestamp('%Y-%m-%d', timestamp(date_create)) as date_start,
-            date_create_order,
+            
 
             case
                 when sum(total_amount) < 60000 then 0 else sum(total_amount)
@@ -69,7 +69,7 @@ with
             sum(phu_phi) as phu_phi
         from {{ ref("t3_one5_revenue_all_channel_tot") }}
         where date_create is not null
-        group by date_start, brand, channel, company, date_create_order
+        group by date_start, brand, channel, company
     )
 select
     coalesce(a.date_start, cast(r_tot.date_start as date)) as date_start,

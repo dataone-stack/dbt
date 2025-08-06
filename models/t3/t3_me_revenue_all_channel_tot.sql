@@ -1,8 +1,9 @@
 
-
 SELECT 
     brand, 
     company,
+    cast(ngay_ship as date) as ngay_ship,
+
     ngay_tien_ve_vi as date_create, 
     order_id,
     "" as status, 
@@ -13,13 +14,15 @@ SELECT
     phu_phi,
     doanh_thu_shopee as doanh_thu_ke_toan,
     'Shopee' AS channel
-FROM {{ ref('t2_shopee_order_tot') }} where company = 'Max Eagle'
+FROM {{ ref('t2_shopee_order_tot') }}  where company = 'Max Eagle'
 
 UNION ALL
 
 SELECT 
     brand, 
     company,
+
+    CAST(Shipped_Time as date) as ngay_ship,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
     CAST(ma_don_hang AS STRING) as order_id, 
     Order_Status as status, 
@@ -30,13 +33,16 @@ SELECT
     phu_phi,
     total_revenue as doanh_thu_ke_toan,
     'Tiktok' AS channel
-FROM {{ ref('t2_tiktok_order_tot') }} where company = 'Max Eagle'
+FROM {{ ref('t2_tiktok_order_tot') }}  where company = 'Max Eagle'
+
+
 
 union all
 
 SELECT 
     brand, 
     company,
+    cast(null as date) as ngay_ship,
     ngay_tien_ve_vi as date_create, 
     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
     trang_thai_don_hang as status, 
