@@ -50,7 +50,7 @@ with
         select distinct
             brand,
             company,
-            format_timestamp('%Y-%m-%d', timestamp(date_create)) as date_start,
+            date(format_timestamp('%Y-%m-%d', timestamp(date_create))) as date_start,
             
 
             case
@@ -69,7 +69,7 @@ with
             sum(phu_phi) as phu_phi
         from {{ ref("t3_revenue_all_channel_tot") }}
         where date_create is not null
-        group by date_start, brand, channel, company
+        group by date(format_timestamp('%Y-%m-%d', timestamp(date_create))), brand, channel, company
     )
 select
     coalesce(a.date_start, cast(r_tot.date_start as date)) as date_start,
