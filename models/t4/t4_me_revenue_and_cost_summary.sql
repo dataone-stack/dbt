@@ -41,6 +41,7 @@ revenue_tot AS (
     brand, 
     company,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
+    
 -- Loại bỏ các đơn hàng có tổng_amount nhỏ hơn 60,000
     case
         when SUM(total_amount) < 60000
