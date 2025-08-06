@@ -11,7 +11,6 @@ JOIN latest_delivery t2
   ON t1.order_number = t2.order_number
   AND t1.update_date = t2.update_date
   AND t1.id = t2.id
-
 ),
 
 orderline AS (
@@ -52,7 +51,12 @@ orderline AS (
         dt.item_name AS san_pham,
         dt.quantity AS so_luong,
         dt.price AS don_gia,
-        dt.total_price AS thanh_tien,
+        CASE
+        when  COALESCE ( curr.rate,0) = 0
+        then dt.total_price
+        else curr.rate * dt.total_price
+        end as thanh_tien,
+       
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
@@ -161,6 +165,7 @@ orderline AS (
         0 AS san_tro_gia,
         0 AS tong_phi_san,
 
+        COALESCE ( curr.rate,0) as ty_gia
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
@@ -173,7 +178,7 @@ orderline AS (
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
     LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
-
+    LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr on ord.currency = curr.currency_code
     ORDER BY ngay_chot_don ASC
 )
 SELECT

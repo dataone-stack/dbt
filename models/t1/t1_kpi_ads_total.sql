@@ -1,0 +1,1 @@
+select * from `google_sheet.one5_kpi_ads`
