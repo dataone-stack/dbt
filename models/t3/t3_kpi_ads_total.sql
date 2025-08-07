@@ -11,6 +11,7 @@ with ads_total as (
     sum(chiPhiAds) as chiPhiAds,
     round(safe_divide(sum(chiPhiAds), sum(doanhThuads + doanhThuLadi)) , 4)  as cir
   from {{ref("t3_ads_total_with_tkqc")}}
+  where company = 'One5'
   group by  
     brand,
     channel,
