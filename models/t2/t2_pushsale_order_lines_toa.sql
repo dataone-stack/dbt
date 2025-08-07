@@ -40,22 +40,39 @@ orderline AS (
             COALESCE(ord.delivery_province_name, '')
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
-        CASE 
-            WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
-            WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
-            ELSE 'Không xác định'
+
+        CASE
+            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
+            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách hàng cũ'
+            ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
+
+        -- CASE 
+        --     WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
+        --     WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
+        --     ELSE 'Không xác định'
+        -- END AS loai_khach_hang,
 
         -- Sản phẩm cụ thể
         dt.item_code AS sku,
         dt.item_name AS san_pham,
         dt.quantity AS so_luong,
-        dt.price AS don_gia,
+        -- dt.price AS don_gia,
+
         CASE
-        when  COALESCE ( curr.rate,0) = 0
-        then dt.total_price
-        else curr.rate * dt.total_price
-        end as thanh_tien,
+            WHEN dt.price < 1000 THEN 26060 * dt.price
+            ELSE dt.price
+        END AS don_gia,
+        
+        CASE
+            WHEN dt.total_price < 1000 THEN 26060 * dt.total_price
+            ELSE dt.total_price
+        END AS thanh_tien,
+        -- CASE
+        -- when  COALESCE ( curr.rate,0) = 0
+        -- then dt.total_price
+        -- else curr.rate * dt.total_price
+        -- end as thanh_tien,
        
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
