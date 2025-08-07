@@ -60,20 +60,14 @@ orderline AS (
         -- dt.price AS don_gia,
 
         CASE
-            WHEN dt.price < 1000 THEN 26060 * dt.price
+            WHEN dt.price < 1000 THEN curr.rate * dt.price
             ELSE dt.price
         END AS don_gia,
-        
+
         CASE
-            WHEN dt.total_price < 1000 THEN 26060 * dt.total_price
+            WHEN dt.total_price < 1000 THEN curr.rate * dt.total_price
             ELSE dt.total_price
         END AS thanh_tien,
-        -- CASE
-        -- when  COALESCE ( curr.rate,0) = 0
-        -- then dt.total_price
-        -- else curr.rate * dt.total_price
-        -- end as thanh_tien,
-       
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
@@ -182,7 +176,7 @@ orderline AS (
         0 AS san_tro_gia,
         0 AS tong_phi_san,
 
-        COALESCE ( curr.rate,0) as ty_gia
+        COALESCE ( curr.rate,0) as ty_gia_usd
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
@@ -195,7 +189,7 @@ orderline AS (
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
     LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
-    LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr on ord.currency = curr.currency_code
+    LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
     ORDER BY ngay_chot_don ASC
 )
 SELECT
