@@ -2,7 +2,7 @@ WITH return_detail AS (
   SELECT 
     order_id,
     return_id,
-    brand,
+    b.brand,
     update_time,
     i.variation_sku, 
     i.item_price * i.amount AS so_tien_hoan_tra,
@@ -11,33 +11,113 @@ WITH return_detail AS (
     return_seller_due_date
   FROM {{ ref('t1_shopee_shop_order_retrurn_total') }},
   UNNEST(item) AS i
-),
+  left join `dtm.t1_bang_gia_san_pham` as b on trim(i.variation_sku) = trim(b.ma_sku)
+) 
+,
 
 total_amount AS (
   SELECT 
-    order_id,
-    brand,
+    a.order_id,
+    b.brand,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
-  FROM {{ ref('t1_shopee_shop_fee_total') }},   
+  FROM {{ ref('t1_shopee_shop_fee_total') }} a,   
   UNNEST(items) AS i
-  GROUP BY order_id,brand
-),
+  left join `dtm.t1_bang_gia_san_pham` as b on 
+  trim(CASE 
+        WHEN i.model_sku = ""
+        THEN i.item_sku
+    ELSE i.model_sku
+  END) = trim (b.ma_sku)
+  GROUP BY a.order_id,b.brand
+)
 
-sale_detail AS (
+
+,shopee_fee_total as (
+  select 
+    detail.order_id,
+    detail.buyer_user_name ,
+    mapping.brand,
+    detail.company,
+    detail.buyer_paid_shipping_fee ,
+    detail.commission_fee ,
+    detail.service_fee ,
+    detail.seller_transaction_fee ,
+    detail.actual_shipping_fee ,
+    detail.shopee_shipping_rebate ,
+    detail.credit_card_promotion ,
+    detail.order_ams_commission_fee ,
+    detail.voucher_from_seller ,
+    mapping.gia_ban_daily,
+    i.model_sku,
+    i.item_sku,
+     CASE 
+        WHEN i.model_sku = ""
+        THEN i.item_sku
+    ELSE i.model_sku
+  END as sku,
+    i.item_name,
+    i.model_name,
+    i.quantity_purchased,
+    i.original_price,
+
+    i.seller_discount,
+    i.discounted_price,
+     i.discount_from_voucher_shopee ,
+    i.discount_from_coin,
+    i.discount_from_voucher_seller,
+    i.shopee_discount
+  FROM {{ ref('t1_shopee_shop_fee_total') }} AS detail,
+  UNNEST(items) AS i
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
+  trim(CASE 
+        WHEN i.model_sku = ""
+        THEN i.item_sku
+    ELSE i.model_sku
+  END) = trim(mapping.ma_sku)
+)
+
+,shopee_order_detail as (
+  select 
+    ord.order_id,
+    ord.create_time,
+    ord.order_status,
+    ord.payment_method ,
+    ord.shipping_carrier ,
+    ord.ship_by_date ,
+    CASE 
+        WHEN i.model_sku = ""
+        THEN i.item_sku
+    ELSE i.model_sku
+  END as sku,
+    ord.buyer_cancel_reason,
+    mapping.brand,
+    ord.days_to_ship
+  from `dtm.t1_shopee_shop_order_detail_total` as ord, 
+  unnest (item_list) as i
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
+  trim(CASE 
+        WHEN i.model_sku = ""
+        THEN i.item_sku
+    ELSE i.model_sku
+  END) = trim(mapping.ma_sku)
+)
+
+,sale_detail AS (
   SELECT 
     detail.order_id,
     detail.buyer_user_name AS ten_nguoi_mua,
     detail.brand,
     detail.company,
-    i.model_sku,
-    i.item_sku,
-    i.item_name,
-    i.model_name,
-    i.quantity_purchased,
-    (i.original_price/i.quantity_purchased) AS gia_san_pham_goc,
-    seller_discount AS nguoi_ban_tro_gia,
-    i.discounted_price,
-    (i.original_price/i.quantity_purchased) as test_doanh_thu,
+    detail.model_sku,
+    detail.item_sku,
+    detail.sku,
+    detail.item_name,
+    detail.model_name,
+    detail.quantity_purchased,
+    safe_divide(detail.original_price,detail.quantity_purchased) AS gia_san_pham_goc,
+    detail.seller_discount AS nguoi_ban_tro_gia,
+    detail.discounted_price,
+    --(i.original_price/i.quantity_purchased) as test_doanh_thu,
     rd.update_time AS ngay_return,
     vi.create_time AS ngay_tien_ve_vi,
     CASE
@@ -45,40 +125,32 @@ sale_detail AS (
       THEN rd.so_tien_hoan_tra
       ELSE 0
     END AS so_tien_hoan_tra,
-    (i.discounted_price) AS tong_tien_san_pham,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee AS phi_van_chuyen_nguoi_mua_tra,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.commission_fee AS phi_co_dinh,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.service_fee AS phi_dich_vu,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.seller_transaction_fee  AS phi_thanh_toan,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.actual_shipping_fee  AS phi_van_chuyen_thuc_te,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate  AS phi_van_chuyen_tro_gia_tu_shopee,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.credit_card_promotion  AS khuyen_mai_cho_the_tin_dung,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.order_ams_commission_fee  AS phi_hoa_hong_tiep_thi_lien_ket,
-    (i.discounted_price / ta.total_tong_tien_san_pham) * detail.voucher_from_seller  AS voucher_from_seller,
-    i.discount_from_voucher_shopee AS shopee_voucher,
-    i.discount_from_coin,
-    i.discount_from_voucher_seller,
+    (detail.discounted_price) AS tong_tien_san_pham,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.buyer_paid_shipping_fee AS phi_van_chuyen_nguoi_mua_tra,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.commission_fee AS phi_co_dinh,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.service_fee AS phi_dich_vu,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.seller_transaction_fee  AS phi_thanh_toan,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.actual_shipping_fee  AS phi_van_chuyen_thuc_te,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.shopee_shipping_rebate  AS phi_van_chuyen_tro_gia_tu_shopee,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.credit_card_promotion  AS khuyen_mai_cho_the_tin_dung,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.order_ams_commission_fee  AS phi_hoa_hong_tiep_thi_lien_ket,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.voucher_from_seller  AS voucher_from_seller,
+    detail.discount_from_voucher_shopee AS shopee_voucher,
+    detail.discount_from_coin,
+    detail.discount_from_voucher_seller,
     rd.status as return_status,
-    mapping.gia_ban_daily,
+    detail.gia_ban_daily,
     case
         when rd.return_id is not null
         then 0
-        else i.shopee_discount
+        else detail.shopee_discount
     end AS tro_gia_tu_shopee
-  FROM {{ ref('t1_shopee_shop_fee_total') }} AS detail,
-  UNNEST(items) AS i
-  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
-  CASE 
-        WHEN i.model_sku = ""
-        THEN i.item_sku
-    ELSE i.model_sku
-  END = mapping.ma_sku and detail.brand = mapping.brand
-  LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND i.model_sku = rd.variation_sku and detail.brand = rd.brand and rd.status = 'ACCEPTED'
+  FROM shopee_fee_total AS detail
+  LEFT JOIN return_detail rd ON detail.order_id = rd.order_id AND trim(detail.sku) = trim(rd.variation_sku) and detail.brand = rd.brand and rd.status = 'ACCEPTED'
   LEFT JOIN total_amount ta ON ta.order_id = detail.order_id and ta.brand = detail.brand
-  LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi ON detail.order_id = vi.order_id and detail.brand = vi.brand and vi.transaction_tab_type = 'wallet_order_income'
-),
-
-sale_order_detail AS (
+  LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi ON detail.order_id = vi.order_id and vi.transaction_tab_type = 'wallet_order_income'
+)
+, sale_order_detail AS (
   SELECT
     sd.*,
     DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR) AS create_time,
@@ -87,15 +159,15 @@ sale_order_detail AS (
     ord.shipping_carrier AS ten_don_vi_van_chuyen,
     ord.ship_by_date AS ngay_ship,
     ord.buyer_cancel_reason AS ly_do_huy_don,
-    COALESCE(((sd.discounted_price) / ta.total_tong_tien_san_pham) * ord.days_to_ship, 0) AS day_to_ship
+    safe_divide ( sd.discounted_price , ta.total_tong_tien_san_pham) * ord.days_to_ship  AS day_to_ship
   FROM sale_detail AS sd
-  LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} AS ord
-    ON sd.order_id = ord.order_id and sd.brand = ord.brand
+  LEFT JOIN shopee_order_detail AS ord
+    ON sd.order_id = ord.order_id and sd.brand = ord.brand and trim(sd.sku) = trim(ord.sku)
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
 
 SELECT
-  test_doanh_thu,
+  --test_doanh_thu,
   create_time as ngay_tao_don,
   ten_nguoi_mua,
   brand,
@@ -184,5 +256,4 @@ END AS status,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
 
 COALESCE(voucher_from_seller, 0) - COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0) - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) - COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0) + COALESCE(phi_dich_vu, 0) + COALESCE(phi_thanh_toan, 0) + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as tong_phi_san
-FROM sale_order_detail
---- tổng tiền sản phẩm là lấy (gia_san_pham_goc- chiết khấu người bán) * quantity 
+FROM sale_order_detail 

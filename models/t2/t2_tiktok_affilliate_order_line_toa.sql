@@ -4,6 +4,7 @@ with aff_info as (
         json_value(skus[OFFSET(0)], '$.content_id') as content_id,
         json_value(skus[OFFSET(0)], '$.content_type') as content_type,
         json_value(skus[OFFSET(0)], '$.creator_username') as creator_username,
+        json_value(skus[OFFSET(0)], '$.campaign_id') as campaign_id,
         case
           when json_value(skus[OFFSET(0)], '$.shop_ads_commission_rate') is not null 
                and json_value(skus[OFFSET(0)], '$.commission_rate') is null
@@ -73,7 +74,9 @@ SELECT
   info.type as ads_org,
   aff.brand,
   aff.shop,
-  aff.company
+  aff.company,
+
+  vid.title
 FROM {{ref("t1_tiktok_affiliate_order_total")}} AS aff
 LEFT JOIN {{ref("t1_tiktok_order_tot")}} AS ord ON aff.order_id = ord.order_id 
   AND aff.brand = ord.brand 
@@ -83,11 +86,13 @@ LEFT JOIN aff_info as info ON aff.order_id = info.order_id
   AND aff.brand = info.brand 
   AND aff.shop = info.shop 
   AND aff.company = info.company
+LEFT JOIN {{ref("t1_tiktok_shop_video_info")}} vid on info.content_id = cast(vid.video_id as string)
 CROSS JOIN UNNEST(COALESCE(ord.line_items, [])) AS item 
 )
 
 select 
   *,
   thanh_toan_hoa_hong_tieu_chuan_uoc_tinh + thanh_toan_hoa_hong_quang_cao_cua_hang_uoc_tinh as hoa_hong_uoc_tinh,
+  gia * so_luong as doanh_thu
   
 from order_line
