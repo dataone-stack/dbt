@@ -10,7 +10,7 @@ SELECT
     ma_don_hang,
     sum(voucher_from_seller) as voucher_from_seller,
     sum(day_to_ship) as day_to_ship,
-    sum(test_doanh_thu) as test_doanh_thu,
+    --sum(test_doanh_thu) as test_doanh_thu,
     SUM(tong_tien_san_pham) AS tong_tien_san_pham,
     SUM(so_tien_hoan_tra) AS so_tien_hoan_tra,
     sum(phi_ship) as phi_van_chuyen_nguoi_mua_tra,

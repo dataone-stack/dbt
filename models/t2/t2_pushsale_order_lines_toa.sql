@@ -40,23 +40,34 @@ orderline AS (
             COALESCE(ord.delivery_province_name, '')
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
-        CASE 
-            WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
-            WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
-            ELSE 'Không xác định'
+
+        CASE
+            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
+            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách hàng cũ'
+            ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
+
+        -- CASE 
+        --     WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
+        --     WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
+        --     ELSE 'Không xác định'
+        -- END AS loai_khach_hang,
 
         -- Sản phẩm cụ thể
         dt.item_code AS sku,
         dt.item_name AS san_pham,
         dt.quantity AS so_luong,
-        dt.price AS don_gia,
+        -- dt.price AS don_gia,
+
         CASE
-        when  COALESCE ( curr.rate,0) = 0
-        then dt.total_price
-        else curr.rate * dt.total_price
-        end as thanh_tien,
-       
+            WHEN dt.price < 1000 THEN curr.rate * dt.price
+            ELSE dt.price
+        END AS don_gia,
+
+        CASE
+            WHEN dt.total_price < 1000 THEN curr.rate * dt.total_price
+            ELSE dt.total_price
+        END AS thanh_tien,
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
@@ -165,7 +176,7 @@ orderline AS (
         0 AS san_tro_gia,
         0 AS tong_phi_san,
 
-        COALESCE ( curr.rate,0) as ty_gia
+        COALESCE ( curr.rate,0) as ty_gia_usd
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
@@ -178,7 +189,7 @@ orderline AS (
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
     LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
-    LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr on ord.currency = curr.currency_code
+    LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
     ORDER BY ngay_chot_don ASC
 )
 SELECT
