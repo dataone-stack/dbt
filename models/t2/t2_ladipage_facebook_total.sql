@@ -3,6 +3,7 @@ SELECT
   'Facebook' AS channel,
   mar.company,
   od.brand,
+  '' as loai_khach_hang,
   mar.marketing_name as staff_name,
   mar.ma_nhan_vien AS id_staff,
   mar.manager as manager_name,
@@ -22,7 +23,8 @@ GROUP BY
   company,
   mar.manager,
   mar.ma_nhan_vien,
-  mar.marketing_name
+  mar.marketing_name,
+  loai_khach_hang
 
 union all
 
@@ -31,6 +33,7 @@ select
   a.channel,
   'Max Eagle' as company,
   a.brand,
+  a.loai_khach_hang,
   b.marketing_name as staff_name,
   b.ma_nhan_vien as id_staff,
   b.manager as manager_name,
@@ -39,5 +42,5 @@ select
 from {{ref("t2_pushsale_order_lines_toa")}} a
 left join {{ref("t1_marketer_facebook_total")}} b on a.marketing_user_name = b.marketer_name and a.company = b.company
 
-where a.trang_thai_don_hang not in ('Chờ chốt đơn','Hệ thống CRM đã xóa', 'Đã xóa', 'Hủy vận đơn' )
-group by date(a.ngay_chot_don),a.brand,b.ma_nhan_vien,b.ma_quan_ly,b.company, b.marketing_name, b.manager, a.channel
+where a.trang_thai_don_hang not in ('Chờ chốt đơn','Hệ thống CRM đã xóa', 'Đã xóa' )
+group by date(a.ngay_chot_don),a.brand,b.ma_nhan_vien,b.ma_quan_ly,b.company, b.marketing_name, b.manager, a.channel, a.loai_khach_hang

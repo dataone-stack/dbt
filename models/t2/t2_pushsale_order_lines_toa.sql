@@ -70,7 +70,46 @@ orderline AS (
         END AS thanh_tien,
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
-        ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
+        -- ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
+        
+        ROUND(CASE
+        WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008') THEN -- Nhóm quà tặng
+        --Phân bổ chiết khấu cho từng sản phẩm quà tặng dựa trên tỷ lệ giá trị của sản phẩm đó trong nhóm quà tặng
+            SAFE_DIVIDE(
+            dt.total_price, 
+            NULLIF(
+                -- tổng giá trị của tất cả sản phẩm quà tặng trong đơn
+                SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number), 0)
+            )
+            * LEAST(
+                ord.total_discount,-- tổng chiết khấu của đơn
+                -- Nếu tổng chiết khấu > tổng giá nhóm quà tặng thì giới hạn bằng tổng giá nhóm quà tặng
+                SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number))
+
+        -- Nhóm thường
+        ELSE
+        --Phân bổ phần chiết khấu còn lại cho từng sản phẩm thường theo tỷ lệ giá trị sản phẩm trong nhóm thường
+            SAFE_DIVIDE(
+            dt.total_price,
+            NULLIF(
+                SUM(CASE WHEN dt.item_code NOT IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number), 0)
+            )
+            --nếu phần chiết khấu còn lại < 0 thì lấy 0
+            * GREATEST(
+                ord.total_discount
+                - SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number),
+                0
+            )
+        END,0) AS chiet_khau,
+
         dt.discount AS giam_gia_san_pham,
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * 
@@ -180,7 +219,7 @@ orderline AS (
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
-    LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON dt.item_code = bangGia.ma_sku
+    LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON trim(dt.item_code) = trim(bangGia.ma_sku)
     LEFT JOIN deliveries de on dt.order_number = de.order_number
     LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name-- and ord.team = mar.team_account
     LEFT JOIN (
