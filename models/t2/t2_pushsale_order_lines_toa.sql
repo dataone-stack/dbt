@@ -128,7 +128,9 @@ orderline AS (
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
             ELSE ord.marketing_display_name
         END AS marketing_name,
-
+    
+        mar.ma_nhan_vien,
+        COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly) AS ma_quan_ly,
         COALESCE(mar.manager, mar2.manager) AS manager,
 
         ord.marketing_user_name,
@@ -224,7 +226,8 @@ orderline AS (
     LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name-- and ord.team = mar.team_account
     LEFT JOIN (
         SELECT DISTINCT team_account, 
-                FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager
+                FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager,
+                FIRST_VALUE(ma_quan_ly) OVER (PARTITION BY team_account ORDER BY marketer_name) as ma_quan_ly
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
     LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)

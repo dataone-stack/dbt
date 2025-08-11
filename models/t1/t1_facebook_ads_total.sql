@@ -29,6 +29,14 @@ union all
 select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_4_dwh.facebook_ads_ads_insights_default`
 union all
 select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_5_dwh.facebook_ads_ads_insights_default`
+union all
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_6_dwh.facebook_ads_ads_insights_default`
+union all
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_7_dwh.facebook_ads_ads_insights_default`
+union all
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_8_dwh.facebook_ads_ads_insights_default`
+union all
+select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_9_dwh.facebook_ads_ads_insights_default`
 
 
 
