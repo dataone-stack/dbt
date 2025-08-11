@@ -3,10 +3,14 @@ WITH ads_total_with_tkqc AS (
         ads.date_start,
         ads.revenue_type,
         -- Ưu tiên thông tin từ campaign mapping, fallback về tkqc
-        COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien) as ma_nhan_vien,
-        COALESCE(campaign_team.staff, tkqc.staff) as staff,
-        COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly) as ma_quan_ly,
-        COALESCE(campaign_team.manager, tkqc.manager) as manager,
+        -- COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien) as ma_nhan_vien,
+        -- COALESCE(campaign_team.staff, tkqc.staff) as staff,
+        -- COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly) as ma_quan_ly,
+        -- COALESCE(campaign_team.manager, tkqc.manager) as manager,
+        tkqc.ma_nhan_vien as ma_nhan_vien,
+         tkqc.staff as staff,
+         tkqc.ma_quan_ly as ma_quan_ly,
+         tkqc.manager as manager,
         tkqc.idtkqc,
         tkqc.nametkqc,
         tkqc.brand,
@@ -33,9 +37,9 @@ WITH ads_total_with_tkqc AS (
         FROM {{ ref('t2_ads_total') }}
     ) AS ads
     
-    -- LEFT JOIN với campaign team mapping trước
-    LEFT JOIN {{ ref('t1_ads_campaign_by_team') }} AS campaign_team
-        ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
+    -- -- LEFT JOIN với campaign team mapping trước
+    -- LEFT JOIN {{ ref('t1_ads_campaign_by_team') }} AS campaign_team
+    --     ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
     
     -- RIGHT JOIN với tkqc như cũ
     RIGHT JOIN{{ ref('t2_tkqc_total') }} AS tkqc
@@ -47,10 +51,14 @@ WITH ads_total_with_tkqc AS (
         ads.date_start,
         tkqc.idtkqc,
         tkqc.nametkqc,
-        COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien),
-        COALESCE(campaign_team.staff, tkqc.staff),
-        COALESCE(campaign_team.manager, tkqc.manager),
-        COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
+        -- COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien),
+        -- COALESCE(campaign_team.staff, tkqc.staff),
+        -- COALESCE(campaign_team.manager, tkqc.manager),
+        -- COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
+        tkqc.ma_nhan_vien,
+        tkqc.ma_quan_ly,
+         tkqc.staff,
+         tkqc.manager,
         tkqc.brand,
         tkqc.channel,
         ads.revenue_type,
@@ -61,7 +69,13 @@ WITH ads_total_with_tkqc AS (
         tkqc.dau_the
 ),
 
-ads_ladipageFacebook_total_with_tkqc AS (
+ladipage_total as (
+  select company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,sum(doanhThuLadi) as doanhThuLadi
+  from {{ref("t2_ladipage_facebook_total")}}
+  group by date_insert,brand,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
+)
+
+,ads_ladipageFacebook_total_with_tkqc AS (
     SELECT
         COALESCE(ads.date_start, ladi.date_insert) as date_start,
         ladi.date_insert,
@@ -94,7 +108,7 @@ ads_ladipageFacebook_total_with_tkqc AS (
             ELSE 0
         END AS doanhThuLadi,
         -- COALESCE(ladi.doanhThuLadi, 0) as doanh_thu_ladi_new
-    FROM {{ ref('t2_ladipage_facebook_total') }} AS ladi
+    FROM ladipage_total AS ladi
     FULL OUTER JOIN ads_total_with_tkqc AS ads
         ON ladi.date_insert = ads.date_start
         AND ads.ma_nhan_vien = ladi.id_staff
@@ -133,8 +147,7 @@ SELECT
         WHEN lower(ads.ben_thue) = "build" THEN ads.chiPhiAds
         ELSE 0
     END AS ca_nhan
-FROM ads_ladipageFacebook_total_with_tkqc AS ads 
-where ads.company = 'Max Eagle'
+FROM ads_ladipageFacebook_total_with_tkqc AS ads where company = 'Max Eagle'
 
 -- ----------------
 -- WITH ads_total_with_tkqc AS (
