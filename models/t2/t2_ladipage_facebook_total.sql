@@ -27,20 +27,18 @@ GROUP BY
   loai_khach_hang
 
 union all
-
-select
+  select
   date(a.ngay_chot_don) as date_insert,
   a.channel,
   'Max Eagle' as company,
   a.brand,
   a.loai_khach_hang,
-  b.marketing_name as staff_name,
-  b.ma_nhan_vien as id_staff,
-  b.manager as manager_name,
-  b.ma_quan_ly as ma_quan_ly,
+  a.marketing_name as staff_name,
+  a.ma_nhan_vien as id_staff,
+  a.manager as manager_name,
+  a.ma_quan_ly as ma_quan_ly,
   sum (a.thanh_tien - a.chiet_khau) as doanhThuLadi
-from {{ref("t2_pushsale_order_lines_toa")}} a
-left join {{ref("t1_marketer_facebook_total")}} b on a.marketing_user_name = b.marketer_name and a.company = b.company
+from {{ ref('t2_pushsale_order_lines_toa') }} a
 
 where a.trang_thai_don_hang not in ('Chờ chốt đơn','Hệ thống CRM đã xóa', 'Đã xóa' )
-group by date(a.ngay_chot_don),a.brand,b.ma_nhan_vien,b.ma_quan_ly,b.company, b.marketing_name, b.manager, a.channel, a.loai_khach_hang
+group by date(a.ngay_chot_don),a.brand,a.ma_nhan_vien,a.ma_quan_ly,a.company, a.marketing_name, a.manager, a.channel, a.loai_khach_hang
