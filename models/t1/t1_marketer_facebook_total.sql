@@ -1,3 +1,40 @@
-select manager, staff as marketing_name,marketer_name, ma_nhan_vien , ma_quan_ly, brand,'One5' as company, "" as team_account from google_sheet.marketer 
-union all
-select ten_quan_ly as manager, marketing_display_name as marketing_name,  marketing_user_name as marketer_name, id_nhan_vien as ma_nhan_vien , id_quan_ly as ma_quan_ly,  Brand as brand,'Max Eagle' as company, team_account from google_sheet.me_marketer  
+SELECT 
+    manager, 
+    staff AS marketing_name,
+    marketer_name, 
+    ma_nhan_vien, 
+    ma_quan_ly, 
+    brand,
+    'One5' AS company, 
+    "" AS team_account
+FROM google_sheet.marketer
+WHERE TRIM(CONCAT(
+    COALESCE(manager, ''), 
+    COALESCE(staff, ''), 
+    COALESCE(marketer_name, ''),
+    COALESCE(ma_nhan_vien, ''), 
+    COALESCE(ma_quan_ly, ''), 
+    COALESCE(brand, '')
+)) <> ''
+
+UNION ALL
+
+SELECT 
+    ten_quan_ly AS manager, 
+    marketing_display_name AS marketing_name,  
+    marketing_user_name AS marketer_name, 
+    id_nhan_vien AS ma_nhan_vien, 
+    id_quan_ly AS ma_quan_ly,  
+    Brand AS brand,
+    'Max Eagle' AS company, 
+    team_account
+FROM google_sheet.me_marketer
+WHERE TRIM(CONCAT(
+    COALESCE(ten_quan_ly, ''), 
+    COALESCE(marketing_display_name, ''),
+    COALESCE(marketing_user_name, ''), 
+    COALESCE(id_nhan_vien, ''),
+    COALESCE(id_quan_ly, ''), 
+    COALESCE(Brand, ''), 
+    COALESCE(team_account, '')
+)) <> ''
