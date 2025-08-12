@@ -1,14 +1,14 @@
-select *,'1' as idtkqc from `chaching_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_brand`
+select *,'chaching_brand' as idtkqc from `chaching_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_brand`
 union all
-select *,'2' as idtkqc from `lyb_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_official`
+select *,'lyb_official' as idtkqc from `lyb_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_official`
 union all
-select *,'3' as idtkqc from `ume_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ume_viet_nam`
+select *,'ume_viet_nam' as idtkqc from `ume_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ume_viet_nam`
 union all
-select *,'4' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
+select *,'ancung_brand' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
 union all
-select * ,'5' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
+select * ,'lyb_cosmetic' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
 union all
-select * ,'6' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
+select * ,'chaching_beauty' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
 union all
 select * ,'be20_keo_ngam_trang_da' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_keo_ngam_trang_da`
 union all

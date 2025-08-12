@@ -13,7 +13,7 @@ WITH ads_total AS (
     ROUND(SAFE_DIVIDE(SUM(chiPhiAds), SUM(doanhThuads + doanhThuLadi)), 4) AS cir,
 
   FROM {{ref('t3_ads_total_with_tkqc')}}
-  WHERE company = 'One5'
+  WHERE company = 'Max Eagle'
   GROUP BY
     brand,
     channel,
