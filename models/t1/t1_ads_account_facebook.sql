@@ -1,0 +1,1 @@
+select * from crypto-arcade-453509-i8.team_a_tien_facebook_ads_dwh.facebook_ads_ad_account
