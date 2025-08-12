@@ -126,7 +126,7 @@ orderline AS (
         -- Nhân sự liên quan
         CASE 
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
-            ELSE ord.marketing_display_name
+            ELSE mar.marketing_name
         END AS marketing_name,
     
         mar.ma_nhan_vien,
