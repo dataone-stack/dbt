@@ -79,7 +79,7 @@ SELECT
     max(invoice.amount) as amount
 FROM 
     ads_total_with_tkqc ads
-    LEFT JOIN {{ ref('t1_financial_invoice_ads') }} AS invoice 
+    Full Outer JOIN {{ ref('t1_financial_invoice_ads') }} AS invoice 
     ON ads.idtkqc  = invoice.account_ads_id and EXTRACT(MONTH from ads.date_start) = invoice.month
     GROUP BY
        EXTRACT(YEAR FROM ads.date_start), 
