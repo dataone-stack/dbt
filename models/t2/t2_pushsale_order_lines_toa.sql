@@ -221,16 +221,16 @@ orderline AS (
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
-    LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON trim(dt.item_code) = trim(bangGia.ma_sku)
+    LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON TRIM(dt.item_code) = TRIM(bangGia.ma_sku)
     LEFT JOIN deliveries de on dt.order_number = de.order_number
-    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name-- and ord.team = mar.team_account
+    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on TRIM(ord.marketing_user_name) = TRIM(mar.marketer_name)-- and ord.team = mar.team_account
     LEFT JOIN (
         SELECT DISTINCT team_account, 
                 FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager,
                 FIRST_VALUE(ma_quan_ly) OVER (PARTITION BY team_account ORDER BY marketer_name) as ma_quan_ly
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
-    LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
+    LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = TRIM(source.source_name) and  TRIM(ord.marketing_user_name) =  TRIM(source.marketing_user_name)
     LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
     ORDER BY ngay_chot_don ASC
 )
@@ -242,5 +242,16 @@ SELECT
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) AS tien_chiet_khau_sp,
  
     (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
-     AS doanh_thu_ke_toan
+     AS doanh_thu_ke_toan,
+    CASE 
+        WHEN loai_khach_hang = 'Khách hàng mới' 
+        THEN thanh_tien - chiet_khau
+        ELSE 0
+    END AS doanh_so_moi,
+
+    CASE 
+        WHEN loai_khach_hang = 'Khách hàng cũ' 
+        THEN thanh_tien - chiet_khau
+        ELSE 0
+    END AS doanh_so_cu
 FROM orderline
