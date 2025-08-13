@@ -22,8 +22,8 @@ UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '-' AS tax_code, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop
 FROM `chaching_beauty_shopee_shop_dwh.shopee_payment_escrow_detail_chaching_beauty`
 UNION ALL
-SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop
-FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_be20_keo_ngam_dau_tam_trang_da`
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_trang_da' AS shop
+FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_be20_keo_ngam_trang_da`
 UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_belle_beauty_vietnam`

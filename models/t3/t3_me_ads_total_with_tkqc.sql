@@ -67,12 +67,16 @@ WITH ads_total_with_tkqc AS (
         tkqc.ben_thue,
         tkqc.phi_thue,
         tkqc.dau_the
-),
+)
 
-ladipage_total as (
-  select company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,sum(doanhThuLadi) as doanhThuLadi
-  from {{ref("t2_ladipage_facebook_total")}}
-  group by date_insert,brand,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
+, ladipage_total AS (
+    SELECT 
+        company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,
+        SUM(doanhThuLadi)    AS doanhThuLadi,
+        SUM(doanh_so_moi)    AS doanh_so_moi,
+        SUM(doanh_so_cu)     AS doanh_so_cu
+    FROM {{ ref('t2_ladipage_facebook_total') }}
+    GROUP BY  date_insert,brand,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
 )
 
 ,ads_ladipageFacebook_total_with_tkqc AS (
@@ -96,6 +100,7 @@ ladipage_total as (
         COALESCE(ads.chiPhiAds, 0) as chiPhiAds,
         COALESCE(ads.doanhThuAds, 0) as doanhThuAds,
         COALESCE(ads.chi_phi_agency, 0) as chi_phi_agency,
+
         CASE
         WHEN ROW_NUMBER() OVER (
               PARTITION BY 
@@ -113,6 +118,43 @@ ladipage_total as (
           ) = 1 THEN COALESCE(ladi.doanhThuLadi, 0)
           ELSE 0
         END AS doanhThuLadi 
+
+                CASE
+        WHEN ROW_NUMBER() OVER (
+              PARTITION BY 
+                  DATE(COALESCE(ads.date_start, ladi.date_insert)),
+                  COALESCE(ads.ma_nhan_vien, ladi.id_staff), 
+                   COALESCE(ads.staff, ladi.staff_name), 
+                  COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly), 
+                  COALESCE(ads.brand, ladi.brand),
+                  COALESCE(ads.channel, ladi.channel),
+                  COALESCE(ads.company, ladi.company)
+              ORDER BY 
+                  CASE WHEN ladi.doanh_so_moi IS NOT NULL THEN 1 ELSE 2 END,
+                  ladi.date_insert,
+                  ads.date_start
+          ) = 1 THEN COALESCE(ladi.doanh_so_moi, 0)
+          ELSE 0
+        END AS doanh_so_moi,
+
+        CASE
+        WHEN ROW_NUMBER() OVER (
+              PARTITION BY 
+                  DATE(COALESCE(ads.date_start, ladi.date_insert)),
+                  COALESCE(ads.ma_nhan_vien, ladi.id_staff), 
+                   COALESCE(ads.staff, ladi.staff_name), 
+                  COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly), 
+                  COALESCE(ads.brand, ladi.brand),
+                  COALESCE(ads.channel, ladi.channel),
+                  COALESCE(ads.company, ladi.company)
+              ORDER BY 
+                  CASE WHEN ladi.doanh_so_cu IS NOT NULL THEN 1 ELSE 2 END,
+                  ladi.date_insert,
+                  ads.date_start
+          ) = 1 THEN COALESCE(ladi.doanh_so_cu, 0)
+          ELSE 0
+        END AS doanh_so_cu
+
     FROM ladipage_total AS ladi
     FULL OUTER JOIN ads_total_with_tkqc AS ads
         ON ladi.date_insert = ads.date_start
@@ -137,7 +179,9 @@ SELECT
     ads.chiPhiAds,
     ads.doanhThuAds,
     ads.doanhThuLadi,
-    -- ads.doanh_thu_ladi_new,
+    ads.doanh_so_moi,
+    ads.doanh_so_cu,
+
     CASE 
         WHEN ads.revenue_type = "" THEN "Organic"
         WHEN ads.revenue_type is null THEN "Organic"

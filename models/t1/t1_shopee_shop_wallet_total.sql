@@ -19,8 +19,8 @@ UNION ALL
 SELECT *, 'One5' as company, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop
 FROM `chaching_beauty_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching_beauty`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_dau_tam_trang_da' AS shop
-FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_dau_tam_trang_da`
+SELECT *, 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_keo_ngam_trang_da' AS shop
+FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_trang_da`
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_beauty_vietnam`

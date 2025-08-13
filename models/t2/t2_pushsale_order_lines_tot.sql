@@ -42,21 +42,68 @@ orderline AS (
             COALESCE(ord.delivery_province_name, '')
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
-        CASE 
-            WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
-            WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
-            ELSE 'Không xác định'
+        CASE
+            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
+            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách hàng cũ'
+            ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
 
         -- Sản phẩm cụ thể
         dt.item_code AS sku,
         dt.item_name AS san_pham,
         dt.quantity AS so_luong,
-        dt.price AS don_gia,
-        dt.total_price AS thanh_tien,
+        
+        CASE
+            WHEN dt.price < 1000 THEN curr.rate * dt.price
+            ELSE dt.price
+        END AS don_gia,
+
+        CASE
+            WHEN dt.total_price < 1000 THEN curr.rate * dt.total_price
+            ELSE dt.total_price
+        END AS thanh_tien,
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
-        ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau,
+        {# ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau, #}
+
+        ROUND(CASE
+        WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008') THEN -- Nhóm quà tặng
+        --Phân bổ chiết khấu cho từng sản phẩm quà tặng dựa trên tỷ lệ giá trị của sản phẩm đó trong nhóm quà tặng
+            SAFE_DIVIDE(
+            dt.total_price, 
+            NULLIF(
+                -- tổng giá trị của tất cả sản phẩm quà tặng trong đơn
+                SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number), 0)
+            )
+            * LEAST(
+                ord.total_discount,-- tổng chiết khấu của đơn
+                -- Nếu tổng chiết khấu > tổng giá nhóm quà tặng thì giới hạn bằng tổng giá nhóm quà tặng
+                SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number))
+
+        -- Nhóm thường
+        ELSE
+        --Phân bổ phần chiết khấu còn lại cho từng sản phẩm thường theo tỷ lệ giá trị sản phẩm trong nhóm thường
+            SAFE_DIVIDE(
+            dt.total_price,
+            NULLIF(
+                SUM(CASE WHEN dt.item_code NOT IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number), 0)
+            )
+            --nếu phần chiết khấu còn lại < 0 thì lấy 0
+            * GREATEST(
+                ord.total_discount
+                - SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number),
+                0
+            )
+        END,0) AS chiet_khau,
+
         dt.discount AS giam_gia_san_pham,
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * 
@@ -73,9 +120,11 @@ orderline AS (
         -- Nhân sự liên quan
         CASE 
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
-            ELSE ord.marketing_display_name
+            ELSE mar.marketing_name
         END AS marketing_name,
-
+    
+        mar.ma_nhan_vien,
+        COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly) AS ma_quan_ly,
         COALESCE(mar.manager, mar2.manager) AS manager,
 
         ord.marketing_user_name,
@@ -170,13 +219,17 @@ orderline AS (
     LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name-- and ord.team = mar.team_account
     LEFT JOIN (
         SELECT DISTINCT team_account, 
-                FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager
+                FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager,
+                FIRST_VALUE(ma_quan_ly) OVER (PARTITION BY team_account ORDER BY marketer_name) as ma_quan_ly
         FROM {{ref("t1_marketer_facebook_total")}}
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
     LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
     -- LEFT JOIN deliveries de on dt.order_number = de.order_number
-    where de.delivery_status in (31,32)
+    LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
+    WHERE de.delivery_status in (31,32)
     ORDER BY de.update_date ASC
+
+
 )
 SELECT
     *,
@@ -186,7 +239,19 @@ SELECT
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) AS tien_chiet_khau_sp,
  
     (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
-     AS doanh_thu_ke_toan
+     AS doanh_thu_ke_toan,
+
+    CASE 
+        WHEN loai_khach_hang = 'Khách hàng mới' 
+        THEN thanh_tien - chiet_khau
+        ELSE 0
+    END AS doanh_so_moi,
+    
+    CASE 
+        WHEN loai_khach_hang = 'Khách hàng cũ' 
+        THEN thanh_tien - chiet_khau
+        ELSE 0
+    END AS doanh_so_cu
 FROM orderline
 
 -------------------------------------------
