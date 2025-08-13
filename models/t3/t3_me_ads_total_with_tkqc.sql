@@ -117,7 +117,7 @@ WITH ads_total_with_tkqc AS (
                   ads.date_start
           ) = 1 THEN COALESCE(ladi.doanhThuLadi, 0)
           ELSE 0
-        END AS doanhThuLadi 
+        END AS doanhThuLadi,
 
                 CASE
         WHEN ROW_NUMBER() OVER (
