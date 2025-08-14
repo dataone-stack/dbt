@@ -48,6 +48,11 @@ orderline AS (
             ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
 
+        CASE
+            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT liên kết với pushsale'
+            ELSE 'Pushsale'
+        END AS nguon_doanh_thu,
+
         -- Sản phẩm cụ thể
         dt.item_code AS sku,
         dt.item_name AS san_pham,
@@ -253,6 +258,7 @@ SELECT
         ELSE 0
     END AS doanh_so_cu
 FROM orderline
+WHERE nguon_doanh_thu <> 'Sàn TMDT'
 
 -------------------------------------------
 

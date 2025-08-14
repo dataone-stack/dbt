@@ -48,7 +48,7 @@ orderline AS (
         END AS loai_khach_hang,
 
         CASE
-            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT'
+            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT'
             ELSE 'Facebook'
         END AS nguon_doanh_thu,
 
