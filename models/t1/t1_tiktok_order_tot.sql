@@ -26,11 +26,11 @@ SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'raspberry_coffee_
 UNION ALL
 SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_beauty' AS shop, * FROM `lybbeauty_tiktok_shop_dwh.tiktok_shop_lyb_beauty_order`
 UNION ALL 
-SELECT 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_viet_nam_store' AS shop, * FROM `be20vietnamstore_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_order`
+SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store' AS shop, * FROM `be20vietnamstore_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_order`
 UNION ALL 
-SELECT 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_viet_nam' AS shop, * FROM `be20vietnam3_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_order`
+SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam' AS shop, * FROM `be20vietnam3_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_order`
 UNION ALL 
-SELECT 'Max Eagle' as company, 'VIÊN NGẬM TRẮNG DA BE20' AS brand, 'be20_viet_nam_store_2' AS shop, * FROM `be20vietnam2_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_order`
+SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_2' AS shop, * FROM `be20vietnam2_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_order`
 UNION ALL 
 SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_natural_viet_nam' AS shop, * FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_ume_beauty_natural_viet_nam_order`
 
