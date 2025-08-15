@@ -47,6 +47,11 @@ orderline AS (
             ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
 
+        CASE
+            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT liên kết với pushsale'
+            ELSE 'Pushsale'
+        END AS nguon_doanh_thu,
+
         -- CASE 
         --     WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
         --     WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'

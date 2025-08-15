@@ -6,21 +6,35 @@ opening_month AS (
   FROM {{ ref('t1_financial_debt') }}
   WHERE month = 6  -- hoặc tháng đầu kỳ theo dữ liệu bạn
 ),
-
--- Tạo danh sách month - staff_code, chỉ lấy tháng >= tháng đầu kỳ của nhân viên
-all_months AS (
-  SELECT DISTINCT yms.year, yms.month, yms.staff_code, yms.staff_name
-  FROM (
-    SELECT year, month, staff_code, staff_name FROM {{ ref('t1_financial_debt') }}
-    UNION DISTINCT
-    SELECT year, month, staff_code, staff_name FROM {{ ref('t1_financial_incurring_debt') }}
-    UNION DISTINCT
-    SELECT year, month, ma_quan_ly as staff_code, manager as staff_name FROM {{ ref('t3_financial_invoice_ads') }}
-  ) yms
-  JOIN opening_month om 
-    ON yms.staff_code = om.staff_code
-    AND (yms.year > om.year OR (yms.year = om.year AND yms.month >= om.month))
+-- CTE tạo danh sách tháng từ tháng 6 đến tháng hiện tại
+months_range AS (
+  SELECT year, month
+  FROM UNNEST(GENERATE_DATE_ARRAY(DATE(2025,6,1), CURRENT_DATE(), INTERVAL 1 MONTH)) AS dt
+  CROSS JOIN UNNEST([STRUCT(EXTRACT(YEAR FROM dt) AS year, EXTRACT(MONTH FROM dt) AS month)])
 ),
+
+-- Danh sách nhân viên từ tất cả bảng
+all_staff AS (
+  SELECT DISTINCT staff_code, staff_name
+  FROM (
+    SELECT staff_code, staff_name FROM {{ ref('t1_financial_debt') }}
+    UNION DISTINCT
+    SELECT staff_code, staff_name FROM {{ ref('t1_financial_incurring_debt') }} 
+    UNION DISTINCT
+    SELECT ma_quan_ly AS staff_code, manager AS staff_name FROM {{ ref('t3_financial_invoice_ads') }}
+  )
+),
+
+-- Ghép calendar month với staff, đảm bảo có dữ liệu từ tháng 6 đến hiện tại
+all_months AS (
+  SELECT mr.year, mr.month, s.staff_code, s.staff_name
+  FROM months_range mr
+  CROSS JOIN all_staff s
+  JOIN opening_month om 
+    ON s.staff_code = om.staff_code
+    AND (mr.year > om.year OR (mr.year = om.year AND mr.month >= om.month))
+)
+,
 
 base AS (
   SELECT 

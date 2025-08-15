@@ -21,7 +21,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.dau_the,
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
-        SUM(ads.doanhThuAds) AS doanhThuAds,
+        ROUND(SUM(ads.doanhThuAds), 0) AS doanhThuAds,
         SUM(ads.spend) * (1 + COALESCE(MAX(tkqc.phi_thue), 0)) as chi_phi_agency
     FROM (
         -- Loại bỏ trùng lặp trong t2_ads_total trước khi JOIN
