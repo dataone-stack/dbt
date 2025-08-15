@@ -100,7 +100,7 @@ SELECT
 
     brand,
     COALESCE(ma_don_code,CAST(ma_don_so AS STRING)) AS ma_don_hang,
-    ngay_data_ve as ngay_tao_don,
+    ngay_chot_don as ngay_tao_don,
     sku as sku_code,
     san_pham as ten_san_pham,
     CAST(so_luong AS INT64) AS so_luong,
@@ -115,3 +115,4 @@ SELECT
     company,
     ho_ten AS ten_khach_hang,
 FROM {{ ref("t2_pushsale_order_lines_toa") }}
+WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết với pushsale'

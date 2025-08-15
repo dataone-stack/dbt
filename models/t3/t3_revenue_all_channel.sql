@@ -139,7 +139,7 @@ SELECT
 
     brand,
     COALESCE(ma_don_code,CAST(ma_don_so AS STRING)) AS ma_don_hang,
-    ngay_data_ve as ngay_tao_don,
+    ngay_chot_don as ngay_tao_don,
     sku as sku_code,
     san_pham as ten_san_pham,
     CAST(so_luong AS INT64) AS so_luong,
