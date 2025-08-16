@@ -29,7 +29,6 @@ revenue_toa AS (
   GROUP BY 1,2,3,4
 )
 
-,a as (
 SELECT
   COALESCE(a.date_start, Cast(r.ngay_tao_don as date)) AS date_start,
   COALESCE(a.brand, r.brand) AS brand,
@@ -54,4 +53,4 @@ FULL OUTER JOIN ads_daily a
   AND r.brand = a.brand
   AND r.channel = a.channel
   AND r.company = a.company
-ORDER BY date_start DESC, brand, channel)
+ORDER BY date_start DESC, brand, channel
