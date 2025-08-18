@@ -2,7 +2,7 @@
 WITH ads_daily AS (
   SELECT
     date_start,
-    TRIM(brand),
+    TRIM(brand) as brand,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads, -- Tổng chi phí quảng cáo, thay NULL bằng 0
@@ -18,7 +18,7 @@ cir_max_monthly AS (
   SELECT
     year,
     month,
-    TRIM(brand),
+    TRIM(brand) as brand,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max,
     AVG(CAST(cir_max_ads AS FLOAT64)) AS avg_cir_max_ads  -- Lấy trung bình cir_max
@@ -29,7 +29,7 @@ cir_max_ads_monthly AS (
   SELECT
     year,
     month,
-    TRIM(brand),
+    TRIM(brand) as brand,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max  -- Lấy trung bình cir_max
   FROM {{ ref('t1_cir_max_ads') }}
@@ -38,7 +38,7 @@ cir_max_ads_monthly AS (
 -- CTE revenue_tot tổng hợp doanh thu
 revenue_tot AS (
   SELECT DISTINCT
-    TRIM(brand), 
+    TRIM(brand) as brand,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
