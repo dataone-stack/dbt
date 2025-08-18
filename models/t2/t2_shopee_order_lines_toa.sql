@@ -31,9 +31,9 @@ total_amount AS (
   GROUP BY a.order_id,b.brand
 )
 
-
 ,shopee_fee_total as (
-  select 
+  select
+    detail.shop,
     detail.order_id,
     detail.buyer_user_name ,
     mapping.brand,
@@ -103,7 +103,8 @@ total_amount AS (
 )
 
 ,sale_detail AS (
-  SELECT 
+  SELECT
+    detail.shop,
     detail.order_id,
     detail.buyer_user_name AS ten_nguoi_mua,
     detail.brand,
@@ -168,6 +169,7 @@ total_amount AS (
 
 SELECT
   --test_doanh_thu,
+  shop,
   create_time as ngay_tao_don,
   ten_nguoi_mua,
   brand,
