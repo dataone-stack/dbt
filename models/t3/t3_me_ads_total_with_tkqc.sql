@@ -46,7 +46,8 @@ WITH ads_total_with_tkqc AS (
         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
         AND DATE(ads.date_start) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
-        
+    
+    WHERE tkqc.status = 'Active'
     GROUP BY
         ads.date_start,
         tkqc.idtkqc,
