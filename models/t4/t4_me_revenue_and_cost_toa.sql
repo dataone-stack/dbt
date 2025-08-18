@@ -8,7 +8,7 @@ WITH ads_daily AS (
     SUM(COALESCE(doanhThuAds, 0))               AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0))              AS doanhThuLadi,
     SUM(COALESCE(doanhThuAds, 0) + COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t3_me_ads_total_with_tkqc`
+  FROM {{ ref('t3_me_ads_total_with_tkqc') }}
   GROUP BY date_start, brand, channel,company
   ORDER BY 1,2,3,4
 ),
@@ -23,7 +23,7 @@ revenue_toa AS (
     SUM(COALESCE(gia_ban_daily_total, 0))       AS gia_ban_daily_total,
     SUM(COALESCE(tien_chiet_khau_sp, 0))        AS tien_chiet_khau_sp,
     SUM(COALESCE(tien_khach_hang_thanh_toan,0)) AS tien_khach_hang_thanh_toan
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t3_me_revenue_all_channel`
+  FROM {{ ref('t3_me_revenue_all_channel') }}
   WHERE company = 'Max Eagle'
     AND ngay_tao_don IS NOT NULL
   GROUP BY 1,2,3,4
