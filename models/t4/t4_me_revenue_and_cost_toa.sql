@@ -1,7 +1,7 @@
 WITH ads_daily AS (
   SELECT
     DATE(date_start) AS date_start,
-    brand,
+    TRIM(brand) AS brand,
     CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
     SUM(COALESCE(chiPhiAds, 0))                 AS chi_phi_ads,
@@ -18,7 +18,7 @@ WITH ads_daily AS (
 revenue_toa AS (
   SELECT
     DATE(ngay_tao_don)                           AS ngay_tao_don,         -- ngày chốt đơn
-    brand,
+    TRIM(brand) AS brand,
     CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
     SUM(COALESCE(doanh_thu_ke_toan, 0))         AS doanh_thu_ke_toan,
