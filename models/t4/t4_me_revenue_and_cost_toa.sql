@@ -59,4 +59,5 @@ FULL OUTER JOIN ads_daily a
   AND r.brand = a.brand
   AND r.channel = a.channel
   AND r.company = a.company
+  AND r.manager = a.manager
 ORDER BY date_start DESC, brand, channel
