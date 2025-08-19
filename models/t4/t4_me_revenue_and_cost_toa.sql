@@ -1,32 +1,35 @@
 WITH ads_daily AS (
   SELECT
     DATE(date_start) AS date_start,
-    brand,
-    channel,
+    TRIM(brand) AS brand,
+    CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
+    TRIM(manager)                               AS manager,
     SUM(COALESCE(chiPhiAds, 0))                 AS chi_phi_ads,
     SUM(COALESCE(doanhThuAds, 0))               AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0))              AS doanhThuLadi,
+    SUM(COALESCE(doanh_so_moi, 0))              AS doanh_so_moi,
+    SUM(COALESCE(doanh_so_cu, 0))              AS doanh_so_cu,
     SUM(COALESCE(doanhThuAds, 0) + COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t3_me_ads_total_with_tkqc`
-  GROUP BY date_start, brand, channel,company
-  ORDER BY 1,2,3,4
+  FROM {{ ref('t3_me_ads_total_with_tkqc') }}
+  WHERE company = 'Max Eagle' AND date_start IS NOT NULL
+  GROUP BY date_start, brand, channel,company, manager
 ),
 
 revenue_toa AS (
   SELECT
     DATE(ngay_tao_don)                           AS ngay_tao_don,         -- ngày chốt đơn
-    brand,
-    channel,
+    TRIM(brand) AS brand,
+    CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
+    TRIM(manager)                               AS manager,
     SUM(COALESCE(doanh_thu_ke_toan, 0))         AS doanh_thu_ke_toan,
     SUM(COALESCE(gia_ban_daily_total, 0))       AS gia_ban_daily_total,
     SUM(COALESCE(tien_chiet_khau_sp, 0))        AS tien_chiet_khau_sp,
     SUM(COALESCE(tien_khach_hang_thanh_toan,0)) AS tien_khach_hang_thanh_toan
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t3_me_revenue_all_channel`
-  WHERE company = 'Max Eagle'
-    AND ngay_tao_don IS NOT NULL
-  GROUP BY 1,2,3,4
+  FROM {{ ref('t3_me_revenue_all_channel') }}
+  WHERE company = 'Max Eagle' AND ngay_tao_don IS NOT NULL
+  GROUP BY ngay_tao_don, brand, channel, company, manager
 )
 
 SELECT
@@ -34,12 +37,15 @@ SELECT
   COALESCE(a.brand, r.brand) AS brand,
   COALESCE(a.channel, r.channel) AS channel,
   COALESCE(a.company, r.company) AS company,
+  COALESCE(a.manager, r.manager) AS manager,
 
 -- Ads
   COALESCE(a.chi_phi_ads, 0)                    AS chi_phi_ads,
   COALESCE(a.doanh_thu_trinh_ads, 0)            AS doanh_thu_trinh_ads,
   COALESCE(a.doanhThuAds, 0)                    AS doanhThuAds,
   COALESCE(a.doanhThuLadi, 0)                   AS doanhThuLadi,
+  COALESCE(a.doanh_so_moi, 0)                  AS doanh_so_moi,
+  COALESCE(a.doanh_so_cu, 0)                  AS doanh_so_cu,
 
   -- Revenue
   COALESCE(r.doanh_thu_ke_toan, 0)              AS doanh_thu_ke_toan,
@@ -53,4 +59,5 @@ FULL OUTER JOIN ads_daily a
   AND r.brand = a.brand
   AND r.channel = a.channel
   AND r.company = a.company
+  AND r.manager = a.manager
 ORDER BY date_start DESC, brand, channel

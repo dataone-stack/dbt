@@ -3,14 +3,11 @@ WITH ads_total_with_tkqc AS (
         ads.date_start,
         ads.revenue_type,
         -- Ưu tiên thông tin từ campaign mapping, fallback về tkqc
-        -- COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien) as ma_nhan_vien,
-        -- COALESCE(campaign_team.staff, tkqc.staff) as staff,
-        -- COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly) as ma_quan_ly,
-        -- COALESCE(campaign_team.manager, tkqc.manager) as manager,
-        tkqc.ma_nhan_vien as ma_nhan_vien,
-         tkqc.staff as staff,
-         tkqc.ma_quan_ly as ma_quan_ly,
-         tkqc.manager as manager,
+        COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien) as ma_nhan_vien,
+        COALESCE(campaign_team.staff, tkqc.staff) as staff,
+        COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly) as ma_quan_ly,
+        COALESCE(campaign_team.manager, tkqc.manager) as manager,
+
         tkqc.idtkqc,
         tkqc.nametkqc,
         tkqc.brand,
@@ -37,28 +34,25 @@ WITH ads_total_with_tkqc AS (
         FROM {{ ref('t2_ads_total') }}
     ) AS ads
     
-    -- -- LEFT JOIN với campaign team mapping trước
-    -- LEFT JOIN {{ ref('t1_ads_campaign_by_team') }} AS campaign_team
-    --     ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
+    --LEFT JOIN với campaign team mapping trước
+    LEFT JOIN {{ ref('t1_ads_campaign_by_team') }} AS campaign_team
+    ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
     
     -- RIGHT JOIN với tkqc như cũ
     RIGHT JOIN{{ ref('t2_tkqc_total') }} AS tkqc
         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
         AND DATE(ads.date_start) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
-        
+    
+    WHERE tkqc.status = 'Active'
     GROUP BY
         ads.date_start,
         tkqc.idtkqc,
         tkqc.nametkqc,
-        -- COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien),
-        -- COALESCE(campaign_team.staff, tkqc.staff),
-        -- COALESCE(campaign_team.manager, tkqc.manager),
-        -- COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
-        tkqc.ma_nhan_vien,
-        tkqc.ma_quan_ly,
-         tkqc.staff,
-         tkqc.manager,
+        COALESCE(campaign_team.staff_code, tkqc.ma_nhan_vien),
+        COALESCE(campaign_team.staff, tkqc.staff),
+        COALESCE(campaign_team.manager, tkqc.manager),
+        COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
         tkqc.brand,
         tkqc.channel,
         ads.revenue_type,

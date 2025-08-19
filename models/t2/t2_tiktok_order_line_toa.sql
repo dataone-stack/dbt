@@ -1,5 +1,6 @@
 WITH LineItems AS (
   SELECT
+  o.shop,
     o.brand,
     o.company,
     o.order_id,
@@ -25,6 +26,7 @@ WITH LineItems AS (
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
+    o.shop,
     o.brand,
     o.company,
     o.order_id,
@@ -60,6 +62,7 @@ ReturnLineItems AS (
 
 OrderData AS (
   SELECT
+    li.shop,
     li.brand,
     li.company,
     li.order_id AS Order_ID,
@@ -189,6 +192,7 @@ GROUP BY
 
 orderLine as(
 SELECT
+    shop,
   brand,
   company,
   Order_ID as ma_don_hang,

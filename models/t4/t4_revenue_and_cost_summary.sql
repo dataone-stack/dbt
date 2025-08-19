@@ -12,6 +12,7 @@
 -- WHERE status NOT IN  ('Đã hủy')
 -- GROUP BY DATE(ngay_tao_don), brand, channel, company --,ten_san_pham,sku_code
 -- ),
+
 with
     ads_daily as (
         select
@@ -40,6 +41,7 @@ with
         from {{ ref("t1_cir_max") }}
         group by year, month, brand, channel
     ),
+
     cir_max_ads_monthly as (
         select year, month, brand, channel, avg(cast(cir_max as float64)) as avg_cir_max  -- Lấy trung bình cir_max
         from {{ ref("t1_cir_max_ads") }}
@@ -52,7 +54,6 @@ with
             company,
             date(format_timestamp('%Y-%m-%d', timestamp(date_create))) as date_start,
             
-
             case
                 when sum(total_amount) < 60000 then 0 else sum(total_amount)
             end as total_amount,
