@@ -83,8 +83,8 @@ orderline AS (
                 0
                 )
             ) * (COALESCE(ord.total_discount, 0) - COALESCE(ord.total_discount_product, 0)),
-            0,
-            ) AS chiet_khau,
+            0
+        ) AS chiet_khau,
         
         -- ROUND(CASE
         -- WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008') THEN -- Nhóm quà tặng
