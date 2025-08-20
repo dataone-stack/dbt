@@ -54,3 +54,6 @@ SELECT
 FROM {{ ref('t2_tiktok_order_tot') }}  where company = 'One5'
 
 
+
+
+

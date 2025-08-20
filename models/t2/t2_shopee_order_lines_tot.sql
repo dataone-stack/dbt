@@ -83,8 +83,20 @@ order_product_summary AS (
 SELECT 
     f.brand,
     f.company,
+     DATETIME_ADD(ord.ship_by_date, INTERVAL 7 HOUR) as ngay_ship,
+
+    case
+        WHEN LOWER(ord.order_status) IN ('cancelled', 'in_cancel') THEN 'Đã hủy'
+        WHEN LOWER(ord.order_status) IN ('ready_to_ship', 'processed') THEN 'Đăng đơn'
+        WHEN LOWER(ord.order_status) = 'to_confirm_receive' THEN 'Đăng đơn'
+        WHEN LOWER(ord.order_status) = 'to_return' THEN 'Đã hoàn'
+        WHEN LOWER(ord.order_status) = 'unpaid' THEN 'Đăng đơn'
+        WHEN LOWER(ord.order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
+        ELSE ""
+    end as status,
     GENERATE_UUID() as ma_giao_dich,
     'ORDER' as don_hang_san_pham,
+
     f.order_id,
     f.tax_code as ma_so_thue,
     vi.refund_sn as ma_yeu_cau_hoan_tien,

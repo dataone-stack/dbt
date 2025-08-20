@@ -71,20 +71,20 @@ SELECT
     'Facebook' AS channel
 FROM {{ref("t2_pushsale_order_lines_tot")}}
 
-union all
+-- union all
 
-SELECT 
-    brand, 
-    company,
-    cast(null as date) as ngay_ship,
-    ngay_tien_ve_vi as date_create, 
-    COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
-    trang_thai_don_hang as status, 
-    tien_khach_hang_thanh_toan as total_amount, 
-    ngay_data_ve as date_create_order, 
-    gia_ban_daily_total,
-    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
-    phu_phi,
-    doanh_thu_ke_toan,
-    'Facebook' AS channel
-FROM {{ref("t2_sandbox_order_lines_tot")}}
+-- SELECT 
+--     brand, 
+--     company,
+--     cast(null as date) as ngay_ship,
+--     ngay_tien_ve_vi as date_create, 
+--     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
+--     trang_thai_don_hang as status, 
+--     tien_khach_hang_thanh_toan as total_amount, 
+--     ngay_data_ve as date_create_order, 
+--     gia_ban_daily_total,
+--     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
+--     phu_phi,
+--     doanh_thu_ke_toan,
+--     'Facebook' AS channel
+-- FROM {{ref("t2_sandbox_order_lines_tot")}}

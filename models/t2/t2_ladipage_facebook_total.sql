@@ -55,30 +55,30 @@ GROUP BY
   a.manager,
   a.ma_quan_ly
 
-  union all
+--   union all
 
   
-SELECT
-  DATE(a.ngay_chot_don) AS date_insert,
-  a.channel,
-  'Max Eagle' AS company,
-  a.brand,
-  a.loai_khach_hang,
-  a.marketing_name AS staff_name,
-  a.ma_nhan_vien AS id_staff,
-  a.manager AS manager_name,
-  a.ma_quan_ly AS ma_quan_ly,
-  SUM(a.thanh_tien - a.chiet_khau) AS doanhThuLadi,
-  SUM(a.doanh_so_moi) AS doanh_so_moi,
-  SUM(a.doanh_so_cu) AS doanh_so_cu
-FROM {{ref("t2_sandbox_order_lines_toa")}} a
-WHERE a.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and a.nguon_doanh_thu <> 'Sàn TMDT liên kết'
-GROUP BY 
-  DATE(a.ngay_chot_don),
-  a.channel,
-  a.brand,
-  a.loai_khach_hang,
-  a.marketing_name,
-  a.ma_nhan_vien,
-  a.manager,
-  a.ma_quan_ly
+-- SELECT
+--   DATE(a.ngay_chot_don) AS date_insert,
+--   a.channel,
+--   'Max Eagle' AS company,
+--   a.brand,
+--   a.loai_khach_hang,
+--   a.marketing_name AS staff_name,
+--   a.ma_nhan_vien AS id_staff,
+--   a.manager AS manager_name,
+--   a.ma_quan_ly AS ma_quan_ly,
+--   SUM(a.thanh_tien - a.chiet_khau) AS doanhThuLadi,
+--   SUM(a.doanh_so_moi) AS doanh_so_moi,
+--   SUM(a.doanh_so_cu) AS doanh_so_cu
+-- FROM {{ref("t2_sandbox_order_lines_toa")}} a
+-- WHERE a.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and a.nguon_doanh_thu <> 'Sàn TMDT liên kết'
+-- GROUP BY 
+--   DATE(a.ngay_chot_don),
+--   a.channel,
+--   a.brand,
+--   a.loai_khach_hang,
+--   a.marketing_name,
+--   a.ma_nhan_vien,
+--   a.manager,
+--   a.ma_quan_ly
