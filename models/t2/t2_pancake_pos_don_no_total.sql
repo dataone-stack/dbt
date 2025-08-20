@@ -144,7 +144,15 @@ select
   province,
   commune,
   -- Tính số ngày nợ kể từ ngày tạo đơn hàng (cộng 7h GMT+7)
-  DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) as so_ngay_no,
+  case
+    when loai_don_no = 'Đã xử lý'
+    then DATE_DIFF(
+        DATE(DATETIME_ADD(updated_at, INTERVAL 7 HOUR)), 
+        DATE(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), 
+        DAY
+      )
+    else DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY)
+  end as so_ngay_no,
   CASE
     WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 0 AND 2 THEN 'Dưới 3 ngày'
     WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 3 AND 5 THEN 'Từ 3 đến 5 ngày'
