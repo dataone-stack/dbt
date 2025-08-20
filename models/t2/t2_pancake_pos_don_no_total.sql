@@ -153,13 +153,6 @@ select
       )
     else DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY)
   end as so_ngay_no,
-  CASE
-    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 0 AND 2 THEN 'Dưới 3 ngày'
-    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 3 AND 5 THEN 'Từ 3 đến 5 ngày'
-    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 6 AND 7 THEN 'Từ 6 đến 7 ngày'
-    WHEN DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) BETWEEN 8 AND 14 THEN 'Từ 8 đến 14 ngày'
-    ELSE 'Trên 14 ngày'
-  END AS trang_thai_don_no,
 
   status_name,
   activated_promotion_advances,
@@ -220,4 +213,15 @@ select
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan
 from order_line )
 
-select * from a
+select *,
+  CASE
+    WHEN so_ngay_no BETWEEN 0 AND 2 THEN 'Dưới 3 ngày'
+    WHEN so_ngay_no BETWEEN 3 AND 5 THEN 'Từ 3 đến 5 ngày'
+    WHEN so_ngay_no BETWEEN 6 AND 7 THEN 'Từ 6 đến 7 ngày'
+    WHEN so_ngay_no BETWEEN 8 AND 14 THEN 'Từ 8 đến 14 ngày'
+    WHEN so_ngay_no BETWEEN 15 AND 21 THEN 'Từ 15 đến 21 ngày'
+    WHEN so_ngay_no BETWEEN 22 AND 28 THEN 'Từ 22 đến 28 ngày'
+    ELSE 'Trên 28 ngày'
+  END AS trang_thai_don_no,
+
+from a
