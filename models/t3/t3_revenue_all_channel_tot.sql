@@ -24,7 +24,7 @@ SELECT
 
     ngay_tien_ve_vi as date_create, 
     order_id,
-    "" as status, 
+    status, 
     tong_tien_da_thanh_toan as total_amount, 
     ngay_dat_hang as date_create_order, 
     gia_ban_daily_total,
@@ -43,7 +43,7 @@ SELECT
     CAST(Shipped_Time as date) as ngay_ship,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
     CAST(ma_don_hang AS STRING) as order_id, 
-    Order_Status as status, 
+    status as status, 
     total_settlement_amount as total_amount, 
     ngay_tao_don as date_create_order, 
     gia_ban_daily_total,

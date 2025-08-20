@@ -144,6 +144,7 @@ order_product_summary AS (
   SELECT 
     f.order_id,
     f.brand,
+    rd.status as status_return,
     SUM(COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)) AS gia_ban_daily_total,
     SUM(
        (COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0))
@@ -165,12 +166,22 @@ order_product_summary AS (
       ELSE i.model_sku  
     END = mapping.ma_sku AND f.brand = mapping.brand
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
-  GROUP BY f.order_id, f.brand
+  GROUP BY f.order_id, f.brand,rd.status
 )
 
 SELECT 
     f.brand,
     f.company,
+    CASE
+    WHEN LOWER(ops.status_return) = 'accepted' THEN 'Đã hoàn'
+    WHEN LOWER(ord.order_status) IN ('cancelled', 'in_cancel') THEN 'Đã hủy'
+    WHEN LOWER(ord.order_status) IN ('ready_to_ship', 'processed') THEN 'Đăng đơn'
+    WHEN LOWER(ord.order_status) = 'to_confirm_receive' THEN 'Đăng đơn'
+    WHEN LOWER(ord.order_status) = 'to_return' THEN 'Đã hoàn'
+    WHEN LOWER(ord.order_status) = 'unpaid' THEN 'Đăng đơn'
+    WHEN LOWER(ord.order_status) IN ('completed', 'shipped') THEN 'Đã giao thành công'
+    ELSE ""
+END AS status,
     GENERATE_UUID() as ma_giao_dich,
     'ORDER' as don_hang_san_pham,
     f.order_id,
