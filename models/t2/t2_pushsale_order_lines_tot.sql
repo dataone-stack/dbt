@@ -49,7 +49,7 @@ orderline AS (
         END AS loai_khach_hang,
 
         CASE
-            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT liên kết với pushsale'
+            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT liên kết'
             ELSE 'Pushsale'
         END AS nguon_doanh_thu,
 
@@ -402,6 +402,5 @@ WHERE nguon_doanh_thu <> 'Sàn TMDT'
 --   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - chiet_khau ) AS tien_chiet_khau_sp,
 --   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien  - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))) AS doanh_thu_ke_toan
 -- from orderline
-
 
 

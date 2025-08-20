@@ -13,7 +13,7 @@ WITH ads_total_with_tkqc AS (
         --  tkqc.manager as manager,
         tkqc.idtkqc,
         tkqc.nametkqc,
-        tkqc.brand,
+        COALESCE(campaign_team.brand, tkqc.brand) as brand,
         tkqc.channel,
         ads.currency,
         tkqc.company,
@@ -35,7 +35,7 @@ WITH ads_total_with_tkqc AS (
             currency,
             spend,
             doanhThuAds
-        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total`
+        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total` where spend >0
     ) AS ads
     
     -- LEFT JOIN với campaign team mapping trước
@@ -68,7 +68,8 @@ WITH ads_total_with_tkqc AS (
         tkqc.ben_thue,
         tkqc.phi_thue,
         tkqc.dau_the,
-        campaign_team.campaign_id
+        campaign_team.campaign_id,
+        campaign_team.brand
 )
 -- select manager, staff, sum(chiPhiAds), sum(doanhThuAds) from ads_total_with_tkqc where date(date_start) ="2025-08-17" and campaign_id = "120231540835210251" group by manager, staff
 

@@ -9,13 +9,30 @@ with total_price as (
     json_value(shipping_address,'$.district_name') as district,
     json_value(shipping_address,'$.province_name') as province,
     json_value(shipping_address,'$.commune_name') as commune
-  from{{ref("t1_pancake_pos_order_total")}}
+  from {{ref("t1_pancake_pos_order_total")}}
   group by id,brand,company,customer,assigning_seller,shipping_address
 ),
+pancake_total as (
+
+SELECT 
+CASE 
+    WHEN ARRAY_LENGTH(po.status_history) = 2 THEN 'Chưa xử lý'
+    WHEN ARRAY_LENGTH(po.status_history) > 2 THEN 'Đã xử lý'
+    ELSE 'Khác'
+  END AS loai_don_no,
+  po.*,
+
+FROM {{ref("t1_pancake_pos_order_total")}} AS po
+CROSS JOIN UNNEST(po.status_history) AS his
+WHERE JSON_VALUE(his, '$.status') = '11' 
+
+)
+
 -- Tách từng item trong đơn hàng + mapping giá bán từ bảng giá sản phẩm
-order_line as (
+,order_line as (
   select
     ord.id,
+    ord.loai_don_no,
     ord.brand,
     ord.order_sources_name,
     ord.company,
@@ -104,15 +121,15 @@ order_line as (
       then 'Thieu'
       else 'Du'
     end as con_thieu
-  from {{ref("t1_pancake_pos_order_total")}} as ord,
+  from pancake_total as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
-  where ord.status_name = 'waitting'
 ),
 a as (
 select
   id as ma_don_hang,
+  loai_don_no,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
   company,

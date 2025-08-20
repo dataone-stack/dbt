@@ -167,7 +167,7 @@ SELECT
     ads.ma_nhan_vien,
     ads.staff,
     ads.ma_quan_ly,
-    ads.manager,
+    upper(trim(ads.manager)) as manager ,
     ads.brand,
     ads.channel, 
     ads.chiPhiAds,

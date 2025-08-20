@@ -1,4 +1,4 @@
-
+with a as (
 SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
@@ -57,6 +57,7 @@ SELECT
     0 as ad_id,
     0 as campaign_id,
     "" as campaign_name,
+
     cost AS spend,
     gross_revenue AS doanhThuAds,
     'TikTok GMVmax' AS revenue_type,
@@ -105,3 +106,29 @@ select
   'Google Ads' as revenue_type,
   customer.currencyCode as currency
 from {{ref("t1_google_ads_total")}}
+)
+
+select 
+    date_start,
+    account_id,
+    ad_id,
+    campaign_id,
+    campaign_name,
+
+    case
+        when account_id = '7531919757827080209'
+        then spend * 26300
+        else spend
+    end as spend,
+
+    case
+        when account_id = '7531919757827080209'
+        then doanhThuAds * 26300
+        else doanhThuAds
+    end as doanhThuAds,
+
+    revenue_type,
+
+    currency
+from a
+    

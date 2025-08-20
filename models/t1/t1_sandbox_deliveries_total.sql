@@ -1,1 +1,1 @@
-select * from `pushsale_maxeagle_dwh.maxeagle_pushsale_deliveries_sandbox`
+select * from crypto-arcade-453509-i8.sandbox_maxeagle_dwh.pushsale_deliveries_sandbox

@@ -1,1 +1,1 @@
-select * from crypto-arcade-453509-i8.google_sheet.ads_campaign_by_team
+select * from crypto-arcade-453509-i8.google_sheet.ads_campaign_by_team where campaign_id is not null
