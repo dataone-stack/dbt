@@ -12,6 +12,7 @@ with total_price as (
   from {{ref("t1_pancake_pos_order_total")}}
   group by id,brand,company,customer,assigning_seller,shipping_address
 ),
+
 pancake_total as (
 
 SELECT 
@@ -37,6 +38,7 @@ WHERE JSON_VALUE(his, '$.status') = '11'
     ord.order_sources_name,
     ord.company,
     ord.inserted_at,
+    ord.updated_at,
     ord.status_name,
     ord.note_print,
     ord.activated_promotion_advances,
@@ -131,6 +133,7 @@ select
   id as ma_don_hang,
   loai_don_no,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
+  DATETIME_ADD(updated_at, INTERVAL 7 HOUR) as ngay_hoan_thanh,
   brand,
   company,
   customer_name,

@@ -285,6 +285,7 @@ order_total AS (
         Order_Status,
         ngay_tao_don,
         Shipped_Time,
+        status,
         SUM(gia_ban_daily_total) AS gia_ban_daily_total,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
         SUM(tien_chiet_khau_sp) AS tien_chiet_khau_sp,
@@ -294,6 +295,7 @@ order_total AS (
         company,
         ma_don_hang,
         Order_Status,
+        status,
         ngay_tao_don,
         Shipped_Time
 ),
