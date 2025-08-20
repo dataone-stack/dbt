@@ -50,7 +50,8 @@ order_product_summary AS (
         else  
         COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0)
     end as doanh_thu_ke_toan,
-
+    safe_divide(i.original_price,i.quantity_purchased) AS gia_san_pham_goc,
+    safe_divide(i.original_price,i.quantity_purchased) * i.quantity_purchased as gia_san_pham_goc_total,
      CASE
       WHEN rd.refund_amount = 0
       THEN rd.so_tien_hoan_tra * -1
@@ -84,7 +85,7 @@ SELECT
     f.brand,
     f.company,
      DATETIME_ADD(ord.ship_by_date, INTERVAL 7 HOUR) as ngay_ship,
-
+   
     case
         WHEN LOWER(ord.order_status) IN ('cancelled', 'in_cancel') THEN 'Đã hủy'
         WHEN LOWER(ord.order_status) IN ('ready_to_ship', 'processed') THEN 'Đăng đơn'
@@ -122,6 +123,8 @@ SELECT
     
     -- Lấy từ order summary
     ops.gia_ban_daily_total,
+    ops.gia_san_pham_goc,
+    ops.gia_san_pham_goc_total,
     ops.doanh_thu_ke_toan,
     (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) as tien_chiet_khau_sp,
     (ops.gia_ban_daily_total -(ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu))) as tien_chiet_khau_sp_shopee,
