@@ -230,4 +230,4 @@ select *,
     ELSE 'Trên 28 ngày'
   END AS trang_thai_don_no,
 
-from a where a.ma_don_hang = '49252'
+from a
