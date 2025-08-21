@@ -96,15 +96,15 @@ FROM {{ ref('t1_shopee_search_ads_total') }}
 union all
 
 select 
-  segments_date as date_start,
+  segment_date as date_start,
   CAST(account_id AS STRING) AS account_id,
   0 as ad_id,
   0 as campaign_id,
   "" as campaign_name,
-  cast (safe_divide(metrics.costMicros,1000000) as float64)  as spend,
+  cast (safe_divide(spend,1000000) as float64)  as spend,
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
-  customer.currencyCode as currency
+  currency
 from {{ref("t1_google_ads_total")}}
 )
 
@@ -116,13 +116,13 @@ select
     campaign_name,
 
     case
-        when account_id = '7531919757827080209'
+        when account_id in ('7531919757827080209','7441124535434280976')
         then spend * 26300
         else spend
     end as spend,
 
     case
-        when account_id = '7531919757827080209'
+        when account_id in ('7531919757827080209','7441124535434280976')
         then doanhThuAds * 26300
         else doanhThuAds
     end as doanhThuAds,
