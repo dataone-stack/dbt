@@ -17,7 +17,7 @@ pancake_total as (
 
 SELECT 
 CASE 
-    WHEN ARRAY_LENGTH(po.status_history) = 2 THEN 'Chưa xử lý'
+    WHEN JSON_VALUE(his, '$.status') in ('6','7') THEN 'Đơn nợ đã hủy, xóa'
     WHEN ARRAY_LENGTH(po.status_history) > 2 THEN 'Đã xử lý'
     ELSE 'Khác'
   END AS loai_don_no,
