@@ -35,6 +35,22 @@ cir_max_ads_monthly AS (
   FROM {{ ref('t1_cir_max_ads') }}
   GROUP BY year, month, brand, channel
 ),
+
+revenue_toa AS (
+    SELECT 
+        DATE(ngay_tao_don) AS date_start,
+        brand,
+        company,
+        channel,
+        SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_toa,
+        SUM(tien_chiet_khau_sp ) AS tien_chiet_khau_sp_toa,
+        SUM(gia_san_pham_goc_total ) AS gia_san_pham_goc_total_toa,
+        SUM(gia_ban_daily_total ) AS gia_ban_daily_total_toa,
+
+    FROM {{ ref('t3_revenue_all_channel') }}
+    WHERE company = "Max Eagle" --status NOT IN  ('Đã hủy')
+    GROUP BY DATE(ngay_tao_don), brand, channel, company --,ten_san_pham,sku_code
+),
 -- CTE revenue_tot tổng hợp doanh thu
 revenue_tot AS (
   SELECT DISTINCT
@@ -70,26 +86,36 @@ revenue_tot AS (
   WHERE date_create IS NOT NULL
   GROUP BY date_start, brand, channel, company
 )
-SELECT
-  COALESCE(a.date_start, Cast(r_tot.date_start as date)) AS date_start,
-  COALESCE(a.brand, r_tot.brand) AS brand,
-  COALESCE(a.channel, r_tot.channel) AS channel,
-  COALESCE(a.company, r_tot.company) AS company,
-  COALESCE(a.chi_phi_ads, 0) AS chi_phi_ads,
-  COALESCE(a.doanh_thu_trinh_ads, 0) AS doanh_thu_trinh_ads,
-  COALESCE(a.doanhThuAds, 0) AS doanhThuAds,
-  COALESCE(a.doanhThuLadi, 0) AS doanhThuLadi,
-  EXTRACT(YEAR FROM COALESCE(a.date_start, Cast(r_tot.date_start as date))) AS year,
-  EXTRACT(MONTH FROM COALESCE(a.date_start, Cast(r_tot.date_start as date))) AS month,
-  cir_max.avg_cir_max AS cir_max,
-  cir_max.avg_cir_max_ads AS cir_max_ads,
-  r_tot.total_amount as total_amount_paid_tot,
-  r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
-  r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot,
-  r_tot.tien_chiet_khau_sp_tot,
-  r_tot.phu_phi,
+select
+    coalesce(a.date_start, cast(r_tot.date_start as date), cast(r_toa.date_start as date)) as date_start,
+    coalesce(a.brand, r_tot.brand, r_toa.brand) as brand,
+    coalesce(a.channel, r_tot.channel, r_toa.channel) as channel,
+    coalesce(a.company, r_tot.company , r_toa.company) as company,
+    coalesce(a.chi_phi_ads, 0) as chi_phi_ads,
+    coalesce(a.doanh_thu_trinh_ads, 0) as doanh_thu_trinh_ads,
+    coalesce(a.doanhthuads, 0) as doanhthuads,
+    coalesce(a.doanhthuladi, 0) as doanhthuladi,
+    extract(year from coalesce(a.date_start, cast(r_tot.date_start as date), cast(r_toa.date_start as date))) as year,
+    extract(month from coalesce(a.date_start, cast(r_tot.date_start as date), cast(r_toa.date_start as date))) as month,
+    cir_max.avg_cir_max as cir_max,
+    cir_max.avg_cir_max_ads as cir_max_ads,
+    r_tot.total_amount as total_amount_paid_tot,
+    r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
+    r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot,
+    r_tot.tien_chiet_khau_sp_tot,
+    r_tot.phu_phi,
+    r_toa.doanh_thu_ke_toan_toa,
+    r_toa.tien_chiet_khau_sp_toa,
+    r_toa.gia_san_pham_goc_total_toa,
+    r_toa.gia_ban_daily_total_toa,
 
-FROM revenue_tot r_tot
+from revenue_tot r_tot
+full outer join 
+    revenue_toa r_toa
+    on  cast(r_tot.date_start as date) = cast(r_toa.date_start as date)
+    and r_tot.brand = r_toa.brand
+    and r_tot.channel = r_toa.channel
+    and r_tot.company = r_toa.company
 FULL OUTER JOIN ads_daily a
   ON Cast(r_tot.date_start as date) = a.date_start
   AND r_tot.brand = a.brand
