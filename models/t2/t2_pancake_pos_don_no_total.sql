@@ -17,10 +17,15 @@ pancake_total as (
 
 SELECT 
 CASE 
-    WHEN JSON_VALUE(his, '$.status') in ('6','7') THEN 'Đơn nợ đã hủy, xóa'
-    WHEN ARRAY_LENGTH(po.status_history) > 2 THEN 'Đã xử lý'
-    ELSE 'Khác'
-  END AS loai_don_no,
+    WHEN ARRAY_LENGTH(po.status_history) = 2 
+    THEN 'Chờ bổ sung hàng'
+
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('6','7')) 
+    then 'Đã hủy do thiếu hàng'
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('3')) 
+    then 'Hoàn tất sau thiếu hàng'
+    ELSE 'Chờ xử lý giao hàng'
+END AS loai_don_no,
   po.*,
 
 FROM {{ref("t1_pancake_pos_order_total")}} AS po
@@ -145,13 +150,14 @@ select
   commune,
   -- Tính số ngày nợ kể từ ngày tạo đơn hàng (cộng 7h GMT+7)
   case
-    when loai_don_no = 'Đã xử lý'
-    then DATE_DIFF(
+    when loai_don_no = 'Chờ bổ sung hàng'
+    then DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY) 
+   
+    else  DATE_DIFF(
         DATE(DATETIME_ADD(updated_at, INTERVAL 7 HOUR)), 
         DATE(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), 
         DAY
       )
-    else DATE_DIFF(CURRENT_DATE, date(DATETIME_ADD(inserted_at, INTERVAL 7 HOUR)), DAY)
   end as so_ngay_no,
 
   status_name,
@@ -224,4 +230,4 @@ select *,
     ELSE 'Trên 28 ngày'
   END AS trang_thai_don_no,
 
-from a
+from a where a.ma_don_hang = '49252'
