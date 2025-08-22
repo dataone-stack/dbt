@@ -20,7 +20,7 @@ CASE
     WHEN ARRAY_LENGTH(po.status_history) = 2 
     THEN 'Chờ hàng'
 
-    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('6','7','4')) 
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('4','5','6','7')) 
     then 'Đã hoàn, hủy'
     WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('3'))
     then 'Hoàn tất'
