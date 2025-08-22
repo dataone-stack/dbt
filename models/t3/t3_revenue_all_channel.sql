@@ -23,7 +23,7 @@ SELECT
     sku_code,
     ten_san_pham,
     CAST(so_luong AS INT64) AS so_luong,
-    status,
+    status_update as status,
     status_name as status_channel,
     gia_san_pham_goc,
     gia_san_pham_goc_total,
