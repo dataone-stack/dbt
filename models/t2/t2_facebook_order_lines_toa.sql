@@ -152,7 +152,7 @@ case
   then 'Đăng đơn nợ hàng'
   when b.loai_don_no is null and a.status = 'Đăng đơn'
   then 'Đăng đơn không nợ hàng'
-  else '-'
+  else a.status
 end as status_dang_don
 from a
 left join {{ref("t2_pancake_pos_don_no_total")}} as b on a.ma_don_hang = b.ma_don_hang and a.brand = b.brand and a.sku_code = b.sku_code
