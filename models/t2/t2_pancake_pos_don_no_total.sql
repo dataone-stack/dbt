@@ -20,17 +20,20 @@ CASE
     WHEN ARRAY_LENGTH(po.status_history) = 2 
     THEN 'Chờ hàng'
 
-    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('6','7')) 
-    then 'Đã hủy'
-    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('3')) 
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('6','7','4')) 
+    then 'Đã hoàn, hủy'
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('3'))
     then 'Hoàn tất'
     ELSE 'Đang xử lý'
 END AS loai_don_no,
   po.*,
 
 FROM {{ref("t1_pancake_pos_order_total")}} AS po
-CROSS JOIN UNNEST(po.status_history) AS his
-WHERE JSON_VALUE(his, '$.status') = '11' 
+WHERE EXISTS (
+    SELECT 1 
+    FROM UNNEST(po.status_history) h 
+    WHERE JSON_VALUE(h, '$.status') = '11'
+) 
 
 )
 
