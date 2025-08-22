@@ -18,19 +18,22 @@ pancake_total as (
 SELECT 
 CASE 
     WHEN ARRAY_LENGTH(po.status_history) = 2 
-    THEN 'Chờ bổ sung hàng'
+    THEN 'Chờ hàng'
 
-    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('6','7')) 
-    then 'Đã hủy do thiếu hàng'
-    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('3')) 
-    then 'Hoàn tất sau thiếu hàng'
-    ELSE 'Chờ xử lý giao hàng'
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('4','5','6','7')) 
+    then 'Đã hoàn, hủy'
+    WHEN ARRAY_LENGTH(po.status_history) > 2 AND EXISTS (SELECT 1 FROM UNNEST(po.status_history) h WHERE JSON_VALUE(h, '$.status') IN ('3'))
+    then 'Hoàn tất'
+    ELSE 'Đang xử lý'
 END AS loai_don_no,
   po.*,
 
 FROM {{ref("t1_pancake_pos_order_total")}} AS po
-CROSS JOIN UNNEST(po.status_history) AS his
-WHERE JSON_VALUE(his, '$.status') = '11' 
+WHERE EXISTS (
+    SELECT 1 
+    FROM UNNEST(po.status_history) h 
+    WHERE JSON_VALUE(h, '$.status') = '11'
+) 
 
 )
 
@@ -212,6 +215,24 @@ select
     WHEN status_name in ('new', 'packing', 'submitted','waitting', 'packing') THEN 'Đăng đơn'
     ELSE 'Khác'
   END AS status,
+
+  CASE
+    WHEN status_name = 'new' THEN 'Mới'
+    WHEN status_name = 'waitting' THEN 'Chờ hàng'
+    WHEN status_name = 'wait_submit' THEN 'Chờ xác nhận'
+    WHEN status_name = 'submitted' THEN 'Đã xác nhận'
+    WHEN status_name = 'packing' THEN 'Đang đóng hàng'
+    WHEN status_name = 'pending' THEN 'Chờ chuyển hàng'
+    WHEN status_name = 'shipped' THEN 'Đã gửi hàng'
+    WHEN status_name = 'delivered' THEN 'Đã nhận hàng'
+    WHEN status_name = 'received_money' THEN 'Đã thu tiền'
+    WHEN status_name = 'canceled' THEN 'Đã hủy'
+    WHEN status_name = 'returning' THEN 'Đang hoàn'
+    WHEN status_name = 'returned' THEN 'Đã hoàn'
+    WHEN status_name = 'removed' THEN 'Đã xóa'
+    ELSE 'Khác'
+  END AS status_pancake,
+  
   (gia_goc * so_luong) AS gia_san_pham_goc_total,
   COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
   COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,

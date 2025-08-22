@@ -87,7 +87,8 @@ order_line as (
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
 
-select
+, a as (
+    select
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
@@ -142,3 +143,16 @@ select
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan
 from order_line
 
+)
+
+select 
+a.*,
+case
+  when b.loai_don_no is not null and a.status = 'Đăng đơn'
+  then 'Đăng đơn nợ hàng'
+  when b.loai_don_no is null and a.status = 'Đăng đơn'
+  then 'Đăng đơn không nợ hàng'
+  else a.status
+end as status_dang_don
+from a
+left join {{ref("t2_pancake_pos_don_no_total")}} as b on a.ma_don_hang = b.ma_don_hang and a.brand = b.brand and a.sku_code = b.sku_code
