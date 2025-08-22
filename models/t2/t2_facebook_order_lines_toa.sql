@@ -143,6 +143,10 @@ order_line as (
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan
 from order_line
 
+),
+don_no as (
+  select distinct ma_don_hang, brand, sku_code, loai_don_no
+  from {{ref("t2_pancake_pos_don_no_total")}}
 )
 
 select 
@@ -155,4 +159,4 @@ case
   else a.status
 end as status_dang_don
 from a
-left join {{ref("t2_pancake_pos_don_no_total")}} as b on a.ma_don_hang = b.ma_don_hang and a.brand = b.brand and a.sku_code = b.sku_code
+left join don_no as b on a.ma_don_hang = b.ma_don_hang and a.brand = b.brand and a.sku_code = b.sku_code
