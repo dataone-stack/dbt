@@ -201,5 +201,5 @@ SELECT
     company,
     ho_ten AS ten_khach_hang,
 FROM {{ref("t2_sandbox_order_lines_toa")}}
-WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết với pushsale'
+WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết'
 
