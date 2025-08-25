@@ -403,4 +403,3 @@ WHERE nguon_doanh_thu <> 'Sàn TMDT'
 --   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien  - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))) AS doanh_thu_ke_toan
 -- from orderline
 
-

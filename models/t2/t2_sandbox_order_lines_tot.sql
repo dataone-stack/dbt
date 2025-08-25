@@ -117,7 +117,7 @@ orderline AS (
         --     )
         -- END,0) AS chiet_khau,
 
-        0 AS giam_gia_san_pham,
+        dt.discount_value AS giam_gia_san_pham,
 
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 

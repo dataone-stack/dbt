@@ -69,7 +69,7 @@ SELECT
     phu_phi,
     doanh_thu_ke_toan,
     'Facebook' AS channel
-FROM {{ref("t2_pushsale_order_lines_tot")}}
+FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 
 -- union all
 

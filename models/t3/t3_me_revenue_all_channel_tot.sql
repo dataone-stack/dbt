@@ -59,7 +59,7 @@ SELECT
     doanh_so_cu as doanh_so_cu,
     doanh_so_moi as doanh_so_moi,
     'Facebook' AS channel
-FROM {{ref("t2_pushsale_order_lines_tot")}}
+FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 
 -- union all
 
