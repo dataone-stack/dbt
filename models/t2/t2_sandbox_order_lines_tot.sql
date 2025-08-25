@@ -1,4 +1,4 @@
-rWITH latest_delivery AS (
+WITH latest_delivery AS (
   SELECT *
   FROM {{ref("t1_sandbox_deliveries_total")}}
   QUALIFY ROW_NUMBER() OVER (PARTITION BY order_number ORDER BY ngay_cap_nhat DESC, id DESC) = 1

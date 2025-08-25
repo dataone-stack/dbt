@@ -42,17 +42,15 @@ orderline AS (
             COALESCE(ord.delivery_province_name, '')
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
-
         CASE
             WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
-            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' OR ord.reason_to_create = 'TAKECARE' OR ord.reason_to_create = 'OLD_ORDER' THEN 'Khách hàng cũ'
+            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách hàng cũ'
             ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
 
         CASE
-            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' OR ord.reason_to_create = 'ECOMMERCE' THEN 'Sàn TMDT liên kết'
-            WHEN ord.id_pushsale > 0 THEN 'Pushsale'
-            ELSE 'Sandbox'
+            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT liên kết'
+            ELSE 'Pushsale'
         END AS nguon_doanh_thu,
 
         -- Sản phẩm cụ thể
@@ -71,18 +69,47 @@ orderline AS (
         END AS thanh_tien,
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
-        ROUND(
-            SAFE_DIVIDE(
-                COALESCE(dt.price, 0) * COALESCE(dt.quantity, 0),
-                NULLIF(
-                SUM(COALESCE(dt.price, 0) * COALESCE(dt.quantity, 0)) OVER (PARTITION BY ord.order_id), 
-                0
-                )
-            ) * (COALESCE(ord.total_discount, 0) - COALESCE(ord.total_discount_product, 0)),
-            0
-        ) AS chiet_khau,
+        {# ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau, #}
 
-        dt.discount_value AS giam_gia_san_pham,
+        ROUND(CASE
+        WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008') THEN -- Nhóm quà tặng
+        --Phân bổ chiết khấu cho từng sản phẩm quà tặng dựa trên tỷ lệ giá trị của sản phẩm đó trong nhóm quà tặng
+            SAFE_DIVIDE(
+            dt.total_price, 
+            NULLIF(
+                -- tổng giá trị của tất cả sản phẩm quà tặng trong đơn
+                SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number), 0)
+            )
+            * LEAST(
+                ord.total_discount,-- tổng chiết khấu của đơn
+                -- Nếu tổng chiết khấu > tổng giá nhóm quà tặng thì giới hạn bằng tổng giá nhóm quà tặng
+                SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number))
+
+        -- Nhóm thường
+        ELSE
+        --Phân bổ phần chiết khấu còn lại cho từng sản phẩm thường theo tỷ lệ giá trị sản phẩm trong nhóm thường
+            SAFE_DIVIDE(
+            dt.total_price,
+            NULLIF(
+                SUM(CASE WHEN dt.item_code NOT IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number), 0)
+            )
+            --nếu phần chiết khấu còn lại < 0 thì lấy 0
+            * GREATEST(
+                ord.total_discount
+                - SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
+                        THEN dt.total_price ELSE 0 END
+                ) OVER (PARTITION BY ord.order_number),
+                0
+            )
+        END,0) AS chiet_khau,
+
+        dt.discount AS giam_gia_san_pham,
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
         ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * 
             CASE WHEN ord.total_shipping_cost = 0 THEN ord.total_cod ELSE 0 END, 0) AS phi_vc_ho_tro_khach,
@@ -216,7 +243,7 @@ SELECT
     COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) AS tien_chiet_khau_sp,
  
-    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
+    (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
      AS doanh_thu_ke_toan,
 
     CASE 
@@ -375,5 +402,4 @@ WHERE nguon_doanh_thu <> 'Sàn TMDT'
 --   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - chiet_khau ) AS tien_chiet_khau_sp,
 --   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien  - COALESCE(chiet_khau, 0) + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))) AS doanh_thu_ke_toan
 -- from orderline
-
 
