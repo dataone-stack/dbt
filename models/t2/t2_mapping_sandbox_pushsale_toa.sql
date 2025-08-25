@@ -43,6 +43,9 @@ SELECT
     marketing_user_name,
     sale_name,
     sale_user_name,
+    loai_khach_hang,
+    ma_nhan_vien,
+    ma_quan_ly,
     'Pushsale' as source
 FROM {{ref("t2_pushsale_order_lines_toa")}}
 
@@ -93,6 +96,9 @@ SELECT
     s.marketing_user_name,
     s.sale_name,
     s.sale_user_name,
+    s.loai_khach_hang,
+    s.ma_nhan_vien,
+    s.ma_quan_ly,
     'Sandbox' as source
 FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p
