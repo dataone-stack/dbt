@@ -53,12 +53,6 @@ orderline AS (
             ELSE 'Sandbox'
         END AS nguon_doanh_thu,
 
-        -- CASE 
-        --     WHEN ord.customer_type = 0 THEN 'Khách hàng mới'
-        --     WHEN ord.customer_type = 1 THEN 'Khách hàng cũ'
-        --     ELSE 'Không xác định'
-        -- END AS loai_khach_hang,
-
         -- Sản phẩm cụ thể
         dt.item_code AS sku,
         dt.item_name AS san_pham,
@@ -87,45 +81,6 @@ orderline AS (
             0
         ) AS chiet_khau,
         
-        -- ROUND(CASE
-        -- WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008') THEN -- Nhóm quà tặng
-        -- --Phân bổ chiết khấu cho từng sản phẩm quà tặng dựa trên tỷ lệ giá trị của sản phẩm đó trong nhóm quà tặng
-        --     SAFE_DIVIDE(
-        --     dt.quantity * dt.price, 
-        --     NULLIF(
-        --         -- tổng giá trị của tất cả sản phẩm quà tặng trong đơn
-        --         SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
-        --                 THEN dt.quantity * dt.price ELSE 0 END
-        --         ) OVER (PARTITION BY ord.order_number), 0)
-        --     )
-        --     * LEAST(
-        --         ord.total_discount,-- tổng chiết khấu của đơn
-        --         -- Nếu tổng chiết khấu > tổng giá nhóm quà tặng thì giới hạn bằng tổng giá nhóm quà tặng
-        --         SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
-        --                 THEN dt.quantity * dt.price ELSE 0 END
-        --         ) OVER (PARTITION BY ord.order_number))
-
-        -- -- Nhóm thường
-        -- ELSE
-        -- --Phân bổ phần chiết khấu còn lại cho từng sản phẩm thường theo tỷ lệ giá trị sản phẩm trong nhóm thường
-        --     SAFE_DIVIDE(
-        --     dt.quantity * dt.price,
-        --     NULLIF(
-        --         SUM(CASE WHEN dt.item_code NOT IN ('NTB-005','NTB-006','NTB-007','NTB-008')
-        --                 THEN dt.quantity * dt.price ELSE 0 END
-        --         ) OVER (PARTITION BY ord.order_number), 0)
-        --     )
-        --     --nếu phần chiết khấu còn lại < 0 thì lấy 0
-        --     * GREATEST(
-        --         ord.total_discount
-        --         - SUM(CASE WHEN dt.item_code IN ('NTB-005','NTB-006','NTB-007','NTB-008')
-        --                 THEN dt.quantity * dt.price ELSE 0 END
-        --         ) OVER (PARTITION BY ord.order_number),
-        --         0
-        --     )
-        -- END,0) AS chiet_khau,
-
-        -- total_discount_product đang update
         dt.discount_value AS giam_gia_san_pham,
 
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
