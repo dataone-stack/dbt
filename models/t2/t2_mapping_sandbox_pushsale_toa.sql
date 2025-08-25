@@ -1,0 +1,84 @@
+SELECT 
+    manager,
+
+    brand, 
+    trang_thai_don_hang,
+    company,
+    phi_van_chuyen_thuc_te,
+    phi_van_chuyen_tro_gia_tu_san,
+    phi_thanh_toan,
+    phi_hoa_hong_shop,
+    phi_hoa_hong_tiep_thi_lien_ket,
+    phi_hoa_hong_quang_cao_cua_hang,
+    phi_dich_vu,
+    phi_xtra,
+    voucher_from_seller,
+    phi_co_dinh,
+
+    tien_khach_hang_thanh_toan,
+    tien_sp_sau_tro_gia,
+    gia_dich_vu_vc,
+    giam_gia_san_pham,
+    seller_tro_gia,
+    san_tro_gia,
+    tong_phi_san,
+    ma_don_code,
+    cast (ma_don_so as string) as ma_don_so ,
+    ngay_chot_don,
+    sku,
+    san_pham,
+    so_luong,
+    don_gia,
+    thanh_tien,
+    gia_ban_daily,
+    gia_ban_daily_total,
+    tien_chiet_khau_sp,
+    doanh_thu_ke_toan,
+    ho_ten,
+    nguon_doanh_thu 
+FROM {{ref("t2_pushsale_order_lines_toa")}}
+
+UNION ALL
+
+SELECT 
+    s.manager,
+
+    s.brand, 
+    s.trang_thai_don_hang,
+    s.company,
+    s.phi_van_chuyen_thuc_te,
+    s.phi_van_chuyen_tro_gia_tu_san,
+    s.phi_thanh_toan,
+    s.phi_hoa_hong_shop,
+    s.phi_hoa_hong_tiep_thi_lien_ket,
+    s.phi_hoa_hong_quang_cao_cua_hang,
+    s.phi_dich_vu,
+    s.phi_xtra,
+    s.voucher_from_seller,
+    s.phi_co_dinh,
+
+    s.tien_khach_hang_thanh_toan,
+    s.tien_sp_sau_tro_gia,
+    s.gia_dich_vu_vc,
+    s.giam_gia_san_pham,
+    s.seller_tro_gia,
+    s.san_tro_gia,
+    s.tong_phi_san,
+    s.ma_don_code,
+    s.ma_don_so,
+    s.ngay_chot_don,
+    s.sku,
+    s.san_pham,
+    s.so_luong,
+   s.don_gia,
+    s.thanh_tien,
+    s.gia_ban_daily,
+    s.gia_ban_daily_total,
+    s.tien_chiet_khau_sp,
+    s.doanh_thu_ke_toan,
+    s.ho_ten,
+    s.nguon_doanh_thu 
+FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
+LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p
+    ON s.ma_don_code = p.ma_don_code
+WHERE p.ma_don_code IS NULL
