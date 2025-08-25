@@ -35,7 +35,13 @@ SELECT
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
     ho_ten,
-    nguon_doanh_thu 
+    nguon_doanh_thu,
+    marketing_name,
+    
+    ma_nhan_vien,
+    ma_quan_ly,
+
+    marketing_user_name
 FROM {{ref("t2_pushsale_order_lines_toa")}}
 
 UNION ALL
@@ -77,7 +83,13 @@ SELECT
     s.tien_chiet_khau_sp,
     s.doanh_thu_ke_toan,
     s.ho_ten,
-    s.nguon_doanh_thu 
+    s.nguon_doanh_thu ,
+    s.marketing_name,
+    
+   s.ma_nhan_vien,
+    s.ma_quan_ly,
+
+    s.marketing_user_name
 FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p
     ON s.ma_don_code = p.ma_don_code
