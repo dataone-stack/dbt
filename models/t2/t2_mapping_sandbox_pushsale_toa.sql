@@ -1,6 +1,6 @@
 SELECT 
     manager,
-
+    channel,
     brand, 
     trang_thai_don_hang,
     company,
@@ -23,7 +23,7 @@ SELECT
     san_tro_gia,
     tong_phi_san,
     ma_don_code,
-    cast (ma_don_so as string) as ma_don_so ,
+    cast (ma_don_so as string) as ma_don_so,
     ngay_chot_don,
     sku,
     san_pham,
@@ -32,23 +32,25 @@ SELECT
     thanh_tien,
     gia_ban_daily,
     gia_ban_daily_total,
+    chiet_khau,
+    doanh_so_cu,
+    doanh_so_moi,
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
     ho_ten,
     nguon_doanh_thu,
     marketing_name,
-    
-    ma_nhan_vien,
-    ma_quan_ly,
-
-    marketing_user_name
+    marketing_user_name,
+    sale_name,
+    sale_user_name,
+    'Pushsale' as source
 FROM {{ref("t2_pushsale_order_lines_toa")}}
 
 UNION ALL
 
 SELECT 
     s.manager,
-
+    s.channel,
     s.brand, 
     s.trang_thai_don_hang,
     s.company,
@@ -76,20 +78,22 @@ SELECT
     s.sku,
     s.san_pham,
     s.so_luong,
-   s.don_gia,
+    s.don_gia,
     s.thanh_tien,
     s.gia_ban_daily,
     s.gia_ban_daily_total,
+    s.chiet_khau,
+    s.doanh_so_cu,
+    s.doanh_so_moi,
     s.tien_chiet_khau_sp,
     s.doanh_thu_ke_toan,
     s.ho_ten,
-    s.nguon_doanh_thu ,
+    s.nguon_doanh_thu,
     s.marketing_name,
-    
-   s.ma_nhan_vien,
-    s.ma_quan_ly,
-
-    s.marketing_user_name
+    s.marketing_user_name,
+    s.sale_name,
+    s.sale_user_name,
+    'Sandbox' as source
 FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p
     ON s.ma_don_code = p.ma_don_code
