@@ -126,7 +126,7 @@ orderline AS (
         -- END,0) AS chiet_khau,
 
         -- total_discount_product đang update
-        0 AS giam_gia_san_pham,
+        dt.discount_value AS giam_gia_san_pham,
 
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 
@@ -261,7 +261,7 @@ SELECT
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
     AS tien_chiet_khau_sp,
  
-    (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
+    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
      AS doanh_thu_ke_toan,
     CASE 
         WHEN loai_khach_hang = 'Khách hàng mới' 
