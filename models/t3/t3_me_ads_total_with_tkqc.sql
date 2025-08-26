@@ -10,7 +10,7 @@ WITH ads_total_with_tkqc AS (
 
         tkqc.idtkqc,
         tkqc.nametkqc,
-        tkqc.brand,
+        COALESCE(campaign_team.brand, tkqc.brand) as brand,
         tkqc.channel,
         ads.currency,
         tkqc.company,
@@ -53,7 +53,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(campaign_team.staff, tkqc.staff),
         COALESCE(campaign_team.manager, tkqc.manager),
         COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
-        tkqc.brand,
+        COALESCE(campaign_team.brand, tkqc.brand),
         tkqc.channel,
         ads.revenue_type,
         ads.currency,
@@ -88,9 +88,9 @@ WITH ads_total_with_tkqc AS (
         --Brand cho báo cáo ME
         COALESCE(
             CASE 
-                WHEN ads.brand = 'Cà Phê Mâm Xôi' THEN 'MX'
-                WHEN ads.brand = 'MEG' THEN 'MX'
-                WHEN ads.brand = 'NATURAL HEALTH' THEN 'MX'
+                WHEN ads.brand = 'Cà Phê Mâm Xôi' THEN 'Mâm xôi'
+                WHEN ads.brand = 'MEG' THEN 'Mâm xôi'
+                WHEN ads.brand = 'NATURAL HEALTH' THEN 'Mâm xôi'
                 ELSE ads.brand
             END,
             ladi.brand_lv1

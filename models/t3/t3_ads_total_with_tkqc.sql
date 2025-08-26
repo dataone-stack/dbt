@@ -98,7 +98,16 @@ ladipage_total as (
         COALESCE(ads.manager, ladi.manager_name) as manager,
         COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly) as ma_quan_ly,
         COALESCE(ads.brand, ladi.brand) as brand,
-        COALESCE(ads.brand, ladi.brand_lv1) as brand_lv1,
+        --Brand cho báo cáo
+        COALESCE(
+            CASE 
+                WHEN ads.brand = 'Cà Phê Mâm Xôi' THEN 'Mâm xôi'
+                WHEN ads.brand = 'MEG' THEN 'Mâm xôi'
+                WHEN ads.brand = 'NATURAL HEALTH' THEN 'Mâm xôi'
+                ELSE ads.brand
+            END,
+            ladi.brand_lv1
+        ) AS brand_lv1,
         COALESCE(ads.channel, ladi.channel) as channel,
         ads.currency,
         COALESCE(ads.company, ladi.company) as company,
