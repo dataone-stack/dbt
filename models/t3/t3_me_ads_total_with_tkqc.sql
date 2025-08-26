@@ -88,9 +88,9 @@ WITH ads_total_with_tkqc AS (
         --Brand cho báo cáo ME
         COALESCE(
             CASE 
-                WHEN ads.brand = 'Cà Phê Mâm Xôi' THEN 'MX'
-                WHEN ads.brand = 'MEG' THEN 'MX'
-                WHEN ads.brand = 'NATURAL HEALTH' THEN 'MX'
+                WHEN ads.brand = 'Cà Phê Mâm Xôi' THEN 'Mâm xôi'
+                WHEN ads.brand = 'MEG' THEN 'Mâm xôi'
+                WHEN ads.brand = 'NATURAL HEALTH' THEN 'Mâm xôi'
                 ELSE ads.brand
             END,
             ladi.brand_lv1
