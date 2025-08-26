@@ -10,7 +10,7 @@ WITH ads_total_with_tkqc AS (
 
         tkqc.idtkqc,
         tkqc.nametkqc,
-        tkqc.brand,
+        COALESCE(campaign_team.brand, tkqc.brand) as brand,
         tkqc.channel,
         ads.currency,
         tkqc.company,
@@ -53,7 +53,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(campaign_team.staff, tkqc.staff),
         COALESCE(campaign_team.manager, tkqc.manager),
         COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
-        tkqc.brand,
+        COALESCE(campaign_team.brand, tkqc.brand),
         tkqc.channel,
         ads.revenue_type,
         ads.currency,
