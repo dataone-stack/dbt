@@ -77,9 +77,9 @@ WITH ads_total_with_tkqc AS (
 ,
 
 ladipage_total as (
-  select company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,sum(doanhThuLadi) as doanhThuLadi
+  select company,manager_name,staff_name,date_insert,brand, brand_lv1,channel,id_staff,ma_quan_ly,sum(doanhThuLadi) as doanhThuLadi
   from `crypto-arcade-453509-i8`.`dtm`.`t2_ladipage_facebook_total`
-  group by date_insert,brand,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
+  group by date_insert,brand,channel,id_staff,ma_quan_ly,company,staff_name,manager_name,brand_lv1
 )
 
 ,ads_ladipageFacebook_total_with_tkqc AS (
@@ -98,6 +98,7 @@ ladipage_total as (
         COALESCE(ads.manager, ladi.manager_name) as manager,
         COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly) as ma_quan_ly,
         COALESCE(ads.brand, ladi.brand) as brand,
+        COALESCE(ads.brand, ladi.brand_lv1) as brand_lv1,
         COALESCE(ads.channel, ladi.channel) as channel,
         ads.currency,
         COALESCE(ads.company, ladi.company) as company,
@@ -140,6 +141,7 @@ SELECT
     ads.ma_quan_ly,
     ads.manager,
     ads.brand,
+    ads.brand_lv1,
     ads.channel, 
     ads.chiPhiAds,
     ads.doanhThuAds,
@@ -170,6 +172,7 @@ group by ads.date_start,
     ads.ma_quan_ly,
     ads.manager,
     ads.brand,
+    ads.brand_lv1,
     ads.channel, 
     ads.chiPhiAds,
     ads.doanhThuAds,

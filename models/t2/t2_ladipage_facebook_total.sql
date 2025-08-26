@@ -3,6 +3,7 @@ SELECT
   'Facebook' AS channel,
   mar.company,
   od.brand,
+  '' as brand_lv1,
   '' as loai_khach_hang,-- không có dữ liệu để NULL
   mar.marketing_name as staff_name,
   mar.ma_nhan_vien AS id_staff,
@@ -35,6 +36,7 @@ SELECT
   a.channel,
   'Max Eagle' AS company,
   a.brand,
+  a.brand_lv1,
   a.loai_khach_hang,
   a.marketing_name AS staff_name,
   a.ma_nhan_vien AS id_staff,
@@ -51,6 +53,7 @@ GROUP BY
   
   a.channel,
   a.brand,
+  a.brand_lv1,
   a.loai_khach_hang,
   a.marketing_name,
   a.ma_nhan_vien,
