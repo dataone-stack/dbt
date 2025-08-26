@@ -2,6 +2,7 @@ SELECT
     manager,
     channel,
     brand, 
+    brand_lv1,
     trang_thai_don_hang,
     company,
     phi_van_chuyen_thuc_te,
@@ -43,6 +44,9 @@ SELECT
     marketing_user_name,
     sale_name,
     sale_user_name,
+    loai_khach_hang,
+    ma_nhan_vien,
+    ma_quan_ly,
     'Pushsale' as source
 FROM {{ref("t2_pushsale_order_lines_toa")}}
 
@@ -52,6 +56,7 @@ SELECT
     s.manager,
     s.channel,
     s.brand, 
+    s.brand_lv1,
     s.trang_thai_don_hang,
     s.company,
     s.phi_van_chuyen_thuc_te,
@@ -93,6 +98,9 @@ SELECT
     s.marketing_user_name,
     s.sale_name,
     s.sale_user_name,
+    s.loai_khach_hang,
+    s.ma_nhan_vien,
+    s.ma_quan_ly,
     'Sandbox' as source
 FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p

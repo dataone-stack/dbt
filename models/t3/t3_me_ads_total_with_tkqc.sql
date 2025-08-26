@@ -65,12 +65,12 @@ WITH ads_total_with_tkqc AS (
 
 , ladipage_total AS (
     SELECT 
-        company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,
+        company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,brand_lv1,
         SUM(doanhThuLadi)    AS doanhThuLadi,
         SUM(doanh_so_moi)    AS doanh_so_moi,
         SUM(doanh_so_cu)     AS doanh_so_cu
     FROM {{ ref('t2_ladipage_facebook_total') }}
-    GROUP BY  date_insert,brand,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
+    GROUP BY  date_insert,brand,brand_lv1,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
 )
 
 ,ads_ladipageFacebook_total_with_tkqc AS (
@@ -85,6 +85,17 @@ WITH ads_total_with_tkqc AS (
         COALESCE(ads.manager, ladi.manager_name) as manager,
         COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly) as ma_quan_ly,
         COALESCE(ads.brand, ladi.brand) as brand,
+        --Brand cho báo cáo ME
+        COALESCE(
+            CASE 
+                WHEN ads.brand = 'Cà Phê Mâm Xôi' THEN 'MX'
+                WHEN ads.brand = 'MEG' THEN 'MX'
+                WHEN ads.brand = 'NATURAL HEALTH' THEN 'MX'
+                ELSE ads.brand
+            END,
+            ladi.brand_lv1
+        ) AS brand_lv1,
+
         COALESCE(ads.channel, ladi.channel) as channel,
         ads.currency,
         COALESCE(ads.company, ladi.company) as company,
@@ -169,6 +180,7 @@ SELECT
     ads.ma_quan_ly,
     upper(trim(ads.manager)) as manager ,
     ads.brand,
+    ads.brand_lv1,
     ads.channel, 
     ads.chiPhiAds,
     ads.doanhThuAds,

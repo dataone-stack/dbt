@@ -81,7 +81,13 @@ orderline AS (
             0
         ) AS chiet_khau,
         
-        dt.discount_value AS giam_gia_san_pham,
+        CASE 
+            WHEN discount_type = 1 
+                THEN ROUND(COALESCE(dt.quantity,0) * COALESCE(dt.price,0) * (COALESCE(dt.discount_value,0)/100), 0)
+            WHEN discount_type IN (0,2) 
+                THEN COALESCE(dt.discount_value,0)
+            ELSE 0  
+        END AS giam_gia_san_pham,
 
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 
@@ -165,6 +171,7 @@ orderline AS (
 
         ord.operation_result_name AS ket_qua_tac_nghiep_telesale,
         bangGia.brand,
+        bangGia.brand_lv1,
         'Max Eagle' AS company,
         CASE 
             WHEN (source.channel IS NULL OR source.channel = '') THEN 'Facebook'

@@ -1,5 +1,6 @@
 SELECT 
     brand, 
+    brand_lv1,
     company,
     
     ngay_tien_ve_vi,
@@ -21,6 +22,7 @@ UNION ALL
 
 SELECT 
     s.brand, 
+    s.brand_lv1,
     s.company,
     
     s.ngay_tien_ve_vi,

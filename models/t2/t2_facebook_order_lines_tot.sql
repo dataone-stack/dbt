@@ -371,7 +371,9 @@ vietful_delivery_returned_date as (
 order_line as (
   select
     ord.id,
+    ord.marketer,
     ord.brand,
+    ord.order_sources_name,
     ord.company,
     ord.inserted_at,
     ord.status_name,
@@ -426,6 +428,8 @@ order_line_returned as (
   select
     ord.id,
     ord.brand,
+    ord.marketer,
+    ord.order_sources_name,
     ord.company,
     ord.inserted_at,
     ord.status_name,
@@ -478,6 +482,8 @@ order_line_returned as (
 ,order_delivered as (
 select
   id as ma_don_hang,
+  marketer,
+  order_sources_name,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
   brand,
@@ -566,6 +572,8 @@ from order_line
 ,order_returned as (
 select
   id as ma_don_hang,
+  marketer,
+  order_sources_name,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
   brand,
