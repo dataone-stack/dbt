@@ -1,5 +1,6 @@
 SELECT 
     brand, 
+    brand_lv1,
     company,
     CAST(ngay_ship AS date) as ngay_ship,
     CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
@@ -19,6 +20,7 @@ UNION ALL
 
 SELECT 
     brand, 
+    brand_lv1,
     company,
     cast(ngay_ship as date) as ngay_ship,
 
@@ -38,6 +40,7 @@ UNION ALL
 
 SELECT 
     brand, 
+    brand_lv1,
     company,
 
     CAST(Shipped_Time as date) as ngay_ship,
@@ -57,6 +60,7 @@ union all
 
 SELECT 
     brand, 
+    brand_lv1,
     company,
     cast (null as date) as ngay_ship,
     ngay_tien_ve_vi as date_create, 
@@ -75,6 +79,7 @@ FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 
 -- SELECT 
 --     brand, 
+--     brand_lv1,
 --     company,
 --     cast(null as date) as ngay_ship,
 --     ngay_tien_ve_vi as date_create, 

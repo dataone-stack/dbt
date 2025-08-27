@@ -1,3 +1,4 @@
+
 WITH latest_delivery AS (
   SELECT *
   FROM {{ref("t1_sandbox_deliveries_total")}}
@@ -118,9 +119,10 @@ orderline AS (
         -- END,0) AS chiet_khau,
 
         CASE 
+            WHEN discount_type = 0 THEN COALESCE(ord.total_discount_product,0)
             WHEN discount_type = 1 
                 THEN ROUND(COALESCE(dt.quantity,0) * COALESCE(dt.price,0) * (COALESCE(dt.discount_value,0)/100), 0)
-            WHEN discount_type IN (0,2) 
+            WHEN discount_type =2 
                 THEN COALESCE(dt.discount_value,0)
             ELSE 0  
         END AS giam_gia_san_pham,
@@ -251,7 +253,7 @@ orderline AS (
     ORDER BY de.ngay_cap_nhat ASC
 
 
-)
+),a as (
 SELECT
     *,
     thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) 
@@ -277,4 +279,7 @@ SELECT
         ELSE 0
     END AS doanh_so_cu
 FROM orderline
-WHERE nguon_doanh_thu <> 'Sàn TMDT'
+WHERE nguon_doanh_thu <> 'Sàn TMDT')
+
+
+select a.* from a left join {{ref("t1_sandbox_don_xoa_total")}} b on a.ma_don_code = b.order_code where b.order_code is null

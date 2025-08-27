@@ -1,0 +1,1 @@
+select order_code from `google_sheet.me_don_xoa` where check_don_xoa = 'Đơn xóa'

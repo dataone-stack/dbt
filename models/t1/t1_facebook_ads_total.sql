@@ -20,6 +20,8 @@
 -- union all
 select *, 'One5' as company from `team_a_tien_facebook_ads_dwh.facebook_ads_ads_insights_default`
 union all
+select *, 'One5' as company from `team_a_tien_facebook_ads_1_dwh.facebook_ads_ads_insights_default`
+union all
 select *,'Max Eagle' as company from `team_maxeagle_facebook_ads_2_dwh.facebook_ads_ads_insights_default` 
 union all
 select * ,'Max Eagle' as company from `team_maxeagle_facebook_ads_1_dwh.facebook_ads_ads_insights_default`
