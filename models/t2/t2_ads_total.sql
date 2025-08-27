@@ -3,7 +3,7 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     ad_id,
-    campaign_id,
+    cast(campaign_id as string) as campaign_id,
     campaign_name,
     spend,
     CASE
@@ -38,16 +38,16 @@ LEFT JOIN {{ref("t1_tkqc")}} tk ON cast(fb.account_id as string) = tk.idtkqc
 UNION ALL
 
 SELECT
-    DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
-    CAST(account_id AS STRING) AS account_id,
-    ad_id,
-    0 as campaign_id,
-    "" as campaign_name,
-    spend,
-    CAST(total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
+    DATE(DATETIME_ADD(DATETIME(a.stat_time_day), INTERVAL 7 HOUR)) AS date_start,
+    CAST(a.account_id AS STRING) AS account_id,
+    a.ad_id,
+    cast(b.campaign_id as string) as campaign_id,
+    b.campaign_name as campaign_name,
+    a.spend,
+    CAST(a.total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     'TikTok Ads' AS revenue_type,
     '-' as currency
-FROM {{ ref('t1_tiktok_ads_total') }}
+FROM {{ ref('t1_tiktok_ads_total') }} a left join {{ref("t1_tiktok_ads_ad_total")}} b on a.ad_id = b.ad_id
 
 UNION ALL
 
@@ -55,7 +55,7 @@ SELECT
     DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     0 as ad_id,
-    0 as campaign_id,
+    '-' as campaign_id,
     "" as campaign_name,
 
     cost AS spend,
@@ -70,7 +70,7 @@ SELECT
     DATE(date) AS date_start,
     CAST(idtkqc AS STRING) AS account_id,
     0 as ad_id,
-    0 as campaign_id,
+    '-' as campaign_id,
     "" as campaign_name,
     expense AS spend,
     broad_gmv AS doanhThuAds,
@@ -84,7 +84,7 @@ SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
     0 as ad_id,
-    0 campaign_id,
+    '-' campaign_id,
     "" as campaign_name,
     chiphi AS spend,
     doanhThuAds AS doanhThuAds,
@@ -99,7 +99,7 @@ select
   segment_date as date_start,
   CAST(account_id AS STRING) AS account_id,
   0 as ad_id,
-  0 as campaign_id,
+  '-' as campaign_id,
   "" as campaign_name,
   cast (safe_divide(spend,1000000) as float64)  as spend,
   0 as doanhThuAds,

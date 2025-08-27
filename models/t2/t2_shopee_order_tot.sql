@@ -40,7 +40,7 @@ order_product_summary AS (
     CASE 
       WHEN i.model_sku = "" THEN i.item_sku
       ELSE i.model_sku  
-    END = mapping.ma_sku AND f.brand = mapping.brand
+    END = mapping.ma_sku -- AND f.brand = mapping.brand
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
   GROUP BY f.order_id, f.brand,rd.status, mapping.brand_lv1
 )
