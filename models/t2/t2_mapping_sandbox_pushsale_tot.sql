@@ -42,4 +42,4 @@ SELECT
 FROM {{ref("t2_sandbox_order_lines_tot")}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_tot")}} p
     ON s.ma_don_code = p.ma_don_code
-WHERE p.ma_don_code IS NULLand s.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and s.nguon_doanh_thu <> 'Sàn TMDT liên kết'
+WHERE p.ma_don_code IS NULL and s.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and s.nguon_doanh_thu <> 'Sàn TMDT liên kết'
