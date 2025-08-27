@@ -415,6 +415,7 @@ order_line as (
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
+    mapBangGia.brand_lv1,
     vietful.ngay_da_giao,
     vietful.shipped_date as ngay_ship,
   from {{ref("t1_pancake_pos_order_total")}} as ord,
@@ -428,6 +429,7 @@ order_line_returned as (
   select
     ord.id,
     ord.brand,
+    mapBangGia.brand_lv1,
     ord.marketer,
     ord.order_sources_name,
     ord.company,
@@ -480,184 +482,186 @@ order_line_returned as (
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
 ,order_delivered as (
-select
-  id as ma_don_hang,
-  marketer,
-  order_sources_name,
-  DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
-  DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
-  brand,
-  company,
-  status_name,
-  activated_promotion_advances,
-  sku as sku_code,
-  ten_sp as ten_san_pham,
-  color,
-  size,
-  so_luong,
-  gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
-  khuyen_mai_dong_gia as giam_gia_seller,
-  giam_gia_don_hang as giam_gia_san,
-  0 as seller_tro_gia,
-  0 as san_tro_gia,
-  (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
-  (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
-  0 as tong_phi_san,
-  (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
-  case
-  when tra_truoc > 0
-  then 0
-  else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
-  end as cod,
-  tra_truoc,
-  cuoc_vc,
-  phi_van_chuyen as phi_ship,
-  0 AS phi_van_chuyen_thuc_te,
-  0 AS phi_van_chuyen_tro_gia_tu_san,
-  0 AS phi_thanh_toan,
-  0 AS phi_hoa_hong_shop,
-  0 AS phi_hoa_hong_tiep_thi_lien_ket,
-  0 AS phi_hoa_hong_quang_cao_cua_hang,
-  0 AS phi_dich_vu,
-  0 as phi_xtra,
-  0 as voucher_from_seller,
-  0 as phi_co_dinh,
-  'Đã giao hàng' as status,
--------------------------------------------
-case
-    when gia_goc_sau_giam_gia_san_pham = 0
+    select
+    id as ma_don_hang,
+    marketer,
+    order_sources_name,
+    DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
+    DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
+    brand,
+    brand_lv1,
+    company,
+    status_name,
+    activated_promotion_advances,
+    sku as sku_code,
+    ten_sp as ten_san_pham,
+    color,
+    size,
+    so_luong,
+    gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
+    khuyen_mai_dong_gia as giam_gia_seller,
+    giam_gia_don_hang as giam_gia_san,
+    0 as seller_tro_gia,
+    0 as san_tro_gia,
+    (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
+    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+    0 as tong_phi_san,
+    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+    case
+    when tra_truoc > 0
     then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    -- when gia_goc = 0
-    -- then (gia_goc_sau_giam_gia_san_pham * so_luong)
-    else (gia_goc_sau_giam_gia_san_pham * so_luong)
-  end as gia_san_pham_goc_total,
+    else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
+    end as cod,
+    tra_truoc,
+    cuoc_vc,
+    phi_van_chuyen as phi_ship,
+    0 AS phi_van_chuyen_thuc_te,
+    0 AS phi_van_chuyen_tro_gia_tu_san,
+    0 AS phi_thanh_toan,
+    0 AS phi_hoa_hong_shop,
+    0 AS phi_hoa_hong_tiep_thi_lien_ket,
+    0 AS phi_hoa_hong_quang_cao_cua_hang,
+    0 AS phi_dich_vu,
+    0 as phi_xtra,
+    0 as voucher_from_seller,
+    0 as phi_co_dinh,
+    'Đã giao hàng' as status,
+    -------------------------------------------
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        -- when gia_goc = 0
+        -- then (gia_goc_sau_giam_gia_san_pham * so_luong)
+        else (gia_goc_sau_giam_gia_san_pham * so_luong)
+    end as gia_san_pham_goc_total,
 
-   case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else COALESCE(gia_ban_daily, 0)
-  end as gia_ban_daily,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else COALESCE(gia_ban_daily, 0)
+    end as gia_ban_daily,
 
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)
-  end as gia_ban_daily_total,
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
-  end as tien_chiet_khau_sp,
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
-  end as doanh_thu_ke_toan,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)
+    end as gia_ban_daily_total,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
+    end as tien_chiet_khau_sp,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
+    end as doanh_thu_ke_toan,
 
-  ngay_da_giao,
-  0 AS phu_phi
-from order_line
+    ngay_da_giao,
+    0 AS phu_phi
+    from order_line
 )
 
 ,order_returned as (
-select
-  id as ma_don_hang,
-  marketer,
-  order_sources_name,
-  DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
-  DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
-  brand,
-  company,
-  status_name,
-  activated_promotion_advances,
-  sku as sku_code,
-  ten_sp as ten_san_pham,
-  color,
-  size,
-  so_luong,
-  gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
-  khuyen_mai_dong_gia as giam_gia_seller,
-  giam_gia_don_hang as giam_gia_san,
-  0 as seller_tro_gia,
-  0 as san_tro_gia,
-  (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
-  -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen) as tien_khach_hang_thanh_toan,
-  0 as tong_phi_san,
-  (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
-  case
-  when tra_truoc > 0
-  then 0
-  else -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
-  end as cod,
-  tra_truoc,
-  cuoc_vc,
-  phi_van_chuyen as phi_ship,
-  0 AS phi_van_chuyen_thuc_te,
-  0 AS phi_van_chuyen_tro_gia_tu_san,
-  0 AS phi_thanh_toan,
-  0 AS phi_hoa_hong_shop,
-  0 AS phi_hoa_hong_tiep_thi_lien_ket,
-  0 AS phi_hoa_hong_quang_cao_cua_hang,
-  0 AS phi_dich_vu,
-  0 as phi_xtra,
-  0 as voucher_from_seller,
-  0 as phi_co_dinh,
-  'Hoàn tất trả hàng' as status,
---------------------------------------------------------
+    select
+    id as ma_don_hang,
+    marketer,
+    order_sources_name,
+    DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
+    DATETIME_ADD(ngay_ship, INTERVAL 7 HOUR) as ngay_ship,
+    brand,
+    brand_lv1,
+    company,
+    status_name,
+    activated_promotion_advances,
+    sku as sku_code,
+    ten_sp as ten_san_pham,
+    color,
+    size,
+    so_luong,
+    gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
+    khuyen_mai_dong_gia as giam_gia_seller,
+    giam_gia_don_hang as giam_gia_san,
+    0 as seller_tro_gia,
+    0 as san_tro_gia,
+    (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
+    -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen) as tien_khach_hang_thanh_toan,
+    0 as tong_phi_san,
+    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+    case
+    when tra_truoc > 0
+    then 0
+    else -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
+    end as cod,
+    tra_truoc,
+    cuoc_vc,
+    phi_van_chuyen as phi_ship,
+    0 AS phi_van_chuyen_thuc_te,
+    0 AS phi_van_chuyen_tro_gia_tu_san,
+    0 AS phi_thanh_toan,
+    0 AS phi_hoa_hong_shop,
+    0 AS phi_hoa_hong_tiep_thi_lien_ket,
+    0 AS phi_hoa_hong_quang_cao_cua_hang,
+    0 AS phi_dich_vu,
+    0 as phi_xtra,
+    0 as voucher_from_seller,
+    0 as phi_co_dinh,
+    'Hoàn tất trả hàng' as status,
+    --------------------------------------------------------
 
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    -- when gia_goc = 0
-    -- then (gia_goc_sau_giam_gia_san_pham * so_luong)
-    else (gia_goc_sau_giam_gia_san_pham * so_luong)
-  end as gia_san_pham_goc_total,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        -- when gia_goc = 0
+        -- then (gia_goc_sau_giam_gia_san_pham * so_luong)
+        else (gia_goc_sau_giam_gia_san_pham * so_luong)
+    end as gia_san_pham_goc_total,
 
 
-   case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else COALESCE(gia_ban_daily, 0)
-  end as gia_ban_daily,
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) * -1
-  end as gia_ban_daily_total,
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
-  end as tien_chiet_khau_sp,
-  case
-    when gia_goc_sau_giam_gia_san_pham = 0
-    then 0
-    -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
-    -- then 0
-    else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang) * -1
-  end as doanh_thu_ke_toan,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else COALESCE(gia_ban_daily, 0)
+    end as gia_ban_daily,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) * -1
+    end as gia_ban_daily_total,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
+    end as tien_chiet_khau_sp,
+    case
+        when gia_goc_sau_giam_gia_san_pham = 0
+        then 0
+        -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
+        -- then 0
+        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang) * -1
+    end as doanh_thu_ke_toan,
 
-  ngay_da_giao,
-  0 AS phu_phi
-from order_line_returned
+    ngay_da_giao,
+    0 AS phu_phi
+    from order_line_returned
 ),
 
 a as (

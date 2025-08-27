@@ -1,1 +1,0 @@
-select * from `google_sheet.aff_shopee_order`

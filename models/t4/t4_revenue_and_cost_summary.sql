@@ -5,6 +5,7 @@ with
         select
             date_start,
             brand,
+            brand_lv1,
             channel,
             company,
             sum(coalesce(chiphiads, 0)) as chi_phi_ads,
@@ -14,7 +15,7 @@ with
             sum(coalesce(doanhthuladi, 0)) as doanhthuladi,
         from {{ ref("t3_ads_total_with_tkqc") }}
         where chiphiads is not null
-        group by date_start, brand, channel, company
+        group by date_start, brand, brand_lv1, channel, company
     ),
 
     cir_max_monthly as (
@@ -39,6 +40,7 @@ with
         SELECT 
             DATE(ngay_tao_don) AS date_start,
             brand,
+            brand_lv1,
             company,
             channel,
             SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_toa,
@@ -48,12 +50,13 @@ with
 
         FROM {{ ref('t3_revenue_all_channel') }}
         -- WHERE status NOT IN  ('Đã hủy')
-        GROUP BY DATE(ngay_tao_don), brand, channel, company --,ten_san_pham,sku_code
+        GROUP BY DATE(ngay_tao_don), brand, brand_lv1, channel, company --,ten_san_pham,sku_code
     ),  
 
     revenue_tot as (
         select distinct
             brand,
+            brand_lv1,
             company,
             date(format_timestamp('%Y-%m-%d', timestamp(date_create))) as date_start,
             
@@ -73,11 +76,12 @@ with
             sum(phu_phi) as phu_phi
         from {{ ref("t3_revenue_all_channel_tot") }}
         where date_create is not null
-        group by date(format_timestamp('%Y-%m-%d', timestamp(date_create))), brand, channel, company
+        group by date(format_timestamp('%Y-%m-%d', timestamp(date_create))), brand, brand_lv1, channel, company
     )
 select
     coalesce(a.date_start, cast(r_tot.date_start as date), cast(r_toa.date_start as date)) as date_start,
     coalesce(a.brand, r_tot.brand, r_toa.brand) as brand,
+    coalesce(a.brand_lv1, r_tot.brand_lv1, r_toa.brand_lv1) as brand_lv1,
     coalesce(a.channel, r_tot.channel, r_toa.channel) as channel,
     coalesce(a.company, r_tot.company , r_toa.company) as company,
     coalesce(a.chi_phi_ads, 0) as chi_phi_ads,
@@ -103,12 +107,14 @@ full outer join
     revenue_toa r_toa
     on  cast(r_tot.date_start as date) = cast(r_toa.date_start as date)
     and r_tot.brand = r_toa.brand
+    and r_tot.brand_lv1 = r_toa.brand_lv1
     and r_tot.channel = r_toa.channel
     and r_tot.company = r_toa.company
 full outer join
     ads_daily a
     on cast(r_tot.date_start as date) = a.date_start
     and r_tot.brand = a.brand
+    and r_tot.brand_lv1 = a.brand_lv1
     and r_tot.channel = a.channel
     and r_tot.company = a.company
 left join
@@ -122,4 +128,5 @@ left join
 order by
     date_start desc,
     brand,
+    brand_lv1,
     channel

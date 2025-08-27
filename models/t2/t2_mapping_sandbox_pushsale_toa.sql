@@ -49,6 +49,7 @@ SELECT
     ma_quan_ly,
     'Pushsale' as source
 FROM {{ref("t2_pushsale_order_lines_toa")}}
+WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết'
 
 UNION ALL
 
@@ -105,4 +106,4 @@ SELECT
 FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p
     ON s.ma_don_code = p.ma_don_code
-WHERE p.ma_don_code IS NULL
+WHERE p.ma_don_code IS NULL and s.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and s.nguon_doanh_thu <> 'Sàn TMDT liên kết'
