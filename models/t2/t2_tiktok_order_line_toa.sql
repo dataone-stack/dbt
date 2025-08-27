@@ -2,6 +2,7 @@ WITH LineItems AS (
   SELECT
   o.shop,
     o.brand,
+    mapping.brand_lv1,
     o.company,
     o.order_id,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
@@ -41,7 +42,8 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id'),
-    mapping.gia_ban_daily
+    mapping.gia_ban_daily,
+    mapping.brand_lv1
 ),
 
 ReturnLineItems AS (
@@ -64,6 +66,7 @@ OrderData AS (
   SELECT
     li.shop,
     li.brand,
+    li.brand_lv1,
     li.company,
     li.order_id AS Order_ID,
     CASE o.order_status
@@ -192,8 +195,9 @@ GROUP BY
 
 orderLine as(
 SELECT
-    shop,
+  shop,
   brand,
+  brand_lv1,
   company,
   Order_ID as ma_don_hang,
   Order_Status,

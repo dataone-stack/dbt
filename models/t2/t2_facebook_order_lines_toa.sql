@@ -79,7 +79,8 @@ order_line as (
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
     tt.customer_name,
-    mapBangGia.gia_ban_daily
+    mapBangGia.gia_ban_daily,
+    mapBangGia.brand_lv1,
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
@@ -92,6 +93,7 @@ order_line as (
   id as ma_don_hang,
   DATETIME_ADD(inserted_at, INTERVAL 7 HOUR) as ngay_tao_don,
   brand,
+  brand_lv1,
   company,
   customer_name,
   status_name,

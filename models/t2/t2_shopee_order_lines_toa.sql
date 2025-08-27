@@ -3,6 +3,7 @@ WITH return_detail AS (
     order_id,
     return_id,
     b.brand,
+    b.brand_lv1,
     update_time,
     i.variation_sku, 
     i.item_price * i.amount AS so_tien_hoan_tra,
@@ -19,6 +20,7 @@ total_amount AS (
   SELECT 
     a.order_id,
     b.brand,
+    b.brand_lv1,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
   FROM {{ ref('t1_shopee_shop_fee_total') }} a,   
   UNNEST(items) AS i
@@ -28,7 +30,7 @@ total_amount AS (
         THEN i.item_sku
     ELSE i.model_sku
   END) = trim (b.ma_sku)
-  GROUP BY a.order_id,b.brand
+  GROUP BY a.order_id,b.brand, b.brand_lv1
 )
 
 ,shopee_fee_total as (
@@ -37,6 +39,7 @@ total_amount AS (
     detail.order_id,
     detail.buyer_user_name ,
     mapping.brand,
+    mapping.brand_lv1,
     detail.company,
     detail.buyer_paid_shipping_fee ,
     detail.commission_fee ,
@@ -91,6 +94,7 @@ total_amount AS (
   END as sku,
     ord.buyer_cancel_reason,
     mapping.brand,
+    mapping.brand_lv1,
     ord.days_to_ship
   from `dtm.t1_shopee_shop_order_detail_total` as ord, 
   unnest (item_list) as i
