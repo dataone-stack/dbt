@@ -46,7 +46,6 @@ SELECT
   SUM(a.doanh_so_moi) AS doanh_so_moi,
   SUM(a.doanh_so_cu) AS doanh_so_cu
 FROM {{ ref('t2_mapping_sandbox_pushsale_toa') }} a
-WHERE a.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and a.nguon_doanh_thu <> 'Sàn TMDT liên kết'
 GROUP BY 
   DATE(a.ngay_chot_don),
 
