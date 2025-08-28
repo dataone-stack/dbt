@@ -1,6 +1,7 @@
 WITH ads_daily AS (
   SELECT
     DATE(date_start) AS date_start,
+    TRIM(brand_lv1) as brand_lv1,
     TRIM(brand) AS brand,
     CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
@@ -13,13 +14,14 @@ WITH ads_daily AS (
     SUM(COALESCE(doanhThuAds, 0) + COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads
   FROM {{ ref('t3_me_ads_total_with_tkqc') }}
   WHERE company = 'Max Eagle' AND date_start IS NOT NULL
-  GROUP BY date_start, brand, channel,company, manager
+  GROUP BY date_start, brand, brand_lv1, channel,company, manager
 ),
 
 revenue_toa AS (
   SELECT
     DATE(ngay_tao_don)                           AS ngay_tao_don,         -- ngày chốt đơn
     TRIM(brand) AS brand,
+    TRIM(brand_lv1) AS brand_lv1,
     CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
     TRIM(manager)                               AS manager,
@@ -29,12 +31,13 @@ revenue_toa AS (
     SUM(COALESCE(tien_khach_hang_thanh_toan,0)) AS tien_khach_hang_thanh_toan
   FROM {{ ref('t3_me_revenue_all_channel') }}
   WHERE company = 'Max Eagle' AND ngay_tao_don IS NOT NULL
-  GROUP BY ngay_tao_don, brand, channel, company, manager
+  GROUP BY ngay_tao_don, brand, brand_lv1, channel, company, manager
 )
 
 SELECT
   COALESCE(a.date_start, Cast(r.ngay_tao_don as date)) AS date_start,
   COALESCE(a.brand, r.brand) AS brand,
+  COALESCE(a.brand_lv1, r.brand_lv1) AS brand_lv1,
   COALESCE(a.channel, r.channel) AS channel,
   COALESCE(a.company, r.company) AS company,
   COALESCE(a.manager, r.manager) AS manager,
@@ -57,7 +60,8 @@ FROM revenue_toa r
 FULL OUTER JOIN ads_daily a
   ON CAST(r.ngay_tao_don as date) = a.date_start
   AND r.brand = a.brand
+  AND r.brand_lv1 = a.brand_lv1
   AND r.channel = a.channel
   AND r.company = a.company
   AND r.manager = a.manager
-ORDER BY date_start DESC, brand, channel
+ORDER BY date_start DESC, brand, brand_lv1, channel

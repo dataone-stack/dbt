@@ -35,7 +35,7 @@ WITH ads_total_with_tkqc AS (
             currency,
             spend,
             doanhThuAds
-        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total` where spend >0
+        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total`
     ) AS ads
     
     -- LEFT JOIN với campaign team mapping trước
