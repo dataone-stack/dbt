@@ -2,6 +2,7 @@ SELECT
     tkqc.manager,
     shop.shop,
     shop.brand,
+    shop.brand_lv1,
     shop.status,
     shop.company,
     phi_van_chuyen_thuc_te,
@@ -48,6 +49,7 @@ SELECT
     tkqc.manager,
     shop.shop,
     shop.brand,
+    shop.brand_lv1,
     shop.status,
     shop.company,
 
@@ -95,6 +97,7 @@ SELECT
     manager,
     '-' as shop,
     brand,
+    brand_lv1,
     trang_thai_don_hang as status,
     company,
 
@@ -132,7 +135,6 @@ SELECT
     'Facebook' AS channel,
     ho_ten AS ten_khach_hang,
 FROM {{ ref("t2_mapping_sandbox_pushsale_toa") }}
-WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết'
 
 -- union all
 
