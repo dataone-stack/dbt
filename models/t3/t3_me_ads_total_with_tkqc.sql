@@ -36,7 +36,7 @@ WITH ads_total_with_tkqc AS (
     
     --LEFT JOIN với campaign team mapping trước
     LEFT JOIN {{ ref('t1_ads_campaign_by_team') }} AS campaign_team
-    ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
+    ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING) and ads.account_id = campaign_team.account_id
     
     -- RIGHT JOIN với tkqc như cũ
     RIGHT JOIN{{ ref('t2_tkqc_total') }} AS tkqc
