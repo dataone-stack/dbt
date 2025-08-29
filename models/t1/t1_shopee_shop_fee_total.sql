@@ -63,3 +63,9 @@ FROM `drdivabeautystore_shopee_shop_dwh.shopee_payment_escrow_detail_dr_diva_bea
 UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'UME' AS brand, 'the_ume_lab' AS shop
 FROM `theumelab_shopee_shop_dwh.shopee_payment_escrow_detail_the_ume_lab`
+union all
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop
+FROM `be20vietnamstore_shopee_shop_dwh.shopee_payment_escrow_detail_be20_viet_nam_store`
+union all
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop
+FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_escrow_detail_ume_beauty_vietnam`

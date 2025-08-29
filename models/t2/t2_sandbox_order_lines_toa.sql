@@ -68,18 +68,6 @@ orderline AS (
             WHEN dt.quantity * dt.price < 1000 THEN curr.rate * dt.quantity * dt.price
             ELSE dt.quantity * dt.price
         END AS thanh_tien,
-
-        -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
-        ROUND(
-            SAFE_DIVIDE(
-                COALESCE(dt.price, 0) * COALESCE(dt.quantity, 0),
-                NULLIF(
-                SUM(COALESCE(dt.price, 0) * COALESCE(dt.quantity, 0)) OVER (PARTITION BY ord.order_id), 
-                0
-                )
-            ) * (COALESCE(ord.total_discount, 0) - COALESCE(ord.total_discount_product, 0)),
-            0
-        ) AS chiet_khau,
         
         CASE 
             WHEN discount_type = 0 THEN COALESCE(ord.total_discount_product,0)
@@ -196,6 +184,8 @@ orderline AS (
         0 AS seller_tro_gia,
         0 AS san_tro_gia,
         0 AS tong_phi_san,
+        ord.total_discount AS tong_chiet_khau_don_hang,
+        ord.total_discount_product AS tong_giam_gia_san_pham_don_hang,
 
         COALESCE ( curr.rate,0) as ty_gia_usd
         
@@ -217,7 +207,29 @@ orderline AS (
 ,a as (
 SELECT
     *,
-    thanh_tien - COALESCE(chiet_khau, 0)  + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) - COALESCE(giam_gia_san_pham, 0) 
+      -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
+      CASE
+        WHEN COALESCE(thanh_tien, 0) - COALESCE(giam_gia_san_pham, 0) = 0 THEN 0
+        ELSE 
+          ROUND(
+              SAFE_DIVIDE(
+                  COALESCE(thanh_tien, 0),
+                  NULLIF(
+                  SUM(
+                      CASE 
+                        WHEN COALESCE(thanh_tien, 0) - COALESCE(giam_gia_san_pham, 0) <> 0  THEN COALESCE(thanh_tien, 0) 
+                        ELSE 0 
+                      END) OVER (PARTITION BY ma_don_code), 
+                  0
+                  )
+              ) * (COALESCE(tong_chiet_khau_don_hang, 0) - COALESCE(tong_giam_gia_san_pham_don_hang, 0)),
+              0
+          )
+        END AS chiet_khau
+FROM orderline )
+
+select a.* ,
+  thanh_tien - COALESCE(chiet_khau, 0)  + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) - COALESCE(giam_gia_san_pham, 0) 
     AS tien_khach_hang_thanh_toan,
     thanh_tien  - COALESCE(giam_gia_san_pham, 0)
     AS tien_sp_sau_tro_gia,
@@ -238,6 +250,5 @@ SELECT
         THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_cu
-FROM orderline )
-
-select a.* from a left join {{ref("t1_sandbox_don_xoa_total")}} b on a.ma_don_code = b.order_code where b.order_code is null
+from a 
+left join {{ref("t1_sandbox_don_xoa_total")}} b on a.ma_don_code = b.order_code where b.order_code is null

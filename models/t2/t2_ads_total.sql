@@ -106,6 +106,24 @@ select
   'Google Ads' as revenue_type,
   currency
 from {{ref("t1_google_ads_total")}}
+
+union all
+
+select 
+date(date_start) as date_start,
+cast (idtkqc as string) as account_id,
+0 as ad_id,
+'-' as campaign_id,
+"" as campaign_name,
+case
+    when tien_te = 'USD'
+    then spend * 26600
+    else spend
+end as spend,
+0 as doanhThuAds,
+  'Google Ads' as revenue_type,
+  tien_te
+from `google_sheet.buiducan_google_ads`
 )
 
 select 
@@ -117,13 +135,13 @@ select
 
     case
         when account_id in ('7531919757827080209','7441124535434280976')
-        then spend * 26300
+        then spend * 26600
         else spend
     end as spend,
 
     case
         when account_id in ('7531919757827080209','7441124535434280976')
-        then doanhThuAds * 26300
+        then doanhThuAds * 26600
         else doanhThuAds
     end as doanhThuAds,
 

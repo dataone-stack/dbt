@@ -39,3 +39,6 @@ FROM `nhatdangnhidastore_shopee_shop_dwh.shopee_return_nhat_dang_nhi_da_store`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang' AS shop
 FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`
+UNION ALL
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop
+FROM `be20vietnamstore_shopee_shop_dwh.shopee_return_be20_viet_nam_store`

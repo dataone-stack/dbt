@@ -1,7 +1,7 @@
 WITH LineItems AS (
   SELECT
   o.shop,
-    o.brand,
+    mapping.brand,
     mapping.brand_lv1,
     o.company,
     o.order_id,
@@ -24,11 +24,11 @@ WITH LineItems AS (
     mapping.gia_ban_daily AS Gia_Ban_Daily
   FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
+  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.shop,
-    o.brand,
+    mapping.brand,
     o.company,
     o.order_id,
     JSON_VALUE(li, '$.sku_id'),
@@ -49,7 +49,7 @@ WITH LineItems AS (
 ReturnLineItems AS (
   SELECT
     r.order_id,
-    r.brand,
+    mapping.brand,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     COALESCE(CAST(JSON_VALUE(li, '$.quantity') AS INT64), 1) AS Sku_Quantity_of_Return,
     CAST(JSON_VALUE(r.refund_amount, '$.refund_total') AS FLOAT64) AS Order_Refund_Amount,
@@ -59,14 +59,15 @@ ReturnLineItems AS (
     END AS Cancelation_Return_Type
   FROM {{ref("t1_tiktok_order_return")}} r
   CROSS JOIN UNNEST(r.return_line_items) AS li
+  left join {{ref("t1_bang_gia_san_pham")}} AS mapping on json_value(li,'$.seller_sku') = mapping.ma_sku
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
 
 OrderData AS (
   SELECT
     li.shop,
-    li.brand,
-    li.brand_lv1,
+    mapping.brand,
+    mapping.brand_lv1,
     li.company,
     li.order_id AS Order_ID,
     CASE o.order_status
@@ -180,6 +181,7 @@ OrderData AS (
     ON li.order_id = r.order_id
     AND li.SKU_ID = r.SKU_ID
     and li.brand = r.brand
+    left join {{ref("t1_bang_gia_san_pham")}} AS mapping on li.Seller_SKU = mapping.ma_sku
 ),
 
 OrderTotal as (
