@@ -63,3 +63,9 @@ FROM `drdivabeautystore_shopee_shop_dwh.shopee_order_detail_dr_diva_beauty_store
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'UME' AS brand, 'the_ume_lab' AS shop
 FROM `theumelab_shopee_shop_dwh.shopee_order_detail_the_ume_lab`
+UNION ALL
+SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop
+FROM `be20vietnamstore_shopee_shop_dwh.shopee_order_detail_be20_viet_nam_store`
+UNION ALL
+SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop
+FROM `umebeautyvietnam_shope_shop_dwh.shopee_order_detail_ume_beauty_vietnam`
