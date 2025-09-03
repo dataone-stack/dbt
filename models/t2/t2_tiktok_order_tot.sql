@@ -298,7 +298,7 @@ order_total AS (
         Order_Status,
         ngay_tao_don,
         Shipped_Time,
-        -- status,
+        "" as status,
         SUM(gia_ban_daily_total) AS gia_ban_daily_total,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
         SUM(tien_chiet_khau_sp) AS tien_chiet_khau_sp,
@@ -326,6 +326,7 @@ a AS (
         trans.order_statement_time,
         order_adjustment_id,
         trans.shop,
+        
         -- (trans.transaction_fee + trans.tiktok_shop_commission_fee  + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.customer_shipping_fee + trans.voucher_xtra_service_fee) as phu_phi
         trans.total_revenue - trans.total_settlement_amount as phu_phi
    FROM `dtm.t2_tiktok_brand_statement_transaction_order_tot` AS trans

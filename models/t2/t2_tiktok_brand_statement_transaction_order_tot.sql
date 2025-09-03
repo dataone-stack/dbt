@@ -72,7 +72,6 @@ SELECT
     type,
     SUM(COALESCE(total_settlement_amount, 0)) as total_settlement_amount,
     SUM(COALESCE(total_revenue,0)) as total_revenue,
-
     SUM(COALESCE(actual_shipping_fee, 0)) AS actual_shipping_fee,
     SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
     SUM(COALESCE(transaction_fee, 0)) AS transaction_fee,
