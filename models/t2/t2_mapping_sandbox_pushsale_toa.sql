@@ -47,9 +47,13 @@ SELECT
     loai_khach_hang,
     ma_nhan_vien,
     ma_quan_ly,
-    'Pushsale' as source
+    'Pushsale' as source,
+    delivery_province_name,
+    delivery_district_name,
+    delivery_ward_name,
+    delivery_address
 FROM {{ref("t2_pushsale_order_lines_toa")}}
-WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết'
+WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết' and channel NOT IN ('Shopee', 'Tiktok')
 
 UNION ALL
 
@@ -102,7 +106,11 @@ SELECT
     s.loai_khach_hang,
     s.ma_nhan_vien,
     s.ma_quan_ly,
-    'Sandbox' as source
+    'Sandbox' as source,
+    s.delivery_province_name,
+    s.delivery_district_name,
+    s.delivery_ward_name,
+    s.delivery_address
 FROM {{ref(("t2_sandbox_order_lines_toa"))}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_toa")}} p
     ON s.ma_don_code = p.ma_don_code

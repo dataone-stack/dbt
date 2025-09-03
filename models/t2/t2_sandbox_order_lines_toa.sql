@@ -187,7 +187,11 @@ orderline AS (
         ord.total_discount AS tong_chiet_khau_don_hang,
         ord.total_discount_product AS tong_giam_gia_san_pham_don_hang,
 
-        COALESCE ( curr.rate,0) as ty_gia_usd
+        COALESCE ( curr.rate,0) as ty_gia_usd,
+        ord.delivery_province_name,
+        ord.delivery_district_name,
+        ord.delivery_ward_name,
+        ord.delivery_address
         
     FROM {{ref("t1_sandbox_order_detail_total")}} dt
     LEFT JOIN {{ref("t1_sandbox_order_total")}} ord ON dt.order_number = ord.order_number
