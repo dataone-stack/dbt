@@ -2,6 +2,10 @@ SELECT
     brand, 
     brand_lv1,
     company,
+    -- sku_code,
+    -- ten_san_pham,
+    -- gia_san_pham_goc_total,
+
     CAST(ngay_ship AS date) as ngay_ship,
     CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
     ma_don_hang as order_id, 
@@ -24,6 +28,9 @@ SELECT
     brand, 
     brand_lv1,
     company,
+    -- sku_code,
+    -- ten_san_pham,
+
     cast(ngay_ship as date) as ngay_ship,
 
     ngay_tien_ve_vi as date_create, 
@@ -33,6 +40,7 @@ SELECT
     ngay_dat_hang as date_create_order, 
     gia_ban_daily_total,
     tien_chiet_khau_sp_shopee as tien_chiet_khau_sp_tot,
+    -- gia_san_pham_goc_total,
     phu_phi,
     doanh_thu_shopee as doanh_thu_ke_toan,
     0 as doanh_so_cu,
@@ -46,6 +54,9 @@ SELECT
     brand, 
     brand_lv1,
     company,
+    -- sku_code,
+    -- ten_san_pham,
+    -- gia_san_pham_goc_total,
 
     CAST(Shipped_Time as date) as ngay_ship,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
@@ -70,6 +81,10 @@ SELECT
     brand, 
     brand_lv1,
     company,
+    -- sku as sku_code,
+    -- san_pham as ten_san_pham,
+    -- thanh_tien as gia_san_pham_goc_total,
+
     cast(null as date) as ngay_ship,
     ngay_tien_ve_vi as date_create, 
     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
@@ -78,6 +93,7 @@ SELECT
     ngay_data_ve as date_create_order, 
     gia_ban_daily_total,
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
+
     phu_phi,
     doanh_thu_ke_toan,
     doanh_so_cu as doanh_so_cu,

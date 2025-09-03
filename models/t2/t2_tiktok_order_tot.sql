@@ -1,7 +1,6 @@
 WITH LineItems AS (
   SELECT
     o.brand,
-    mapping.brand_lv1,
     o.order_id,
     o.company,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
@@ -22,9 +21,9 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily
-  FROM {{ ref('t1_tiktok_order_tot') }} o
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.brand,
@@ -41,9 +40,10 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id'),
-    mapping.gia_ban_daily,
-    mapping.brand_lv1
-),
+    mapping.gia_ban_daily
+)
+--select * from LineItems where Order_ID = 579785176962401968
+,
 
 ReturnLineItems AS (
   SELECT
@@ -56,16 +56,19 @@ ReturnLineItems AS (
         WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
         ELSE null
     END AS Cancelation_Return_Type
-  FROM {{ ref('t1_tiktok_order_return') }} r
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_return` r
   CROSS JOIN UNNEST(r.return_line_items) AS li
+  left join  `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping 
+  on json_value(li,'$.seller_sku') = mapping.ma_sku
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
-),
+)
+--select * from ReturnLineItems where order_id = 579785176962401968
+,
 
 OrderData AS (
   SELECT
     li.brand,
     li.company,
-    li.brand_lv1,
     li.order_id AS Order_ID,
     CASE o.order_status
       WHEN 'CANCELLED' THEN 'Canceled'
@@ -188,19 +191,22 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN {{ ref('t1_tiktok_order_tot') }} o
+  JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
     ON li.order_id = o.order_id
-    AND li.brand = o.brand
   LEFT JOIN ReturnLineItems r
     ON li.order_id = r.order_id
     AND li.SKU_ID = r.SKU_ID
     and li.brand = r.brand
-),
+  left join  `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapping on
+  li.Seller_SKU = mapping.ma_sku
+)
+--select * from OrderData where Order_ID = 579785176962401968
+,
 
 orderLine as(
 SELECT
   brand,
-  brand_lv1,
+  brand as brand_lv1,
   company,
   Order_ID as ma_don_hang,
   Order_Status,
@@ -266,31 +272,33 @@ SELECT
   
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
-  CASE
-    WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
-    WHEN Order_Status = 'Shipped' THEN 'Đang giao'
-    WHEN Order_Status = 'AWAITING_COLLECTION' THEN 'Đang giao'
-    WHEN Order_Status = 'AWAITING_SHIPMENT' THEN 'Đang giao'
-    WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
-    WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
-    WHEN Order_Status = 'UNPAID' THEN 'Đăng đơn'
-    WHEN Order_Status = 'IN_TRANSIT' THEN 'Đang giao'
-    ELSE 'Khác'
-END AS status,
+--   CASE
+--     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
+--     WHEN Order_Status = 'Shipped' THEN 'Đang giao'
+--     WHEN Order_Status = 'AWAITING_COLLECTION' THEN 'Đang giao'
+--     WHEN Order_Status = 'AWAITING_SHIPMENT' THEN 'Đang giao'
+--     WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
+--     WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
+--     WHEN Order_Status = 'UNPAID' THEN 'Đăng đơn'
+--     WHEN Order_Status = 'IN_TRANSIT' THEN 'Đang giao'
+--     ELSE 'Khác'
+-- END AS status,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
-),
+)
+-- select * from orderLine where ma_don_hang =580087776528139654 --brand is null and date(ngay_tao_don) between "2025-07-01" and "2025-09-03"
+,
 
 order_total AS (
     SELECT
         brand,
-        brand_lv1,
+        brand as brand_lv1,
         company,
         ma_don_hang,
         Order_Status,
         ngay_tao_don,
         Shipped_Time,
-        status,
+        -- status,
         SUM(gia_ban_daily_total) AS gia_ban_daily_total,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
         SUM(tien_chiet_khau_sp) AS tien_chiet_khau_sp,
@@ -301,10 +309,14 @@ order_total AS (
         company,
         ma_don_hang,
         Order_Status,
-        status,
+        -- status,
         ngay_tao_don,
         Shipped_Time
-),
+)
+
+-- select * from order_total where order_adjustment_id = 579913257609364969
+
+,
 
 a AS (
     SELECT 
@@ -313,15 +325,17 @@ a AS (
         trans.total_revenue,
         trans.order_statement_time,
         order_adjustment_id,
+        trans.shop,
         -- (trans.transaction_fee + trans.tiktok_shop_commission_fee  + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.customer_shipping_fee + trans.voucher_xtra_service_fee) as phu_phi
         trans.total_revenue - trans.total_settlement_amount as phu_phi
-    FROM order_total AS ord 
-    LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} AS trans
+   FROM `dtm.t2_tiktok_brand_statement_transaction_order_tot` AS trans
+    LEFT JOIN  order_total AS ord 
         ON ord.ma_don_hang = trans.order_adjustment_id
-        AND ord.brand = trans.brand
-)
+        -- AND ord.brand = trans.brand     
 
-SELECT * 
-FROM a 
-  -- AND DATE(order_statement_time) = '2025-05-31' 
-  -- AND brand = 'Chaching'
+)
+--select ma_don_hang,status,sum(total_settlement_amount) from a where brand = 'LYB' and date(order_statement_time) between '2025-08-01' and '2025-08-31' group by ma_don_hang,status
+
+select * from a -- and ma_don_hang = 580087776528139654
+
+
