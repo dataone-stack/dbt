@@ -82,6 +82,11 @@ revenue_tot AS (
     case
         when SUM(total_amount) < 60000
         then 0
+        else  SUM(doanh_thu_ke_toan)
+    end as doanh_thu_ke_toan_v2,
+    case
+        when SUM(total_amount) < 60000
+        then 0
         else SUM(tien_chiet_khau_sp_tot) 
     end as tien_chiet_khau_sp_tot,
 
@@ -106,6 +111,7 @@ select
     r_tot.total_amount as total_amount_paid_tot,
     r_tot.gia_ban_daily_total as gia_ban_daily_total_tot,
     r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot,
+    r_tot.doanh_thu_ke_toan_v2 as doanh_thu_ke_toan_tot_v2,
     r_tot.tien_chiet_khau_sp_tot,
     r_tot.phu_phi,
     r_toa.doanh_thu_ke_toan_toa,
