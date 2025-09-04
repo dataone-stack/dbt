@@ -224,7 +224,11 @@ orderline AS (
         0 AS san_tro_gia,
         0 AS tong_phi_san,
 
-        COALESCE ( curr.rate,0) as ty_gia_usd
+        COALESCE ( curr.rate,0) as ty_gia_usd,
+        ord.delivery_province_name,
+        ord.delivery_district_name,
+        ord.delivery_ward_name,
+        ord.delivery_address
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number

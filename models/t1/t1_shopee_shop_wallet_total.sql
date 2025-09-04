@@ -4,7 +4,7 @@ UNION ALL
 SELECT *, 'One5' as company, 'LYB' AS brand, 'lyb_official' AS shop
 FROM `lyb_shopee_shop_dwh.shopee_payment_wallet_transaction_lyb_official`
 UNION ALL
-SELECT *, 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
+SELECT *, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop
 FROM `lybcosmetic_shopee_shop_dwh.shopee_payment_wallet_transaction_lyb_cosmetic`
 UNION ALL
 SELECT *, 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
@@ -19,14 +19,14 @@ UNION ALL
 SELECT *, 'One5' as company, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop
 FROM `chaching_beauty_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching_beauty`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da' AS shop
+SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_trang_da`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
+SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_beauty_vietnam`
-UNION ALL
-SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
-FROM `bellevietnamstore_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_vietnam_store`
+-- UNION ALL
+-- SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
+-- FROM `bellevietnamstore_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_vietnam_store`
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'Cà phê gừng' AS brand, 'tong_cong_ty_ca_phe_giam_can' AS shop
 FROM `tongcongtycaphegiamcan_shopee_shop_dwh.shopee_payment_wallet_transaction_tong_cong_ty_ca_phe_giam_can`
@@ -66,3 +66,6 @@ FROM `be20vietnamstore_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_vi
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop
 FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_wallet_transaction_ume_beauty_vietnam`
+UNION ALL
+SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
+FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_beana_beauty_vietnam`

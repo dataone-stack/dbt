@@ -22,13 +22,14 @@ order_line as (
     json_value(item, '$.variation_info.fields[0].value') as color,
     json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
-    COALESCE(
-      SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
-        safe_cast(json_value(item, '$.quantity') as int64) + 
-        safe_cast(json_value(item, '$.total_discount') as int64),
-        safe_cast(json_value(item, '$.quantity') as int64)
-      ), 0) as gia_goc,
+    -- COALESCE(
+    --   SAFE_DIVIDE(
+    --     safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+    --     safe_cast(json_value(item, '$.quantity') as int64) + 
+    --     safe_cast(json_value(item, '$.total_discount') as int64),
+    --     safe_cast(json_value(item, '$.quantity') as int64)
+    --   ), 0) as gia_goc,
+    COALESCE(safe_cast(json_value(item, '$.variation_info.retail_price') as int64), 0) as gia_goc,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
@@ -142,7 +143,7 @@ order_line as (
   COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
   COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
-  (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen)) AS doanh_thu_ke_toan
+  ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) AS doanh_thu_ke_toan
 from order_line
 
 ),

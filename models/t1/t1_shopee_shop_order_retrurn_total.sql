@@ -7,7 +7,7 @@ UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
 FROM `ancung_shopee_shop_dwh.shopee_return_ancung_brand`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop
 FROM `lybcosmetic_shopee_shop_dwh.shopee_return_lyb_cosmetic`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
@@ -42,3 +42,9 @@ FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_h
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop
 FROM `be20vietnamstore_shopee_shop_dwh.shopee_return_be20_viet_nam_store`
+UNION ALL
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
+FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_beana_beauty_vietnam`
+UNION ALL
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
+FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_return_belle_beauty_vietnam`

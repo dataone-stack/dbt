@@ -1,7 +1,8 @@
- with transactions as(
+with transactions as(
 SELECT
     brand AS `brand`,
     company,
+    shop,
     case
     when order_id is null and adjustment_id is not null
     then adjustment_order_id
@@ -58,11 +59,12 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.seller_shipping_fee_discount_amount') AS FLOAT64) AS `seller_shipping_fee_discount`,
     NULL AS `estimated_package_weight`,
     NULL AS `actual_package_weight`
-FROM {{ ref('t1_tiktok_brand_statement_transaction_order_tot') }} WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 
+FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_brand_statement_transaction_order_tot` WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 
 )
-
+,a as(
 SELECT 
     brand,
+    shop,
     company,
     datetime_add(safe_cast(order_statement_time as datetime), INTERVAL 7 HOUR) as order_statement_time,
     order_adjustment_id,
@@ -70,7 +72,6 @@ SELECT
     type,
     SUM(COALESCE(total_settlement_amount, 0)) as total_settlement_amount,
     SUM(COALESCE(total_revenue,0)) as total_revenue,
-
     SUM(COALESCE(actual_shipping_fee, 0)) AS actual_shipping_fee,
     SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
     SUM(COALESCE(transaction_fee, 0)) AS transaction_fee,
@@ -83,8 +84,13 @@ SELECT
 FROM transactions
 GROUP BY 
     brand,
+    shop,
     company,
     order_statement_time,
     order_adjustment_id,
     currency,
     type
+)
+
+
+select * from a-- where date(order_statement_time)-- between "2025-07-31" and "2025-08-28" and shop = "ume_beauty_vietnam_tt"

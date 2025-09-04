@@ -3,6 +3,7 @@ WITH LineItems AS (
     o.brand,
     o.order_id,
     o.company,
+    o.shop,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     JSON_VALUE(li, '$.seller_sku') AS Seller_SKU,
     JSON_VALUE(li, '$.product_name') AS Product_Name,
@@ -26,6 +27,7 @@ WITH LineItems AS (
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku and o.brand = mapping.brand
   GROUP BY
     o.brand,
+    o.shop,
     o.order_id,
     o.company,
     JSON_VALUE(li, '$.sku_id'),
@@ -46,6 +48,7 @@ ReturnLineItems AS (
   SELECT
     r.order_id,
     r.brand,
+    r.shop,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     COALESCE(CAST(JSON_VALUE(li, '$.quantity') AS INT64), 1) AS Sku_Quantity_of_Return,
     CAST(JSON_VALUE(r.refund_amount, '$.refund_total') AS FLOAT64) AS Order_Refund_Amount,
@@ -61,6 +64,7 @@ ReturnLineItems AS (
 OrderData AS (
   SELECT
     li.brand,
+    li.shop,
     li.company,
     li.order_id AS Order_ID,
     CASE o.order_status
@@ -179,17 +183,20 @@ OrderData AS (
 OrderTotal as (
 SELECT
     brand,
+    shop,
     Order_ID,
     sum(SKU_Subtotal_After_Discount) as tong_tien_sau_giam_gia
 FROM  OrderData
 GROUP BY
     brand,
+    shop,
     Order_ID
 ),
 
 orderLine as(
 SELECT
   brand,
+  shop,
   company,
   Order_ID as ma_don_hang,
   Order_Status,
@@ -255,6 +262,7 @@ SELECT
   
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
+  (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan_v2,
   CASE
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
     WHEN Order_Status = 'Shipped' THEN 'Đang giao'

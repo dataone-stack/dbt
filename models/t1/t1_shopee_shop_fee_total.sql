@@ -7,7 +7,7 @@ UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '0317468051' AS tax_code, 'An Cung' AS brand, 'ancung_brand' AS shop
 FROM `ancung_shopee_shop_dwh.shopee_payment_escrow_detail_ancung_brand`
 UNION ALL
-SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '0317423004' AS tax_code, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '0317423004' AS tax_code, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop
 FROM `lybcosmetic_shopee_shop_dwh.shopee_payment_escrow_detail_lyb_cosmetic`
 UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '0315027453' AS tax_code, 'UME' AS brand, 'ume_viet_nam' AS shop
@@ -22,14 +22,14 @@ UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '-' AS tax_code, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop
 FROM `chaching_beauty_shopee_shop_dwh.shopee_payment_escrow_detail_chaching_beauty`
 UNION ALL
-SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'be20_keo_ngam_trang_da' AS shop
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_be20_keo_ngam_trang_da`
 UNION ALL
-SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_belle_beauty_vietnam`
-UNION ALL
-SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
-FROM `bellevietnamstore_shopee_shop_dwh.shopee_payment_escrow_detail_belle_vietnam_store`
+-- UNION ALL
+-- SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
+-- FROM `bellevietnamstore_shopee_shop_dwh.shopee_payment_escrow_detail_belle_vietnam_store`
 UNION ALL
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'Cà phê gừng' AS brand, 'ca_phe_giam_can_store' AS shop
 FROM `caphegiamcanstore_shopee_shop_dwh.shopee_payment_escrow_detail_ca_phe_giam_can_store`
@@ -69,3 +69,6 @@ FROM `be20vietnamstore_shopee_shop_dwh.shopee_payment_escrow_detail_be20_viet_na
 union all
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop
 FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_escrow_detail_ume_beauty_vietnam`
+union all
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
+FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_beana_beauty_vietnam`
