@@ -3,6 +3,7 @@ WITH ads_daily AS (
   SELECT
     date_start,
     TRIM(brand) as brand,
+    -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads, -- Tổng chi phí quảng cáo, thay NULL bằng 0
@@ -40,12 +41,14 @@ revenue_toa AS (
     SELECT 
         DATE(ngay_tao_don) AS date_start,
         brand,
+        -- brand_lv1,
         company,
         channel,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_toa,
         SUM(tien_chiet_khau_sp ) AS tien_chiet_khau_sp_toa,
         SUM(gia_san_pham_goc_total ) AS gia_san_pham_goc_total_toa,
         SUM(gia_ban_daily_total ) AS gia_ban_daily_total_toa,
+        SUM(tien_khach_hang_thanh_toan ) AS tien_khach_hang_thanh_toan_toa,
 
     FROM {{ ref('t3_revenue_all_channel') }}
  --status NOT IN  ('Đã hủy')
@@ -55,6 +58,7 @@ revenue_toa AS (
 revenue_tot AS (
   SELECT DISTINCT
     TRIM(brand) as brand,
+    -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
@@ -108,6 +112,7 @@ select
     r_toa.tien_chiet_khau_sp_toa,
     r_toa.gia_san_pham_goc_total_toa,
     r_toa.gia_ban_daily_total_toa,
+    r_toa.tien_khach_hang_thanh_toan_toa,
 
 from revenue_tot r_tot
 full outer join 

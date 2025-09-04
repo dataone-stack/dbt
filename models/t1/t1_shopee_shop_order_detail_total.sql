@@ -7,7 +7,7 @@ UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
 FROM `ancung_shopee_shop_dwh.shopee_order_detail_ancung_brand`
 UNION ALL
-SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop
+SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop
 FROM `lybcosmetic_shopee_shop_dwh.shopee_order_detail_lyb_cosmetic`
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop
@@ -22,7 +22,7 @@ UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'One5' as company, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop
 FROM `chaching_beauty_shopee_shop_dwh.shopee_order_detail_chaching_beauty`
 UNION ALL
-SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da' AS shop
+SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_order_detail_be20_keo_ngam_trang_da`
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
@@ -69,3 +69,6 @@ FROM `be20vietnamstore_shopee_shop_dwh.shopee_order_detail_be20_viet_nam_store`
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop
 FROM `umebeautyvietnam_shope_shop_dwh.shopee_order_detail_ume_beauty_vietnam`
+UNION ALL
+SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
+FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_order_detail_beana_beauty_vietnam`
