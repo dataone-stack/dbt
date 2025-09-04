@@ -17,6 +17,7 @@ SELECT
     tien_chiet_khau_sp,
     phu_phi,
     doanh_thu_ke_toan,
+    doanh_thu_ke_toan as doanh_thu_ke_toan_v2,
     doanh_so_cu,
     doanh_so_moi
 FROM {{ref("t2_pushsale_order_lines_tot")}}
@@ -43,6 +44,7 @@ SELECT
     s.tien_chiet_khau_sp,
     s.phu_phi,
     s.doanh_thu_ke_toan,
+    s.doanh_thu_ke_toan as doanh_thu_ke_toan_v2,
     s.doanh_so_cu,
     s.doanh_so_moi
 FROM {{ref("t2_sandbox_order_lines_tot")}} s
