@@ -22,13 +22,14 @@ order_line as (
     json_value(item, '$.variation_info.fields[0].value') as color,
     json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
-    COALESCE(
-      SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
-        safe_cast(json_value(item, '$.quantity') as int64) + 
-        safe_cast(json_value(item, '$.total_discount') as int64),
-        safe_cast(json_value(item, '$.quantity') as int64)
-      ), 0) as gia_goc,
+    -- COALESCE(
+    --   SAFE_DIVIDE(
+    --     safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+    --     safe_cast(json_value(item, '$.quantity') as int64) + 
+    --     safe_cast(json_value(item, '$.total_discount') as int64),
+    --     safe_cast(json_value(item, '$.quantity') as int64)
+    --   ), 0) as gia_goc,
+    COALESCE(safe_cast(json_value(item, '$.variation_info.retail_price') as int64), 0) as gia_goc,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(

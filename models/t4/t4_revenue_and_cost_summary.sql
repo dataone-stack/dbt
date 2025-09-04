@@ -82,7 +82,7 @@ revenue_tot AS (
     case
         when SUM(total_amount) < 60000
         then 0
-        else  SUM(doanh_thu_ke_toan)
+        else  SUM(doanh_thu_ke_toan_v2)
     end as doanh_thu_ke_toan_v2,
     case
         when SUM(total_amount) < 60000
