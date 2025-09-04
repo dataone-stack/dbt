@@ -6,7 +6,7 @@ SELECT 'One5' as company, 'Chaching' AS brand, 'cha_ching_fashion' AS shop, * FR
 UNION ALL
 SELECT 'One5' as company, 'LYB' AS brand, 'lyb_brand' AS shop, * FROM `lyb_tiktok_shop_dwh.tiktok_shop_lyb_brand_return_order`
 UNION ALL
-SELECT 'One5' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic' AS shop, * FROM `lybcosmetic_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_return_order`
+SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_tt' AS shop, * FROM `lybcosmetic_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_return_order`
 UNION ALL
 SELECT 'One5' as company, 'UME' AS brand, 'ume_viet_nam' AS shop, * FROM `ume_tiktok_shop_dwh.tiktok_shop_ume_viet_nam_return_order`
 UNION ALL

@@ -32,7 +32,7 @@ SELECT
   b.revenue_target,
   b.cir_target
 FROM ads_total a
-LEFT JOIN {{ref('t1_kpi_ads_total')}} b
+FULL OUTER JOIN {{ref('t1_kpi_ads_total')}} b
   ON a.brand = b.brand
   AND a.channel = b.channel
   AND a.ma_nhan_vien = b.ma_nhan_vien

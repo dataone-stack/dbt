@@ -185,7 +185,8 @@ orderline AS (
         0 AS tong_phi_san,
         0 as phu_phi,
         ord.total_discount AS tong_chiet_khau_don_hang,
-        ord.total_discount_product AS tong_giam_gia_san_pham_don_hang
+        ord.total_discount_product AS tong_giam_gia_san_pham_don_hang,
+        ord.is_delete
         
     FROM {{ref("t1_sandbox_order_detail_total")}} dt
     LEFT JOIN {{ref("t1_sandbox_order_total")}} ord ON dt.order_number = ord.order_number
@@ -255,5 +256,4 @@ select a.*,
         THEN thanh_tien - chiet_khau
         ELSE 0
     END AS doanh_so_cu
-from a 
-left join {{ref("t1_sandbox_don_xoa_total")}} b on a.ma_don_code = b.order_code where b.order_code is null
+from a where is_delete is not true
