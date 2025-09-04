@@ -45,3 +45,6 @@ FROM `be20vietnamstore_shopee_shop_dwh.shopee_return_be20_viet_nam_store`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_beana_beauty_vietnam`
+UNION ALL
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
+FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_return_belle_beauty_vietnam`

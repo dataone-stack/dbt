@@ -22,11 +22,11 @@ UNION ALL
 SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_trang_da`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_beauty_vietnam' AS shop
+SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_beauty_vietnam`
-UNION ALL
-SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
-FROM `bellevietnamstore_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_vietnam_store`
+-- UNION ALL
+-- SELECT *, 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_vietnam_store' AS shop
+-- FROM `bellevietnamstore_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_vietnam_store`
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'Cà phê gừng' AS brand, 'tong_cong_ty_ca_phe_giam_can' AS shop
 FROM `tongcongtycaphegiamcan_shopee_shop_dwh.shopee_payment_wallet_transaction_tong_cong_ty_ca_phe_giam_can`

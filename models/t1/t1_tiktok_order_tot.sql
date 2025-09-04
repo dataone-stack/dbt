@@ -14,7 +14,7 @@ SELECT 'One5' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop, * FROM `oma
 UNION ALL
 SELECT 'One5' as company, 'Chaching Beauty' AS brand, 'cha_ching_beauty' AS shop, * FROM `chaching_beauty_tiktok_shop_dwh.tiktok_shop_cha_ching_beauty_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'Belle Beauty' AS brand, 'belle_viet_nam_store' AS shop, * FROM `bellevietnamstore_tiktok_shop_dwh.tiktok_shop_belle_viet_nam_store_order`
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'belle_viet_nam_store_tt' AS shop, * FROM `bellevietnamstore_tiktok_shop_dwh.tiktok_shop_belle_viet_nam_store_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'cafe_mam_xoi_chinh_hang_store' AS shop, * FROM `caphemamxoichinhhangstore_tiktok_shop_dwh.tiktok_shop_cafe_mam_xoi_chinh_hang_store_order`
 UNION ALL
@@ -32,7 +32,7 @@ SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_tt' AS shop, * FR
 -- UNION ALL 
 -- SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_2' AS shop, * FROM `be20vietnam2_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_order`
 UNION ALL 
-SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_natural_viet_nam' AS shop, * FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_ume_beauty_natural_viet_nam_order`
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_natural_viet_nam_tt' AS shop, * FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_ume_beauty_natural_viet_nam_order`
 UNION ALL 
 SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_tt' AS shop, * FROM `umebeautyvietnam_tiktok_shop_dwh.tiktok_shop_ume_beauty_vietnam_order`
 

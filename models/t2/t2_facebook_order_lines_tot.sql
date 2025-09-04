@@ -231,7 +231,7 @@ order_line_returned as (
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
+        else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - khuyen_mai_dong_gia)
     end as tien_chiet_khau_sp,
     case
         when gia_goc_sau_giam_gia_san_pham = 0
@@ -245,7 +245,7 @@ order_line_returned as (
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - khuyen_mai_dong_gia)
+        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang)
     end as doanh_thu_ke_toan_v2,
 
     ngay_da_giao,
