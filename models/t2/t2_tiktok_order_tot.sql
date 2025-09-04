@@ -301,6 +301,7 @@ order_total AS (
         "" as status,
         SUM(gia_ban_daily_total) AS gia_ban_daily_total,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
+        SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_v2,
         SUM(tien_chiet_khau_sp) AS tien_chiet_khau_sp,
     FROM orderLine
     GROUP BY
