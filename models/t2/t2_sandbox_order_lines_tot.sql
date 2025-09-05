@@ -186,7 +186,8 @@ orderline AS (
         0 as phu_phi,
         ord.total_discount AS tong_chiet_khau_don_hang,
         ord.total_discount_product AS tong_giam_gia_san_pham_don_hang,
-        ord.is_delete
+        ord.is_delete,
+        ord.tracking_no
         
     FROM {{ref("t1_sandbox_order_detail_total")}} dt
     LEFT JOIN {{ref("t1_sandbox_order_total")}} ord ON dt.order_number = ord.order_number

@@ -19,7 +19,8 @@ SELECT
     doanh_thu_ke_toan,
     doanh_thu_ke_toan as doanh_thu_ke_toan_v2,
     doanh_so_cu,
-    doanh_so_moi
+    doanh_so_moi,
+    tracking_no,
 FROM {{ref("t2_pushsale_order_lines_tot")}}
 WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết' and channel NOT IN ('Shopee', 'Tiktok')
 
@@ -46,7 +47,8 @@ SELECT
     s.doanh_thu_ke_toan,
     s.doanh_thu_ke_toan as doanh_thu_ke_toan_v2,
     s.doanh_so_cu,
-    s.doanh_so_moi
+    s.doanh_so_moi,
+    s.tracking_no,
 FROM {{ref("t2_sandbox_order_lines_tot")}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_tot")}} p
     ON s.ma_don_code = p.ma_don_code
