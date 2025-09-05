@@ -217,6 +217,7 @@ orderline AS (
         0 AS san_tro_gia,
         0 AS tong_phi_san,
         0 as phu_phi,
+        ord.tracking_no,
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
