@@ -314,8 +314,7 @@ order_total AS (
         ngay_tao_don,
         Shipped_Time
 )
-
--- select * from order_total where order_adjustment_id = 579913257609364969
+-- select * from order_total where ma_don_hang = 579980156334802932
 
 ,
 
@@ -333,11 +332,10 @@ a AS (
    FROM `dtm.t2_tiktok_brand_statement_transaction_order_tot` AS trans
     LEFT JOIN  order_total AS ord 
         ON ord.ma_don_hang = trans.order_adjustment_id
-        -- AND ord.brand = trans.brand     
+        -- AND ord.brand = trans.brand
 
 )
+
 --select ma_don_hang,status,sum(total_settlement_amount) from a where brand = 'LYB' and date(order_statement_time) between '2025-08-01' and '2025-08-31' group by ma_don_hang,status
 
-select * from a -- and ma_don_hang = 580087776528139654
-
-
+select * from a  -- and ma_don_hang = 580087776528139654
