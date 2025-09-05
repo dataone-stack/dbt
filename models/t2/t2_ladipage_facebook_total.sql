@@ -42,14 +42,12 @@ SELECT
   a.ma_nhan_vien AS id_staff,
   a.manager AS manager_name,
   a.ma_quan_ly AS ma_quan_ly,
-  SUM(a.thanh_tien - a.chiet_khau) AS doanhThuLadi,
+  SUM(a.doanh_thu_ke_toan) AS doanhThuLadi,
   SUM(a.doanh_so_moi) AS doanh_so_moi,
   SUM(a.doanh_so_cu) AS doanh_so_cu
 FROM {{ ref('t2_mapping_sandbox_pushsale_toa') }} a
 GROUP BY 
   DATE(a.ngay_chot_don),
-
-  
   a.channel,
   a.brand,
   a.brand_lv1,
