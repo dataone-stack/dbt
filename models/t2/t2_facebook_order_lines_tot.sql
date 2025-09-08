@@ -87,7 +87,7 @@ order_line as (
       ) * ord.partner_fee, 0) as cuoc_vc,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
