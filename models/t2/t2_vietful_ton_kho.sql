@@ -28,7 +28,7 @@ product_date_matrix AS (
     dr.date_value
   FROM dtm.t1_vietful_xuatkho_total t
   JOIN dtm.t1_vietful_xuat_kho_details d ON t.or_code = d.or_code
-  left JOIN `dtm.t1_vietful_product` p ON p.sku = d.sku
+  left JOIN `dtm.t1_vietful_product_total` p ON p.sku = d.sku
   CROSS JOIN date_range dr
   WHERE t.shipped_date IS NOT NULL
     AND DATE(t.shipped_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
@@ -46,7 +46,7 @@ daily_outbound_raw AS (
     SUM(d.packedQty) as daily_qty
   FROM dtm.t1_vietful_xuatkho_total t
   JOIN dtm.t1_vietful_xuat_kho_details d ON t.or_code = d.or_code
-  left JOIN `dtm.t1_vietful_product` p ON p.sku = d.sku
+  left JOIN `dtm.t1_vietful_product_total` p ON p.sku = d.sku
   WHERE t.shipped_date IS NOT NULL
     AND DATE(t.shipped_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   GROUP BY 1,2,3,4,5,6

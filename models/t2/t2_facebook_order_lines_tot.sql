@@ -66,25 +66,45 @@ order_line as (
 
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
@@ -123,25 +143,45 @@ order_line_returned as (
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
+        case
+        when json_value(item, '$.variation_info.retail_price_original') is null
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
