@@ -42,9 +42,10 @@ orderline AS (
             COALESCE(ord.delivery_province_name, '')
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
+        
         CASE
             WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
-            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách hàng cũ'
+            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' OR ord.reason_to_create = 'TAKECARE' OR ord.reason_to_create = 'OLD_ORDER' THEN 'Khách hàng cũ'
             ELSE 'Khách hàng mới'
         END AS loai_khach_hang,
 
