@@ -1,6 +1,3 @@
-
-
-
 with total_price as (
   select
     id,
@@ -69,19 +66,19 @@ order_line as (
 
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
@@ -126,25 +123,25 @@ order_line_returned as (
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.total_discount, 0) as giam_gia_don_hang,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.shipping_fee, 0) as phi_van_chuyen,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.partner_fee, 0) as cuoc_vc,
     COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price') as int64)*
+        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
       ) * ord.prepaid, 0) as tra_truoc,
@@ -175,13 +172,13 @@ order_line_returned as (
     color,
     size,
     so_luong,
-    gia_goc_sau_giam_gia_san_pham as gia_san_pham_goc,
+    gia_goc as gia_san_pham_goc,
     khuyen_mai_dong_gia as giam_gia_seller,
     giam_gia_don_hang as giam_gia_san,
     0 as seller_tro_gia,
     0 as san_tro_gia,
     (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
-    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tien_khach_hang_thanh_toan,
     0 as tong_phi_san,
     (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
     case
@@ -241,7 +238,7 @@ order_line_returned as (
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
+        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     end as doanh_thu_ke_toan,
     case
         when gia_goc_sau_giam_gia_san_pham = 0
@@ -340,7 +337,7 @@ order_line_returned as (
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang) * -1
+        else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen ) * -1
     end as doanh_thu_ke_toan,
     case
         when gia_goc_sau_giam_gia_san_pham = 0
