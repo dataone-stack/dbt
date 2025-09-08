@@ -49,8 +49,9 @@ orderline AS (
         END AS loai_khach_hang,
 
         CASE
-            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' THEN 'Sàn TMDT liên kết'
-            ELSE 'Pushsale'
+            WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' OR ord.reason_to_create = 'ECOMMERCE' THEN 'Sàn TMDT liên kết'
+            WHEN ord.id_pushsale > 0 THEN 'Pushsale'
+            ELSE 'Sandbox'
         END AS nguon_doanh_thu,
 
         -- Sản phẩm cụ thể
@@ -230,31 +231,29 @@ SELECT
           )
         END AS chiet_khau
     
-FROM orderline
-WHERE nguon_doanh_thu <> 'Sàn TMDT')
+FROM orderline)
 
 
 select a.*,
-    thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) 
-    + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) AS tien_khach_hang_thanh_toan,
-    thanh_tien - COALESCE(giam_gia_san_pham, 0) 
+    thanh_tien - COALESCE(chiet_khau, 0)  + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) - COALESCE(giam_gia_san_pham, 0) 
+    AS tien_khach_hang_thanh_toan,
+    thanh_tien  - COALESCE(giam_gia_san_pham, 0)
     AS tien_sp_sau_tro_gia,
     COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
-    (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0)- COALESCE(giam_gia_san_pham, 0))
-     AS tien_chiet_khau_sp,
+    (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
+    AS tien_chiet_khau_sp,
  
-    (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
+    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
      AS doanh_thu_ke_toan,
-
     CASE 
         WHEN loai_khach_hang = 'Khách hàng mới' 
-        THEN thanh_tien - chiet_khau
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_moi,
-    
+
     CASE 
         WHEN loai_khach_hang = 'Khách hàng cũ' 
-        THEN thanh_tien - chiet_khau
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_cu
 from a where is_delete is not true
