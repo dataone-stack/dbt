@@ -4,20 +4,25 @@ SELECT
   mar.company,
   od.brand,
   '' as brand_lv1,
-  '' as loai_khach_hang,-- không có dữ liệu để NULL
+  '' as loai_khach_hang, -- không có dữ liệu để NULL
   mar.marketing_name as staff_name,
   mar.ma_nhan_vien AS id_staff,
   mar.manager as manager_name,
   mar.ma_quan_ly AS ma_quan_ly,
   SUM(od.total_price_after_sub_discount) AS doanhThuLadi,
-  NULL AS doanh_so_moi,   -- không có dữ liệu để NULL
-  NULL AS doanh_so_cu     -- không có dữ liệu để NULL
+  NULL AS doanh_so_moi, -- không có dữ liệu để NULL
+  NULL AS doanh_so_cu   -- không có dữ liệu để NULL
 FROM {{ref('t1_pancake_pos_order_total')}} AS od
 LEFT JOIN {{ref("t1_marketer_facebook_total")}} AS mar
   ON JSON_VALUE(od.marketer, '$.name') = mar.marketer_name
 WHERE od.marketer IS NOT NULL 
   AND mar.company = 'One5'
-  AND od.order_sources_name IN ('Facebook', 'Ladipage Facebook', 'Webcake')
+  AND (
+        -- Điều kiện riêng cho brand LYB
+        (od.brand = 'LYB' AND od.order_sources_name IN ('Ladipage Facebook', 'Webcake'))
+        -- Các brand khác
+        OR (od.brand <> 'LYB' AND od.order_sources_name IN ('Facebook', 'Ladipage Facebook', 'Webcake'))
+      )
   AND (od.brand != 'UME' OR (od.brand = 'UME' AND od.status_name NOT IN ('new', 'removed')))
 GROUP BY 
   DATE(DATE_ADD(od.inserted_at, INTERVAL 7 HOUR)),
@@ -28,6 +33,7 @@ GROUP BY
   mar.ma_nhan_vien,
   mar.manager,
   mar.ma_quan_ly
+
 
 UNION ALL
 

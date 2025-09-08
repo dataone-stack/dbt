@@ -3,6 +3,8 @@ SELECT
     brand_lv1,
     company,
     sku,
+    manager,
+    channel,
     san_pham,
     thanh_tien,
 
@@ -21,6 +23,7 @@ SELECT
     doanh_so_cu,
     doanh_so_moi,
     tracking_no,
+    'Pushsale' as source
 FROM {{ref("t2_pushsale_order_lines_tot")}}
 WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết' and channel NOT IN ('Shopee', 'Tiktok')
 
@@ -31,6 +34,8 @@ SELECT
     s.brand_lv1,
     s.company,
     s.sku,
+    s.manager,
+    s.channel,
     s.san_pham,
     s.thanh_tien,
 
@@ -49,6 +54,7 @@ SELECT
     s.doanh_so_cu,
     s.doanh_so_moi,
     s.tracking_no,
+    'Sandbox' as source
 FROM {{ref("t2_sandbox_order_lines_tot")}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_tot")}} p
     ON s.ma_don_code = p.ma_don_code
