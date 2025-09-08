@@ -9,7 +9,6 @@ WITH current_inventory AS (
   FROM dtm.t1_vietful_product_inventory
   WHERE date_record = (SELECT MAX(date_record) FROM dtm.t1_vietful_product_inventory)
 ),
-
 -- Tạo danh sách tất cả các ngày cần tính
 date_range AS (
   SELECT 
@@ -124,7 +123,6 @@ mov7_calculation AS (
 ),
 
 a AS (
-  -- Kết hợp tất cả dữ liệu
   SELECT 
     i.warehouse_code as KHO,
     i.sku as SKU,
@@ -146,7 +144,50 @@ a AS (
       ELSE NULL 
     END as DOH_7,
     7 as thoi_gian_nhap_kho,
-    i.brand
+    i.brand,
+    
+    -- Thêm các status fields
+    CASE 
+      WHEN COALESCE(mov3.mov3, 0) = 0 THEN 'Không có xuất kho 3 ngày'
+      WHEN i.available_qty = 0 THEN 'Hết hàng'
+      WHEN (i.available_qty / mov3.mov3) <= 3 THEN 'Sắp hết hàng'
+      WHEN (i.available_qty / mov3.mov3) > 7 THEN 'An toàn'
+      ELSE 'Bình thường'
+    END as STATUS_DOH3,
+    
+    CASE 
+      WHEN COALESCE(mov7.mov7, 0) = 0 THEN 'Không có xuất kho 7 ngày'
+      WHEN i.available_qty = 0 THEN 'Hết hàng'
+      WHEN (i.available_qty / mov7.mov7) <= 3 THEN 'Sắp hết hàng'
+      WHEN (i.available_qty / mov7.mov7) > 7 THEN 'An toàn'
+      ELSE 'Bình thường'
+    END as STATUS_DOH7,
+    
+    -- Status tổng hợp (ưu tiên DOH7)
+    CASE 
+      WHEN COALESCE(mov7.mov7, 0) = 0 THEN 'Không có xuất kho'
+      WHEN i.available_qty = 0 THEN 'Hết hàng'
+      WHEN (i.available_qty / mov7.mov7) <= 3 THEN 'Sắp hết hàng'
+      WHEN (i.available_qty / mov7.mov7) > 7 THEN 'An toàn'
+      ELSE 'Bình thường'
+    END as STATUS_TONG_HOP,
+    
+    -- Mức độ ưu tiên (cho sorting/filtering)
+    CASE 
+      WHEN i.available_qty = 0 THEN 1
+      WHEN COALESCE(mov7.mov7, 0) = 0 THEN 2
+      WHEN (i.available_qty / mov7.mov7) <= 3 THEN 3
+      WHEN (i.available_qty / mov7.mov7) <= 7 THEN 4
+      ELSE 5
+    END as MUC_DO_UU_TIEN,
+    
+    -- Flag fields cho Power BI filtering
+    CASE WHEN COALESCE(mov3.mov3, 0) = 0 THEN 1 ELSE 0 END as FLAG_KHONG_XUAT_3_NGAY,
+    CASE WHEN COALESCE(mov7.mov7, 0) = 0 THEN 1 ELSE 0 END as FLAG_KHONG_XUAT_7_NGAY,
+    CASE WHEN i.available_qty = 0 THEN 1 ELSE 0 END as FLAG_HET_HANG,
+    CASE WHEN i.available_qty > 0 AND (i.available_qty / NULLIF(mov7.mov7, 0)) <= 3 THEN 1 ELSE 0 END as FLAG_SAP_HET_HANG,
+    CASE WHEN (i.available_qty / NULLIF(mov7.mov7, 0)) > 7 THEN 1 ELSE 0 END as FLAG_AN_TOAN
+    
   FROM current_inventory i
   LEFT JOIN monthly_outbound m ON i.warehouse_code = m.warehouse_code 
     AND i.sku = m.sku AND i.partner_sku = m.partnerSKU
@@ -156,7 +197,6 @@ a AS (
     AND i.sku = mov3.sku AND i.partner_sku = mov3.partnerSKU
   LEFT JOIN mov7_calculation mov7 ON i.warehouse_code = mov7.warehouse_code 
     AND i.sku = mov7.sku AND i.partner_sku = mov7.partnerSKU
-  ORDER BY i.warehouse_code, i.sku
+  ORDER BY MUC_DO_UU_TIEN, i.warehouse_code, i.sku
 )
-
 SELECT * FROM a -- WHERE sku = "8938555693021"
