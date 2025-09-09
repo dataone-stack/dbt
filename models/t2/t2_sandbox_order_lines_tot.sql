@@ -43,10 +43,16 @@ orderline AS (
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
         
-        CASE
-            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
-            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' OR ord.reason_to_create = 'TAKECARE' OR ord.reason_to_create = 'OLD_ORDER' THEN 'Khách hàng cũ'
-            ELSE 'Khách hàng mới'
+        -- CASE
+        --     WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách cũ'
+        --     WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' OR ord.reason_to_create = 'TAKECARE' OR ord.reason_to_create = 'OLD_ORDER' THEN 'Khách cũ'
+        --     ELSE 'Khách mới'
+        -- END AS loai_khach_hang,
+
+        CASE 
+            WHEN ord.customer_type = 0 THEN 'Khách mới'
+            WHEN ord.customer_type = 1 THEN 'Khách cũ'
+            ELSE 'Không xác định'
         END AS loai_khach_hang,
 
         CASE
@@ -253,14 +259,14 @@ select a.*,
     (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
         AS doanh_thu_ke_toan,
     CASE 
-        WHEN loai_khach_hang = 'Khách hàng mới' 
+        WHEN loai_khach_hang = 'Khách mới' 
         THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
-        WHEN loai_khach_hang = 'Khách hàng cũ' 
+        WHEN loai_khach_hang = 'Khách cũ' 
         THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_cu
-from a where is_delete is not true
+from a where is_delete is not true and nguon_doanh_thu <> 'Sàn TMDT liên kết'
