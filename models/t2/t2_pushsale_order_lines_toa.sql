@@ -42,9 +42,9 @@ orderline AS (
         ord.delivery_province_name AS tinh_giao_hang,
 
         CASE
-            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách hàng cũ'
-            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách hàng cũ'
-            ELSE 'Khách hàng mới'
+            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách cũ'
+            WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' THEN 'Khách cũ'
+            ELSE 'Khách mới'
         END AS loai_khach_hang,
 
         CASE
@@ -234,7 +234,13 @@ orderline AS (
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON TRIM(dt.item_code) = TRIM(bangGia.ma_sku)
     LEFT JOIN deliveries de on dt.order_number = de.order_number
-    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on TRIM(ord.marketing_user_name) = TRIM(mar.marketer_name)-- and ord.team = mar.team_account
+    
+-- Gắn thông tin marketer cho từng đơn dựa trên marketing_user_name và ngày chốt đơn đúng trong khoảng thời gian marketer sử dụng account đó
+    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar 
+        ON TRIM(ord.marketing_user_name) = TRIM(mar.marketer_name) 
+        AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar.start_date)
+        AND (mar.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar.end_date))   
+        
     LEFT JOIN (
         SELECT DISTINCT team_account, 
                 FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager,
@@ -255,13 +261,13 @@ SELECT
     (thanh_tien - COALESCE(chiet_khau, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
      AS doanh_thu_ke_toan,
     CASE 
-        WHEN loai_khach_hang = 'Khách hàng mới' 
+        WHEN loai_khach_hang = 'Khách mới' 
         THEN thanh_tien - chiet_khau
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
-        WHEN loai_khach_hang = 'Khách hàng cũ' 
+        WHEN loai_khach_hang = 'Khách cũ' 
         THEN thanh_tien - chiet_khau
         ELSE 0
     END AS doanh_so_cu

@@ -6,7 +6,9 @@ SELECT
     ma_quan_ly, 
     brand,
     'One5' AS company, 
-    "" AS team_account
+    '' AS team_account,
+    NULL AS start_date,
+    NULL AS end_date
 FROM google_sheet.marketer
 WHERE TRIM(CONCAT(
     COALESCE(manager, ''), 
@@ -27,7 +29,9 @@ SELECT
     id_quan_ly AS ma_quan_ly,  
     Brand AS brand,
     'Max Eagle' AS company, 
-    team_account
+    team_account,
+    start_date,
+    end_date
 FROM google_sheet.me_marketer
 WHERE TRIM(CONCAT(
     COALESCE(ten_quan_ly, ''), 

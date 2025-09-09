@@ -27,3 +27,17 @@ union all
 select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_lyquocviet_one5`
 union all
 select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_ume_googleads_buithequoc97`
+union all
+select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_agwuduhhxbxbnxnxkxkxk2`
+union all
+select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_ume_googleads_nguyenvuduca`
+-- union all
+-- select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_ume_googleads_rukehajotiza10788`
+union all
+select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_rosaliewalton892`
+union all
+select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_hughjennefer`
+union all
+select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_pl8582937`
+union all
+select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_ngadenny522`
