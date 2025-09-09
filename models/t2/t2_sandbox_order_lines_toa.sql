@@ -234,25 +234,25 @@ SELECT
 FROM orderline )
 
 select a.* ,
-  thanh_tien - COALESCE(chiet_khau, 0)  + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) - COALESCE(giam_gia_san_pham, 0) 
-    AS tien_khach_hang_thanh_toan,
-    thanh_tien  - COALESCE(giam_gia_san_pham, 0)
-    AS tien_sp_sau_tro_gia,
+    ROUND(thanh_tien - COALESCE(chiet_khau, 0)  + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) - COALESCE(giam_gia_san_pham, 0), -1)
+        AS tien_khach_hang_thanh_toan,
+    ROUND(thanh_tien  - COALESCE(giam_gia_san_pham, 0),-1)
+        AS tien_sp_sau_tro_gia,
     COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
-    AS tien_chiet_khau_sp,
+        AS tien_chiet_khau_sp,
  
-    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
+    ROUND((thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)),-1) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
      AS doanh_thu_ke_toan,
     CASE 
         WHEN loai_khach_hang = 'Khách hàng mới' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
+        THEN ROUND((thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)),-1)
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
         WHEN loai_khach_hang = 'Khách hàng cũ' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
+        THEN ROUND((thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)),-1)
         ELSE 0
     END AS doanh_so_cu
 from a  where is_delete is not true
