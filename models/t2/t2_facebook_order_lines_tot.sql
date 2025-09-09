@@ -3,8 +3,17 @@ with total_price as (
     id,
     brand,
     sum(total_price) as total_amount
-  from {{ref("t1_pancake_pos_order_total")}}
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total`
   group by id,brand
+),
+vietful_return_detail as(
+   SELECT 
+    brand,
+    partner_or_code,
+    JSON_VALUE(i, '$.partnerSKU') AS partner_sku
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`,
+  UNNEST(return_details) AS i
+  WHERE sale_channel_code = 'PANCAKE' and return_details is not null
 ),
 vietful_delivery_date as (
   select 
@@ -16,7 +25,7 @@ vietful_delivery_date as (
      FROM UNNEST(status_trackings) AS status
      WHERE JSON_VALUE(status, '$.statusCode') = '71'
      LIMIT 1) AS ngay_da_giao
-  from {{ref("t1_vietful_xuatkho_total")}}
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
   where sale_channel_code = 'PANCAKE'
 ),
 vietful_delivery_returned_date as (
@@ -29,7 +38,7 @@ vietful_delivery_returned_date as (
       FROM UNNEST(status_trackings) AS status
       WHERE JSON_VALUE(status, '$.statusCode') = '83'
       LIMIT 1) AS ngay_da_giao
-  FROM {{ref("t1_vietful_xuatkho_total")}}
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
   WHERE sale_channel_code = 'PANCAKE'
     AND EXISTS (
         SELECT 1
@@ -112,11 +121,18 @@ order_line as (
     mapBangGia.brand_lv1,
     vietful.ngay_da_giao,
     vietful.shipped_date as ngay_ship,
-  from {{ref("t1_pancake_pos_order_total")}} as ord,
+    case
+    when vietful_return.partner_sku is null
+    then 0
+    else 1
+    end as check_return
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
+  left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code  and 
+  json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 ),
 order_line_returned as (
@@ -141,6 +157,7 @@ order_line_returned as (
     COALESCE(
      safe_cast(json_value(item, '$.variation_info.retail_price') as int64) , 0) as gia_goc_sau_giam_gia_san_pham,
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
+    
     COALESCE(
       SAFE_DIVIDE(
         case
@@ -187,11 +204,11 @@ order_line_returned as (
       ) * ord.prepaid, 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
     vietful.ngay_da_giao,
-    vietful.shipped_date as ngay_ship,
-  from {{ref("t1_pancake_pos_order_total")}} as ord,
+    vietful.shipped_date as ngay_ship
+  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_delivery_returned_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','') and ord.status_name not in ('removed')
 )
@@ -217,15 +234,33 @@ order_line_returned as (
     giam_gia_don_hang as giam_gia_san,
     0 as seller_tro_gia,
     0 as san_tro_gia,
-    (gia_goc_sau_giam_gia_san_pham * so_luong) as tien_sp_sau_tro_gia,
-    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tien_khach_hang_thanh_toan,
-    0 as tong_phi_san,
-    (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
     case
-    when tra_truoc > 0
+    when check_return = 0
+    then (gia_goc_sau_giam_gia_san_pham * so_luong) 
+    else 0
+    end as tien_sp_sau_tro_gia,
+
+    case
+    when check_return = 0
+    then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen 
+    else 0
+    end as tien_khach_hang_thanh_toan,
+
+    0 as tong_phi_san,
+
+    case
+    when check_return = 0
+    then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen 
+    else 0
+    end as tong_tien_sau_giam_gia,
+
+    case
+    when tra_truoc > 0 or check_return = 1
     then 0
     else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
     end as cod,
+
+
     tra_truoc,
     cuoc_vc,
     phi_van_chuyen as phi_ship,
@@ -267,21 +302,21 @@ order_line_returned as (
         else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)
     end as gia_ban_daily_total,
     case
-        when gia_goc_sau_giam_gia_san_pham = 0
+        when gia_goc_sau_giam_gia_san_pham = 0 or check_return = 1
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
         else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
     end as tien_chiet_khau_sp,
     case
-        when gia_goc_sau_giam_gia_san_pham = 0
+        when gia_goc_sau_giam_gia_san_pham = 0 or check_return = 1
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
         else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     end as doanh_thu_ke_toan,
     case
-        when gia_goc_sau_giam_gia_san_pham = 0
+        when gia_goc_sau_giam_gia_san_pham = 0 or check_return = 1
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
@@ -393,12 +428,12 @@ order_line_returned as (
 ),
 
 a as (
-select * from order_delivered
+select * from order_delivered where ngay_da_giao is not null
 union all
 select * from order_returned where ngay_da_giao is not null
 )
 
-select * from a --  where brand = "LYB" and date(ngay_da_giao) between "2025-07-10" and "2025-07-10"
+select * from a  --  where brand = "LYB" and date(ngay_da_giao) between "2025-07-10" and "2025-07-10"
 
 
 
