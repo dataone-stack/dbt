@@ -477,7 +477,7 @@ union all
 select * from order_returned where ngay_da_giao is not null
 )
 
-select * from a where a.ma_don_hang = '24799'  --  where brand = "LYB" and date(ngay_da_giao) between "2025-07-10" and "2025-07-10"
+select * from a   --  where brand = "LYB" and date(ngay_da_giao) between "2025-07-10" and "2025-07-10"
 
 
 
