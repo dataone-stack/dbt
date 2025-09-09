@@ -70,7 +70,7 @@ orderline AS (
         END AS thanh_tien,
         
         CASE 
-            WHEN discount_type = 0 THEN COALESCE(ord.total_discount_product,0)
+            WHEN discount_type = 0 THEN 0
             WHEN discount_type = 1 
                 THEN ROUND(COALESCE(dt.quantity,0) * COALESCE(dt.price,0) * (COALESCE(dt.discount_value,0)/100), 0)
             WHEN discount_type =2 
