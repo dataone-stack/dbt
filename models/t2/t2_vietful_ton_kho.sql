@@ -145,6 +145,8 @@ a AS (
     END as DOH_7,
     7 as thoi_gian_nhap_kho,
     i.brand,
+    bang_gia.brand_lv1 as bg_brand_lv1,
+    bang_gia.brand as bg_brand,
     
     -- Thêm các status fields
     CASE 
@@ -197,6 +199,7 @@ a AS (
     AND i.sku = mov3.sku AND i.partner_sku = mov3.partnerSKU
   LEFT JOIN mov7_calculation mov7 ON i.warehouse_code = mov7.warehouse_code 
     AND i.sku = mov7.sku AND i.partner_sku = mov7.partnerSKU
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bang_gia ON bang_gia.ma_sku = i.partner_sku
   ORDER BY MUC_DO_UU_TIEN, i.warehouse_code, i.sku
 )
 SELECT * FROM a -- WHERE sku = "8938555693021"

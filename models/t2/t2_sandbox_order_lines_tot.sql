@@ -195,7 +195,13 @@ orderline AS (
     LEFT JOIN {{ref("t1_sandbox_order_total")}} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bangGia ON dt.item_code = bangGia.ma_sku
     LEFT JOIN deliveries de on dt.order_number = de.order_number
-    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar on ord.marketing_user_name = mar.marketer_name-- and ord.team = mar.team_account
+
+    -- Gắn thông tin marketer cho từng đơn dựa trên marketing_user_name và ngày chốt đơn đúng trong khoảng thời gian marketer sử dụng account đó
+    LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar 
+        ON TRIM(ord.marketing_user_name) = TRIM(mar.marketer_name) 
+        AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar.start_date)
+        AND (mar.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar.end_date))
+       
     LEFT JOIN (
         SELECT DISTINCT team_account, 
                 FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager,
