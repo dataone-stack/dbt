@@ -221,7 +221,7 @@ orderline AS (
         
     FROM {{ ref('t1_pushsale_order_line_total') }} dt
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
-    LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON dt.item_code = bangGia.ma_sku
+    LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON TRIM(dt.item_code) = TRIM(bangGia.ma_sku)
     LEFT JOIN deliveries de on dt.order_number = de.order_number
 
     -- Gắn thông tin marketer cho từng đơn dựa trên marketing_user_name và ngày chốt đơn đúng trong khoảng thời gian marketer sử dụng account đó
@@ -230,12 +230,14 @@ orderline AS (
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar.start_date)
         AND (mar.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar.end_date))
         
+    -- Nếu không có marketing_user_name thì phân đơn đó về manager dựa vào ord.team
     LEFT JOIN (
-        SELECT DISTINCT team_account, 
-                FIRST_VALUE(manager) OVER (PARTITION BY team_account ORDER BY marketer_name) as manager,
-                FIRST_VALUE(ma_quan_ly) OVER (PARTITION BY team_account ORDER BY marketer_name) as ma_quan_ly
-        FROM {{ref("t1_marketer_facebook_total")}}
+        SELECT DISTINCT team_account, manager, ma_quan_ly, start_date, end_date
+        FROM {{ref("t1_marketer_facebook_total")}} WHERE company ='Max Eagle' 
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
+        AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar2.start_date)
+        AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
+        
     LEFT JOIN {{ ref('t1_pushsale_source_name') }} source ON trim(ord.source_name) = trim(source.source_name) and  trim(ord.marketing_user_name) =  trim(source.marketing_user_name)
     -- LEFT JOIN deliveries de on dt.order_number = de.order_number
     LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
