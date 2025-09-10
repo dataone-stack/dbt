@@ -413,8 +413,8 @@ order_line_returned as (
 
     case
     when brand = 'An Cung'
-    then -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen- khuyen_mai_dong_gia)
-    else -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - phi_van_chuyen)
+    then -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen- khuyen_mai_dong_gia)
+    else -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     end as tien_khach_hang_thanh_toan,
 
     0 as tong_phi_san,

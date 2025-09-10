@@ -5,7 +5,8 @@ SELECT
     phi_thue, 
     CAST(dau_the AS INT64) AS dau_the, 
     ma_nhan_vien, 
-    staff, 
+    -- chuẩn hóa staff dạng Nguyễn Văn A
+    (SELECT STRING_AGG(CONCAT(UPPER(SUBSTR(word, 1, 1)), LOWER(SUBSTR(word, 2))) , ' ') FROM UNNEST(SPLIT(staff, ' ')) AS word) AS staff,
     ma_quan_ly, 
     manager, 
     brand, 
@@ -26,7 +27,8 @@ SELECT
     phi_thue, 
     CAST(dau_the AS INT64) AS dau_the, 
     ma_nhan_vien, 
-    staff, 
+    -- chuẩn hóa staff dạng Nguyễn Văn A
+    (SELECT STRING_AGG(CONCAT(UPPER(SUBSTR(word, 1, 1)), LOWER(SUBSTR(word, 2))) , ' ') FROM UNNEST(SPLIT(staff, ' ')) AS word) AS staff,
     ma_quan_ly, 
     manager, 
     brand, 
