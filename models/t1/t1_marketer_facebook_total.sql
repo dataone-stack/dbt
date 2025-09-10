@@ -23,7 +23,8 @@ UNION ALL
 
 SELECT 
     ten_quan_ly AS manager, 
-    marketing_display_name AS marketing_name,  
+    -- chuẩn hóa marketing_display_name dạng Nguyễn Văn A
+    (SELECT STRING_AGG(CONCAT(UPPER(SUBSTR(word, 1, 1)), LOWER(SUBSTR(word, 2))) , ' ') FROM UNNEST(SPLIT(marketing_display_name, ' ')) AS word) AS marketing_name,
     marketing_user_name AS marketer_name, 
     id_nhan_vien AS ma_nhan_vien, 
     id_quan_ly AS ma_quan_ly,  
