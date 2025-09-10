@@ -85,7 +85,7 @@ orderline AS (
             ELSE 0  
         END AS giam_gia_san_pham,
 
-        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc,
+        ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_cod, 0) AS gia_dich_vu_vc, -- đây là số phí ship thu khách, sau khi đã trừ phần hỗ trợ vận chuyển rồi
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * 
             CASE WHEN ord.total_shipping_cost = 0 THEN ord.total_cod ELSE 0 END, 0) AS phi_vc_ho_tro_khach,
         ROUND(SAFE_DIVIDE(dt.quantity * dt.price, NULLIF(ord.total_price, 0)) * ord.total_deposit, 0) AS tra_truoc,
@@ -256,17 +256,16 @@ select a.*,
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
         AS tien_chiet_khau_sp,
  
-    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) -- + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)))
-        AS doanh_thu_ke_toan,
+    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)) AS doanh_thu_ke_toan, -- - COALESCE(phi_vc_ho_tro_khach, 0)))
     CASE 
         WHEN loai_khach_hang = 'Khách mới' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0))
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
         WHEN loai_khach_hang = 'Khách cũ' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0))
         ELSE 0
     END AS doanh_so_cu
 from a where is_delete is not true and nguon_doanh_thu <> 'Sàn TMDT liên kết'
