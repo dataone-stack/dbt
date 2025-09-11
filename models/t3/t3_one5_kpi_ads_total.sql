@@ -30,6 +30,7 @@ SELECT
   b.month as kpi_month,
   b.year as kpi_year,
   b.revenue_target,
+  b.spend,
   b.cir_target
 FROM ads_total a
 FULL OUTER JOIN {{ref('t1_kpi_ads_total')}} b
