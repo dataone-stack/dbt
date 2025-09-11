@@ -217,10 +217,12 @@ orderline AS (
             team_account,
             manager,
             ma_quan_ly,
-            FIRST_VALUE(start_date) OVER (PARTITION BY team_account ORDER BY start_date ASC) AS start_date,
-            FIRST_VALUE(end_date) OVER (PARTITION BY team_account ORDER BY end_date DESC) AS end_date
+            start_date,
+            end_date,
+            -- FIRST_VALUE(start_date) OVER (PARTITION BY team_account ORDER BY start_date ASC) AS start_date,
+            -- FIRST_VALUE(end_date) OVER (PARTITION BY team_account ORDER BY end_date DESC) AS end_date
             FROM crypto-arcade-453509-i8.dtm.t1_marketer_facebook_total
-            WHERE company = 'Max Eagle' 
+            WHERE company = 'Max Eagle' and team_account is not null
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar2.start_date)
         AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
