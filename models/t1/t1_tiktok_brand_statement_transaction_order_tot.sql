@@ -21,6 +21,10 @@ FROM `chaching_beauty_tiktok_shop_dwh.tiktok_shop_cha_ching_beauty_statement_tra
 UNION ALL
 SELECT 'One5' as company, 'Omazo' AS brand, 'omazo_vietnam' AS shop, * 
 FROM `omazo_tiktok_shop_dwh.tiktok_shop_omazo_vietnam_statement_transaction_order`
+union all
+SELECT 'One5' as company, 'UME' AS brand, 'cham_soc_lan_da_trang_min' AS shop, * 
+FROM `chamsoclandatrangmin_tiktok_shop_dwh.tiktok_shop_cham_soc_lan_da_trang_min_statement_transaction_order`
+
 UNION ALL
 SELECT 'Max Eagle' as company, 'UME' AS brand, 'belle_viet_nam_store_tt' AS shop, * 
 FROM `bellevietnamstore_tiktok_shop_dwh.tiktok_shop_belle_viet_nam_store_statement_transaction_order`
