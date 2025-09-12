@@ -30,31 +30,49 @@ order_line as (
     --     safe_cast(json_value(item, '$.quantity') as int64)
     --   ), 0) as gia_goc,
     COALESCE(safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64), 0) as gia_goc,
+    COALESCE(safe_cast(json_value(item, '$.variation_info.retail_price') as int64), 0) as gia_sp_sau_giam_gia,
+
     safe_cast(json_value(item, '$.total_discount') as int64) as khuyen_mai_dong_gia,
-    COALESCE(
+    round(COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
-        safe_cast(json_value(item, '$.quantity') as int64),
+        case
+        when ord.brand in ('Chaching Beauty','An Cung')
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        * safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
-      ) * ord.total_discount, 0) as giam_gia_don_hang,
-    COALESCE(
+      ) * ord.total_discount, 0) ) as giam_gia_don_hang,
+    round(COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
-        safe_cast(json_value(item, '$.quantity') as int64),
+        case
+        when ord.brand in ('Chaching Beauty','An Cung')
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        * safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
-      ) * ord.shipping_fee, 0) as phi_van_chuyen,
-    COALESCE(
+      ) * ord.shipping_fee, 0)) as phi_van_chuyen,
+    round(COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
-        safe_cast(json_value(item, '$.quantity') as int64),
+        case
+        when ord.brand in ('Chaching Beauty','An Cung')
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        * safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
-      ) * ord.partner_fee, 0) as cuoc_vc,
-    COALESCE(
+      ) * ord.partner_fee, 0) ) as cuoc_vc,
+    round(COALESCE(
       SAFE_DIVIDE(
-        safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)*
-        safe_cast(json_value(item, '$.quantity') as int64),
+        case
+        when ord.brand in ('Chaching Beauty','An Cung')
+        then safe_cast(json_value(item, '$.variation_info.retail_price') as int64)
+        else safe_cast(json_value(item, '$.variation_info.retail_price_original') as int64)
+        end
+        * safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
-      ) * ord.prepaid, 0) as tra_truoc,
+      ) * ord.prepaid, 0)) as tra_truoc,
     tt.customer_name,
     mapBangGia.gia_ban_daily,
     mapBangGia.brand_lv1,
@@ -85,15 +103,35 @@ order_line as (
   giam_gia_don_hang as giam_gia_san,
   0 as seller_tro_gia,
   0 as san_tro_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia as tien_sp_sau_tro_gia,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang - phi_van_chuyen as tien_khach_hang_thanh_toan,
+  case
+  when brand in ('Chaching Beauty','An Cung')
+  then (gia_sp_sau_giam_gia * so_luong) - khuyen_mai_dong_gia
+  else  (gia_goc * so_luong) - khuyen_mai_dong_gia
+  end as tien_sp_sau_tro_gia,
+
+  case
+  when brand in ('Chaching Beauty','An Cung')
+  then (gia_sp_sau_giam_gia * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen 
+  else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen 
+  end as tien_khach_hang_thanh_toan,
+
   0 as tong_phi_san,
-  (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen as tong_tien_sau_giam_gia,
+
+  case
+  when brand in ('Chaching Beauty','An Cung')
+  then (gia_sp_sau_giam_gia * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen 
+  else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen 
+  end as tong_tien_sau_giam_gia,
+  
   case
   when tra_truoc > 0
   then 0
+  when brand in ('Chaching Beauty','An Cung')
+  then (gia_sp_sau_giam_gia * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
   else (gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen
   end as cod,
+
+
   tra_truoc,
   cuoc_vc,
   phi_van_chuyen as phi_ship,
@@ -119,13 +157,18 @@ order_line as (
   COALESCE(gia_ban_daily, 0) AS gia_ban_daily,
   COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
   (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang) AS tien_chiet_khau_sp,
-  ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) AS doanh_thu_ke_toan
+
+  case
+  when brand in ('Chaching Beauty','An Cung')
+  then ((gia_sp_sau_giam_gia * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) 
+  else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) 
+  end AS doanh_thu_ke_toan
 from order_line
 
 ),
 don_no as (
   select distinct ma_don_hang, brand, sku_code, loai_don_no
-  from {{ref("t2_pancake_pos_don_no_total")}}
+  from{{ref("t2_pancake_pos_don_no_total")}}
 )
 
 select 
