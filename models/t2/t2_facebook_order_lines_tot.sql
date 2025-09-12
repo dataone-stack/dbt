@@ -283,19 +283,19 @@ order_line_returned as (
     0 as seller_tro_gia,
     0 as san_tro_gia,
     case
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - khuyen_mai_dong_gia
     
     else (gia_goc_sau_giam_gia_san_pham * so_luong)
     end as tien_sp_sau_tro_gia,
 
     case
-    when brand = 'An Cung' and status_name = 'returned'
+    when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
     when status_name = 'returned'
     then (gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen 
 
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen - khuyen_mai_dong_gia
     else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen 
 
@@ -304,12 +304,12 @@ order_line_returned as (
     0 as tong_phi_san,
 
     case
-    when brand = 'An Cung' and status_name = 'returned'
+    when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
     when status_name = 'returned'
     then (gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen 
 
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen - khuyen_mai_dong_gia
     else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen 
 end as tong_tien_sau_giam_gia,
@@ -317,12 +317,12 @@ end as tong_tien_sau_giam_gia,
     case
     when tra_truoc > 0
     then 0
-    when brand = 'An Cung' and status_name = 'returned'
+    when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
     when status_name = 'returned'
     then (gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen
 
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen - khuyen_mai_dong_gia
     else (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen
     end as cod,
@@ -372,12 +372,12 @@ end as tong_tien_sau_giam_gia,
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        when brand = 'An Cung' and status_name = 'returned'
+        when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
         then (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
         when status_name ='returned'
         then (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - giam_gia_don_hang)
 
-        when brand = 'An Cung'
+        when brand in ('An Cung','Chaching Beauty')
         then (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - khuyen_mai_dong_gia)
         else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
     end as tien_chiet_khau_sp,
@@ -387,12 +387,12 @@ end as tong_tien_sau_giam_gia,
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        when brand = 'An Cung'and status_name = 'returned'
+        when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
         then ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
         when  status_name = 'returned'
         then ((gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen)
 
-        when brand = 'An Cung'
+        when brand in ('An Cung','Chaching Beauty')
         then ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen-khuyen_mai_dong_gia)
         else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     end as doanh_thu_ke_toan,
@@ -403,12 +403,12 @@ end as tong_tien_sau_giam_gia,
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        when brand = 'An Cung' and status_name = 'returned'
+        when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
         then ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
         when status_name = 'returned'
         then ((gia_goc * so_luong) - giam_gia_don_hang)
 
-        when brand = 'An Cung'
+        when brand in ('An Cung','Chaching Beauty')
         then ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - khuyen_mai_dong_gia)
         else ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang)
     end as doanh_thu_ke_toan_v2,
@@ -443,18 +443,18 @@ end as tong_tien_sau_giam_gia,
     0 as san_tro_gia,
     
     case
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - khuyen_mai_dong_gia)
     else -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong))
     end as tien_sp_sau_tro_gia,
 
     case
-    when brand = 'An Cung' and status_name = 'returned'
+    when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
     then -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     when status_name = 'returned'
     then -1* ((gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen)
 
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen- khuyen_mai_dong_gia)
     else -1* ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     end as tien_khach_hang_thanh_toan,
@@ -462,12 +462,12 @@ end as tong_tien_sau_giam_gia,
     0 as tong_phi_san,
 
     case
-    when brand = 'An Cung' and status_name = 'returned'
+    when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
     then -1* ( (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     when status_name = 'returned'
     then -1* ( (gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen )
 
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then -1* ( (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen - khuyen_mai_dong_gia )
     else -1* ( (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen )
     end as tong_tien_sau_giam_gia,
@@ -476,12 +476,12 @@ end as tong_tien_sau_giam_gia,
     case
     when tra_truoc > 0
     then 0
-    when brand = 'An Cung' and status_name = 'returned'
+    when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
     then -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     when status_name = 'returned'
     then -1 * ((gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen)
 
-    when brand = 'An Cung'
+    when brand in ('An Cung','Chaching Beauty')
     then -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen - khuyen_mai_dong_gia)
     else -1 * ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen)
     end as cod,
@@ -534,12 +534,12 @@ end as tong_tien_sau_giam_gia,
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        when brand = 'An Cung'  and status_name = 'returned'
+        when brand in ('An Cung','Chaching Beauty')  and status_name = 'returned'
         then -1 * ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang))
         when status_name = 'returned'
         then -1 * ( (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc * so_luong) - giam_gia_don_hang))
 
-        when brand = 'An Cung' 
+        when brand in ('An Cung','Chaching Beauty') 
         then -1 * ((COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - khuyen_mai_dong_gia))
         else -1 * ( (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - ((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang))
     end as tien_chiet_khau_sp,
@@ -549,12 +549,12 @@ end as tong_tien_sau_giam_gia,
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        when brand = 'An Cung' and status_name = 'returned'
+        when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
         then -1 * (((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen))
         when status_name = 'returned'
         then -1 * (((gia_goc * so_luong) - giam_gia_don_hang + phi_van_chuyen))
 
-        when brand = 'An Cung' 
+        when brand in ('An Cung','Chaching Beauty') 
         then -1 * (((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen-khuyen_mai_dong_gia))
         else -1 * (((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen))
     end as doanh_thu_ke_toan,
@@ -564,12 +564,12 @@ end as tong_tien_sau_giam_gia,
         then 0
         -- when (gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang + phi_van_chuyen < 50000
         -- then 0
-        when brand = 'An Cung' and status_name = 'returned'
+        when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
         then -1 * (((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang))
         when status_name = 'returned'
         then -1 * (((gia_goc * so_luong) - giam_gia_don_hang))
         
-        when brand = 'An Cung' 
+        when brand in ('An Cung','Chaching Beauty') 
         then -1 * (((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang - khuyen_mai_dong_gia))
         else -1 * (((gia_goc_sau_giam_gia_san_pham * so_luong) - giam_gia_don_hang))
     end as doanh_thu_ke_toan_v2,
