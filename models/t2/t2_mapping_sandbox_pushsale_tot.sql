@@ -14,7 +14,7 @@ SELECT
     
     trang_thai_don_hang,
     tien_khach_hang_thanh_toan,
-    ngay_data_ve,
+    ngay_chot_don,
     gia_ban_daily_total,
     tien_chiet_khau_sp,
     phu_phi,
@@ -45,7 +45,7 @@ SELECT
     
     s.trang_thai_don_hang,
     s.tien_khach_hang_thanh_toan,
-    s.ngay_data_ve,
+    s.ngay_chot_don,
     s.gia_ban_daily_total,
     s.tien_chiet_khau_sp,
     s.phu_phi,
