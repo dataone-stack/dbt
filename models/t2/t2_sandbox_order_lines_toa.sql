@@ -217,10 +217,12 @@ orderline AS (
             team_account,
             manager,
             ma_quan_ly,
-            FIRST_VALUE(start_date) OVER (PARTITION BY team_account ORDER BY start_date ASC) AS start_date,
-            FIRST_VALUE(end_date) OVER (PARTITION BY team_account ORDER BY end_date DESC) AS end_date
+            start_date,
+            end_date,
+            -- FIRST_VALUE(start_date) OVER (PARTITION BY team_account ORDER BY start_date ASC) AS start_date,
+            -- FIRST_VALUE(end_date) OVER (PARTITION BY team_account ORDER BY end_date DESC) AS end_date
             FROM crypto-arcade-453509-i8.dtm.t1_marketer_facebook_total
-            WHERE company = 'Max Eagle' 
+            WHERE company = 'Max Eagle' and team_account is not null
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar2.start_date)
         AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
@@ -262,17 +264,17 @@ select a.* ,
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
         AS tien_chiet_khau_sp,
  
-    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)) AS doanh_thu_ke_toan, -- - COALESCE(phi_vc_ho_tro_khach, 0)))
+    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) AS doanh_thu_ke_toan, 
      
     CASE 
         WHEN loai_khach_hang = 'Khách mới' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0))
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
         WHEN loai_khach_hang = 'Khách cũ' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0))
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))
         ELSE 0
     END AS doanh_so_cu
 from a  where is_delete is not true

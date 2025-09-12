@@ -6,4 +6,4 @@ UNION ALL
 SELECT * ,
     'Max Eagle' AS company
     FROM `google_sheet.me_kpi_ads`
-    WHERE year IS NOT NULL
+    WHERE year IS NOT NULL and month >8
