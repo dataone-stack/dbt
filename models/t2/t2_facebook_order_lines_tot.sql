@@ -13,6 +13,7 @@ vietful_delivery_date as (
     partner_or_code,
     shipped_date,
     ref_code,
+    tracking_code,
     (SELECT AS VALUE JSON_VALUE(status, '$.statusDate')
      FROM UNNEST(status_trackings) AS status
      WHERE JSON_VALUE(status, '$.statusCode') = '71'
@@ -28,6 +29,7 @@ vietful_delivery_returned_date as (
       shipped_date,
       return_details,
       sale_channel_code,
+      tracking_code,
       (SELECT JSON_VALUE(status, '$.statusDate')
       FROM UNNEST(status_trackings) AS status
       WHERE JSON_VALUE(status, '$.statusCode') = '83'
@@ -54,6 +56,7 @@ vietful_delivery_returned_date as (
       shipped_date,
       return_details,
       sale_channel_code,
+      tracking_code,
       (SELECT JSON_VALUE(status, '$.statusDate')
        FROM UNNEST(status_trackings) AS status
        WHERE JSON_VALUE(status, '$.statusCode') = '81'
@@ -84,6 +87,7 @@ vietful_return_detail as(
     ref_code,
     shipped_date,
     ngay_da_giao,
+    tracking_code,
     JSON_VALUE(i, '$.partnerSKU') AS partner_sku
   FROM vietful_delivery_returned_date,
   UNNEST(return_details) AS i
@@ -162,6 +166,7 @@ order_line as (
     mapBangGia.gia_ban_daily,
     mapBangGia.brand_lv1,
     vietful.ngay_da_giao,
+    vietful.tracking_code,
     vietful.shipped_date as ngay_ship
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
@@ -246,6 +251,7 @@ order_line_returned as (
         ) * ord.prepaid), 0) as tra_truoc,
     mapBangGia.gia_ban_daily,
     vietful_return.ngay_da_giao,
+    vietful_return.tracking_code,
     vietful_return.shipped_date as ngay_ship
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
@@ -408,6 +414,7 @@ end as tong_tien_sau_giam_gia,
     end as doanh_thu_ke_toan_v2,
 
     ngay_da_giao,
+    tracking_code,
     0 AS phu_phi
     from order_line
 )
@@ -568,6 +575,7 @@ end as tong_tien_sau_giam_gia,
     end as doanh_thu_ke_toan_v2,
 
     ngay_da_giao,
+    tracking_code,
     0 AS phu_phi
     from order_line_returned
 ),
