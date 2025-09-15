@@ -6,7 +6,7 @@ WITH latest_delivery AS (
 ),
 
 deliveries as (
-SELECT t1.*
+SELECT distinct t1.*
 FROM  {{ref("t1_sandbox_deliveries_total")}} t1
 JOIN latest_delivery t2
   ON t1.order_number = t2.order_number

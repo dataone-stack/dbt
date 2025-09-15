@@ -93,7 +93,7 @@ SELECT
     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
     trang_thai_don_hang as status, 
     tien_khach_hang_thanh_toan as total_amount, 
-    ngay_data_ve as date_create_order, 
+    ngay_chot_don as date_create_order, 
     gia_ban_daily_total,
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
 
