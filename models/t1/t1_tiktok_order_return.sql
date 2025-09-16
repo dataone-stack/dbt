@@ -26,7 +26,7 @@ SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_tt' AS shop, * FR
 -- UNION ALL
 -- SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_2' AS shop, * FROM `be20vietnam2_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_return_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_natural_viet_nam_tt' AS shop, * FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_ume_beauty_natural_viet_nam_return_order`
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_natural_viet_nam_tt' AS shop, * FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_the_ume_lab_return_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_tt' AS shop, * FROM `umebeautyvietnam_tiktok_shop_dwh.tiktok_shop_ume_beauty_vietnam_return_order`
 UNION ALL
