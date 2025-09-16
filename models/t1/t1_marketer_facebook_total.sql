@@ -7,9 +7,9 @@ SELECT
     brand,
     'One5' AS company, 
     '' AS team_account,
-    NULL AS start_date,
-    NULL AS end_date
-FROM google_sheet.marketer
+    start_date,
+    end_date
+FROM google_sheet.one5_marketer
 WHERE TRIM(CONCAT(
     COALESCE(manager, ''), 
     COALESCE(staff, ''), 
