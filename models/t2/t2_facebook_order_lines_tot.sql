@@ -23,60 +23,34 @@ vietful_delivery_date as (
 ),
 vietful_delivery_returned_date as (
     SELECT 
-      brand,
-      partner_or_code,
-      ref_code,
-      shipped_date,
-      return_details,
-      sale_channel_code,
-      tracking_code,
-      (SELECT JSON_VALUE(status, '$.statusDate')
+    brand,
+    partner_or_code,
+    ref_code,
+    shipped_date,
+    return_details,
+    sale_channel_code,
+    tracking_code,
+    (
+      SELECT JSON_VALUE(status, '$.statusDate')
       FROM UNNEST(status_trackings) AS status
-      WHERE JSON_VALUE(status, '$.statusCode') = '83'
-      LIMIT 1) AS ngay_da_giao
+      WHERE JSON_VALUE(status, '$.statusCode') IN ('81', '83')
+      ORDER BY CASE JSON_VALUE(status, '$.statusCode')
+                 WHEN '83' THEN 1  -- ưu tiên 83
+                 WHEN '81' THEN 2
+               END
+      LIMIT 1
+    ) AS ngay_da_giao
   FROM {{ref("t1_vietful_xuatkho_total")}}
   WHERE sale_channel_code = 'PANCAKE'
     AND EXISTS (
-        SELECT 1
-        FROM UNNEST(status_trackings) AS status
-        WHERE JSON_VALUE(status, '$.statusCode') = '71'
+      SELECT 1
+      FROM UNNEST(status_trackings) AS status
+      WHERE JSON_VALUE(status, '$.statusCode') = '71'
     )
     AND EXISTS (
-        SELECT 1
-        FROM UNNEST(status_trackings) AS status
-        WHERE JSON_VALUE(status, '$.statusCode') = '83'
-    )
-
-  union all
-
-  SELECT 
-      brand,
-      partner_or_code,
-      ref_code,
-      shipped_date,
-      return_details,
-      sale_channel_code,
-      tracking_code,
-      (SELECT JSON_VALUE(status, '$.statusDate')
-       FROM UNNEST(status_trackings) AS status
-       WHERE JSON_VALUE(status, '$.statusCode') = '81'
-       LIMIT 1) AS ngay_da_giao
-  FROM {{ref("t1_vietful_xuatkho_total")}}
-  WHERE sale_channel_code = 'PANCAKE'
-    AND EXISTS (
-        SELECT 1
-        FROM UNNEST(status_trackings) AS status
-        WHERE JSON_VALUE(status, '$.statusCode') = '71'
-    )
-    AND EXISTS (
-        SELECT 1
-        FROM UNNEST(status_trackings) AS status
-        WHERE JSON_VALUE(status, '$.statusCode') = '81'
-    )
-    AND NOT EXISTS (
-        SELECT 1
-        FROM UNNEST(status_trackings) AS status
-        WHERE JSON_VALUE(status, '$.statusCode') = '83'
+      SELECT 1
+      FROM UNNEST(status_trackings) AS status
+      WHERE JSON_VALUE(status, '$.statusCode') IN ('81','83')
     )
 ),
 
