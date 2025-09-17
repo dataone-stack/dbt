@@ -16,7 +16,7 @@ WITH ads_total AS (
   WHERE company = 'Max Eagle'
   GROUP BY
     brand,
-    -- channel, --tạm tắt, khi ME bổ sung channel thì bật lại
+    channel,
     date_start,
     ma_nhan_vien,
     staff,
