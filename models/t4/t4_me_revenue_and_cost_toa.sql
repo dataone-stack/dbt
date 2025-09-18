@@ -6,13 +6,14 @@ WITH ads_daily AS (
     CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
     TRIM(manager)                               AS manager,
+    
     SUM(COALESCE(chiPhiAds, 0))                 AS chi_phi_ads,
     SUM(COALESCE(doanhThuAds, 0))               AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0))              AS doanhThuLadi,
     SUM(COALESCE(doanh_so_moi, 0))              AS doanh_so_moi,
     SUM(COALESCE(doanh_so_cu, 0))              AS doanh_so_cu,
     SUM(COALESCE(doanhThuAds, 0) + COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads
-  FROM {{ ref('t3_me_ads_total_with_tkqc') }}
+  FROM {{ref("t3_me_ads_total_with_tkqc")}}
   WHERE company = 'Max Eagle' AND date_start IS NOT NULL
   GROUP BY date_start, brand, brand_lv1, channel,company, manager
 ),
@@ -25,13 +26,14 @@ revenue_toa AS (
     CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2))) AS channel,
     company,
     TRIM(manager)                               AS manager,
+    shop,
     SUM(COALESCE(doanh_thu_ke_toan, 0))         AS doanh_thu_ke_toan,
     SUM(COALESCE(gia_ban_daily_total, 0))       AS gia_ban_daily_total,
     SUM(COALESCE(tien_chiet_khau_sp, 0))        AS tien_chiet_khau_sp,
     SUM(COALESCE(tien_khach_hang_thanh_toan,0)) AS tien_khach_hang_thanh_toan
-  FROM {{ ref('t3_me_revenue_all_channel') }}
+  FROM {{ref("t3_me_revenue_all_channel")}}
   WHERE company = 'Max Eagle' AND ngay_tao_don IS NOT NULL
-  GROUP BY ngay_tao_don, brand, brand_lv1, channel, company, manager
+  GROUP BY ngay_tao_don, brand, brand_lv1, channel, company, manager,shop
 )
 
 SELECT
@@ -41,6 +43,7 @@ SELECT
   COALESCE(a.channel, r.channel) AS channel,
   COALESCE(a.company, r.company) AS company,
   COALESCE(a.manager, r.manager) AS manager,
+  r.shop,
 
 -- Ads
   COALESCE(a.chi_phi_ads, 0)                    AS chi_phi_ads,
