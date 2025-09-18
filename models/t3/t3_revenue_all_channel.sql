@@ -1,6 +1,6 @@
 SELECT 
     '-' as manager,
-    -- '-' as shop,
+    '-' as shop,
      brand,
     brand_lv1,
     status as status,
@@ -48,7 +48,7 @@ union all
 
 SELECT 
     tkqc.manager,
-    -- shop.shop,
+    shop.shop,
     shop.brand,
     shop.brand_lv1,
     shop.status,
@@ -98,7 +98,7 @@ UNION ALL
 
 SELECT 
     tkqc.manager,
-    -- shop.shop,
+    shop.shop,
     shop.brand,
     shop.brand_lv1,
     shop.status,
@@ -149,7 +149,7 @@ UNION ALL
 
 SELECT 
     manager,
-    -- '-' as shop,
+    '-' as shop,
     brand,
     brand_lv1,
     trang_thai_don_hang as status,
