@@ -1,0 +1,1 @@
+select * from `google_sheet.me_tkqc_voi` where date_start is not null

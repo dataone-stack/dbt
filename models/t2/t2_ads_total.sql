@@ -38,6 +38,21 @@ LEFT JOIN {{ref("t1_tkqc")}} tk ON cast(fb.account_id as string) = tk.idtkqc
 UNION ALL
 
 SELECT
+    date_start,
+    idtkqc as account_id,
+    0 as ad_id,
+    '-' as campaign_id,
+    "" as campaign_name,
+
+    chiphiads AS spend,
+    0 AS doanhThuAds,
+    'Facebook Ads' AS revenue_type,
+    '-' as currency
+FROM {{ref("t1_facebook_ads_voi_total")}}
+
+UNION ALL
+
+SELECT
     DATE(DATETIME_ADD(DATETIME(a.stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(a.account_id AS STRING) AS account_id,
     a.ad_id,
