@@ -1,6 +1,6 @@
 WITH ads_total AS (
   SELECT 
-    brand,
+    brand_lv1 AS brand,
     'All' AS channel,
     date_start,
     ma_nhan_vien,
@@ -8,14 +8,14 @@ WITH ads_total AS (
     ma_quan_ly,
     manager,
     company,
-    SUM(doanhThuads + doanhThuLadi) AS DoanhThuAds,
+    SUM(doanhThuads + doanh_so_moi) AS DoanhThuAds,
     SUM(chiPhiAds) AS chiPhiAds,
-    ROUND(SAFE_DIVIDE(SUM(chiPhiAds), SUM(doanhThuads + doanhThuLadi)), 4) AS cir,
+    ROUND(SAFE_DIVIDE(SUM(chiPhiAds), SUM(doanhThuads + doanh_so_moi)), 4) AS cir,
 
   FROM {{ref('t3_ads_total_with_tkqc')}}
   WHERE company = 'Max Eagle'
   GROUP BY
-    brand,
+    brand_lv1,
     channel,
     date_start,
     ma_nhan_vien,
