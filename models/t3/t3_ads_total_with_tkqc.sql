@@ -36,18 +36,20 @@ WITH ads_total_with_tkqc AS (
             currency,
             spend,
             doanhThuAds
-        FROM {{ ref('t2_ads_total') }}
+        from {{ref("t2_ads_total")}}
     ) AS ads
-    
-    --LEFT JOIN với campaign team mapping trước
-    LEFT JOIN {{ ref('t1_ads_campaign_by_team') }} AS campaign_team
-    ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING) and ads.account_id = campaign_team.account_id
-    
-    -- RIGHT JOIN với tkqc như cũ
-    RIGHT JOIN{{ ref('t2_tkqc_total') }} AS tkqc
+-- RIGHT JOIN với tkqc như cũ
+     right JOIN {{ref("t2_tkqc_total")}} AS tkqc
         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
         AND DATE(ads.date_start) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
+    
+    --LEFT JOIN với campaign team mapping trước
+    left  JOIN {{ref("t1_ads_campaign_by_team")}} AS campaign_team
+    ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING) and ads.account_id = campaign_team.account_id AND tkqc.end_date <= DATE('2025-08-31')
+    
+    
+   
     GROUP BY
         ads.date_start,
         tkqc.idtkqc,
@@ -76,7 +78,7 @@ WITH ads_total_with_tkqc AS (
         SUM(doanhThuLadi)    AS doanhThuLadi,
         SUM(doanh_so_moi)    AS doanh_so_moi,
         SUM(doanh_so_cu)     AS doanh_so_cu
-    FROM {{ ref('t2_ladipage_facebook_total') }}
+    FROM {{ref("t2_ladipage_facebook_total")}}
     GROUP BY  date_insert,brand,brand_lv1,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
 )
 
@@ -175,7 +177,6 @@ WITH ads_total_with_tkqc AS (
         AND ads.channel = ladi.channel
         AND ads.company = ladi.company
 )
-
 SELECT
     ads.date_start,
     ads.currency,
@@ -242,9 +243,9 @@ FROM ads_ladipageFacebook_total_with_tkqc AS ads
 --             currency,
 --             spend,
 --             doanhThuAds
---         FROM {{ ref('t2_ads_total') }}
+--         FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total`
 --     ) AS ads
---     RIGHT JOIN {{ ref('t2_tkqc_total') }} AS tkqc
+--     RIGHT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tkqc_total` AS tkqc
 --         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
 --         AND DATE(ads.date_start) >= DATE(tkqc.start_date)
 --         AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
@@ -300,7 +301,7 @@ FROM ads_ladipageFacebook_total_with_tkqc AS ads
 --             ELSE 0
 --         END AS doanhThuLadi,
 --         -- COALESCE(ladi.doanhThuLadi, 0) as doanh_thu_ladi_new
---     FROM {{ ref('t2_ladipage_facebook_total') }} AS ladi
+--     FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ladipage_facebook_total` AS ladi
 --     FULL OUTER JOIN ads_total_with_tkqc AS ads
 --         ON ladi.date_insert = ads.date_start
 --         AND ads.ma_nhan_vien = ladi.id_staff
@@ -339,4 +340,4 @@ FROM ads_ladipageFacebook_total_with_tkqc AS ads
 --         WHEN lower(ads.ben_thue) = "build" THEN ads.chiPhiAds
 --         ELSE 0
 --     END AS ca_nhan
--- FROM ads_ladipageFacebook_total_with_tkqc AS ads 
+-- FROM ads_ladipageFacebook_total_with_tkqc AS ads

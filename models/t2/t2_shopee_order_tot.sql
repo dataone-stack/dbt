@@ -86,6 +86,7 @@ END AS status,
     f.seller_transaction_fee * -1 as phi_thanh_toan,
     f.order_ams_commission_fee * -1 as phi_hoa_hong_tiep_thi_lien_ket,
     f.credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
+    f.actual_shipping_fee as phi_van_chuyen_thuc_te,
     
     -- Lấy từ wallet
     vi.amount as wallet_amount,
