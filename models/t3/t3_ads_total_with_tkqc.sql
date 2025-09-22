@@ -13,7 +13,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(campaign_team.brand, tkqc.brand) as brand,
         --Brand cho báo cáo ME
         CASE 
-            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm xôi'
+            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm Xôi'
             ELSE COALESCE(campaign_team.brand, tkqc.brand)
         END AS brand_lv1,
         tkqc.channel,
