@@ -1,7 +1,7 @@
 WITH ads_total AS (
   SELECT 
     brand_lv1 AS brand,
-    'All' AS channel,
+    channel,
     date_start,
     ma_nhan_vien,
     staff,
