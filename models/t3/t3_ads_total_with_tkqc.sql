@@ -60,7 +60,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
         COALESCE(campaign_team.brand, tkqc.brand),
         CASE 
-            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm xôi'
+            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm Xôi'
             ELSE COALESCE(campaign_team.brand, tkqc.brand)
         END,
         tkqc.channel,
@@ -98,7 +98,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(ads.brand, ladi.brand) as brand,
         --Brand cho báo cáo ME
         CASE 
-            WHEN COALESCE(ads.brand, ladi.brand_lv1) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm xôi'
+            WHEN COALESCE(ads.brand, ladi.brand_lv1) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm Xôi'
             ELSE COALESCE(ads.brand, ladi.brand_lv1)
         END AS brand_lv1,
 
