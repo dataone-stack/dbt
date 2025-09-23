@@ -69,7 +69,9 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.phi_thue,
-        tkqc.dau_the
+        tkqc.dau_the,
+        campaign_team.brand,
+        tkqc.brand
 )
 
 , ladipage_total AS (
