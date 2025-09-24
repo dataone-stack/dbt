@@ -273,13 +273,13 @@ SELECT
     (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) AS doanh_so,
     CASE 
         WHEN loai_khach_hang = 'Khách mới' 
-        THEN thanh_tien - chiet_khau
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
         WHEN loai_khach_hang = 'Khách cũ' 
-        THEN thanh_tien - chiet_khau
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_cu
 FROM orderline
