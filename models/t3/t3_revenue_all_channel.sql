@@ -39,6 +39,7 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
+    doanh_thu_ke_toan AS doanh_so,
     'Facebook' AS channel,
     
     customer_name AS ten_khach_hang,
@@ -86,6 +87,7 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
+    doanh_so,
     'Shopee' AS channel,
     ten_nguoi_mua AS ten_khach_hang
 FROM {{ref("t2_shopee_order_lines_toa")}} shop
@@ -138,6 +140,7 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
+    doanh_so,
     'Tiktok' AS channel,
     Recipient AS ten_khach_hang
 FROM {{ref("t2_tiktok_order_line_toa")}} shop
@@ -192,6 +195,7 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
+    doanh_so,
     'Facebook' AS channel,
     ho_ten AS ten_khach_hang,
 FROM {{ref("t2_mapping_sandbox_pushsale_toa")}}
