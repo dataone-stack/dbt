@@ -270,13 +270,13 @@ select a.* ,
      
     CASE 
         WHEN loai_khach_hang = 'Khách mới' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_moi,
 
     CASE 
         WHEN loai_khach_hang = 'Khách cũ' 
-        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))
+        THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_cu
 from a  where is_delete is not true
