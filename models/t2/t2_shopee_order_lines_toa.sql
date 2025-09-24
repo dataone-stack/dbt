@@ -96,7 +96,7 @@ total_amount AS (
     mapping.brand,
     mapping.brand_lv1,
     ord.days_to_ship
-  from `dtm.t1_shopee_shop_order_detail_total` as ord, 
+  from {{ ref('t1_shopee_shop_order_detail_total') }} as ord, 
   unnest (item_list) as i
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
   trim(CASE 
