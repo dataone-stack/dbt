@@ -1,18 +1,19 @@
 WITH return_detail AS (
   SELECT 
-    order_id,
-    return_id,
-    brand,
-    update_time,
+    ord.order_id,
+    ord.return_id,
+    ord.brand,
+    ord.update_time,
     i.variation_sku, 
     i.item_price * i.amount AS so_tien_hoan_tra,
-    status,
-    refund_amount,
-    return_seller_due_date
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
+    ord.status,
+    i.refund_amount,
+    ord.return_seller_due_date,
+    i.item_price * cost_price.cost_price as gia_von,
+  FROM {{ ref('t1_shopee_shop_order_retrurn_total') }} ord,
   UNNEST(item) AS i
+  left join `google_sheet.bang_gia_von` as cost_price on i.variation_sku = cost_price.product_sku
 )
-
 ,
 
 -- Tính tổng giá daily và doanh thu kế toán theo order
@@ -36,13 +37,19 @@ order_product_summary AS (
     sum(shopee_discount) as tro_gia_shopee,
     sum(COALESCE(i.original_price, 0)) as gia_goc,
     sum(COALESCE(i.seller_discount, 0))*-1 as seller_tro_gia,
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,
+    SUM(COALESCE(cost_price.cost_price, 0) * COALESCE(i.quantity_purchased, 0)) as gia_von
+  FROM {{ ref('t1_shopee_shop_fee_total') }} f,
   UNNEST(items) AS i
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping ON 
+  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
     CASE 
       WHEN i.model_sku = "" THEN trim(i.item_sku)
       ELSE trim(i.model_sku ) 
     END = trim(mapping.ma_sku) -- AND f.brand = mapping.brand
+  left join `google_sheet.bang_gia_von` as cost_price ON
+    CASE 
+      WHEN i.model_sku = "" THEN trim(i.item_sku)
+      ELSE trim(i.model_sku) 
+    END = trim(cost_price.product_sku)
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
   GROUP BY f.order_id, f.brand, mapping.brand_lv1
 )
@@ -102,14 +109,14 @@ END AS status,
     ops.so_tien_hoan_tra,
     ops.tro_gia_shopee,
     (ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu)) as doanh_thu_shopee,
-    (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi
-
-FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi 
+    (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi,
+    ops.gia_von
+FROM {{ ref('t1_shopee_shop_fee_total') }} f
+LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi 
     ON f.order_id = vi.order_id 
     AND f.brand = vi.brand
     AND vi.transaction_tab_type = 'wallet_order_income'
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` ord 
+LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} ord 
     ON f.order_id = ord.order_id 
     AND f.brand = ord.brand
 LEFT JOIN order_product_summary ops 
@@ -117,9 +124,6 @@ LEFT JOIN order_product_summary ops
     AND f.brand = ops.brand
 )
 select * from a
---select order_id, sum(doanh_thu_shopee), sum(wallet_amount) from a where brand ="Chaching" and date(ngay_tien_ve_vi) between "2025-08-01" and "2025-08-31" group by order_id
-
-
 
 
 
@@ -136,10 +140,13 @@ select * from a
 --     i.item_price * i.amount AS so_tien_hoan_tra,
 --     status,
 --     refund_amount,
---     return_seller_due_date
---   FROM {{ ref('t1_shopee_shop_order_retrurn_total') }},
+--     return_seller_due_date,
+--     i.item_price * ost_price.gia_von as gia_von,
+--   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
 --   UNNEST(item) AS i
--- ),
+--   left join `google_sheet.bang_gia_von` as cost_price on i.variation_sku = cost_price.product_sku
+-- )
+-- ,
 
 -- -- Tính tổng giá daily và doanh thu kế toán theo order
 -- order_product_summary AS (
@@ -147,37 +154,47 @@ select * from a
 --     f.order_id,
 --     f.brand,
 --     mapping.brand_lv1,
---     rd.status as status_return,
+--     -- rd.status as status_return,
 --     SUM(COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)) AS gia_ban_daily_total,
 --     SUM(
 --        (COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0))
 --     ) AS doanh_thu_ke_toan,
---      CASE
---       WHEN sum(rd.refund_amount) = 0
---       THEN sum(rd.so_tien_hoan_tra) * -1
---       ELSE 0
---     END AS so_tien_hoan_tra,
+--     --  CASE
+--     --   WHEN sum(rd.refund_amount) = 0
+--     --   THEN sum(rd.so_tien_hoan_tra) * -1
+--     --   ELSE 0
+--     -- END 
+--     COALESCE(sum(rd.so_tien_hoan_tra) * -1,0) AS so_tien_hoan_tra,
 --     0 as nguoi_ban_hoan_xu,
 --     sum(shopee_discount) as tro_gia_shopee,
 --     sum(COALESCE(i.original_price, 0)) as gia_goc,
 --     sum(COALESCE(i.seller_discount, 0))*-1 as seller_tro_gia,
---   FROM {{ ref('t1_shopee_shop_fee_total') }} f,
+--     SUM(COALESCE(cost_price.gia_von, 0) * COALESCE(i.quantity_purchased, 0)) as gia_von
+--   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,
 --   UNNEST(items) AS i
---   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
+--   LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping ON 
 --     CASE 
---       WHEN i.model_sku = "" THEN i.item_sku
---       ELSE i.model_sku  
---     END = mapping.ma_sku -- AND f.brand = mapping.brand
+--       WHEN i.model_sku = "" THEN trim(i.item_sku)
+--       ELSE trim(i.model_sku ) 
+--     END = trim(mapping.ma_sku) -- AND f.brand = mapping.brand
+--   left join `google_sheet.bang_gia_von` as cost_price ON
+--      CASE 
+--       WHEN i.model_sku = "" THEN trim(i.item_sku)
+--       ELSE trim(i.model_sku ) 
+--     END = trim(cost_price.ma_sku)   
 --   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
---   GROUP BY f.order_id, f.brand,rd.status, mapping.brand_lv1
+--   GROUP BY f.order_id, f.brand, mapping.brand_lv1
 -- )
+
+-- -- select * from order_product_summary where order_id ="250728BU40UX1A"
+-- , a as(
 
 -- SELECT 
 --     f.brand,
 --     ops.brand_lv1,
 --     f.company,
 --     CASE
---     WHEN LOWER(ops.status_return) = 'accepted' THEN 'Đã hoàn'
+--     -- WHEN LOWER(ops.status_return) = 'accepted' THEN 'Đã hoàn'
 --     WHEN LOWER(ord.order_status) IN ('cancelled', 'in_cancel') THEN 'Đã hủy'
 --     WHEN LOWER(ord.order_status) IN ('ready_to_ship', 'processed') THEN 'Đăng đơn'
 --     WHEN LOWER(ord.order_status) = 'to_confirm_receive' THEN 'Đăng đơn'
@@ -208,6 +225,7 @@ select * from a
 --     f.seller_transaction_fee * -1 as phi_thanh_toan,
 --     f.order_ams_commission_fee * -1 as phi_hoa_hong_tiep_thi_lien_ket,
 --     f.credit_card_promotion as ngan_hang_khuyen_mai_the_tin_dung,
+--     f.actual_shipping_fee as phi_van_chuyen_thuc_te,
     
 --     -- Lấy từ wallet
 --     vi.amount as wallet_amount,
@@ -223,16 +241,21 @@ select * from a
 --     ops.so_tien_hoan_tra,
 --     ops.tro_gia_shopee,
 --     (ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu)) as doanh_thu_shopee,
---     (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi
-
--- FROM {{ ref('t1_shopee_shop_fee_total') }} f
--- LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi 
+--     (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi,
+--     ops.gia_von,
+-- FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f
+-- LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi 
 --     ON f.order_id = vi.order_id 
 --     AND f.brand = vi.brand
 --     AND vi.transaction_tab_type = 'wallet_order_income'
--- LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} ord 
+-- LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` ord 
 --     ON f.order_id = ord.order_id 
 --     AND f.brand = ord.brand
 -- LEFT JOIN order_product_summary ops 
 --     ON f.order_id = ops.order_id 
 --     AND f.brand = ops.brand
+-- )
+-- select * from a
+
+
+

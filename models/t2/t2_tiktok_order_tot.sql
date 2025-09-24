@@ -20,11 +20,13 @@ WITH LineItems AS (
     SUM(CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64)) AS SKU_Subtotal_After_Discount,
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
-    mapping.gia_ban_daily AS Gia_Ban_Daily
+    mapping.gia_ban_daily AS Gia_Ban_Daily,
+    sum(cost_price.cost_price) as cost_price
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
   CROSS JOIN UNNEST(o.line_items) AS li
   LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
+  left join `google_sheet.bang_gia_von` as cost_price on JSON_VALUE(li, '$.seller_sku') = cost_price.product_sku
   GROUP BY
     o.brand,
     o.company,
@@ -120,6 +122,8 @@ OrderData AS (
         then 0
         else li.Gia_Ban_Daily
     end as Gia_Ban_Daily,
+
+    li.cost_price,
 
     CAST(JSON_VALUE(o.payment, '$.shipping_fee') AS FLOAT64) AS Shipping_Fee_After_Discount,
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
@@ -266,6 +270,7 @@ SELECT
   Checked_Marked_by,
   Gia_Ban_Daily AS gia_ban_daily,
   Gia_Ban_Daily * Quantity AS gia_ban_daily_total,
+  cost_price  * Quantity AS gia_von,
   COALESCE(SKU_Unit_Original_Price, 0) AS gia_san_pham_goc,
   COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0) AS gia_san_pham_goc_total,
   (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_tro_gia,
@@ -303,6 +308,7 @@ order_total AS (
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_v2,
         SUM(tien_chiet_khau_sp) AS tien_chiet_khau_sp,
+        sum(gia_von) as gia_von
     FROM orderLine
     GROUP BY
         brand,

@@ -1,13 +1,16 @@
 WITH current_inventory AS (
-  -- Lấy tồn kho khả dụng hiện tại (ngày gần nhất)
   SELECT 
     warehouse_code,
     sku,
     partner_sku,
     available_qty,
-    brand
+    brand,
+    date_record
   FROM dtm.t1_vietful_product_inventory
-  WHERE date_record = (SELECT MAX(date_record) FROM dtm.t1_vietful_product_inventory)
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY warehouse_code, sku, partner_sku, brand -- Thêm brand
+    ORDER BY date_record DESC
+  ) = 1
 ),
 -- Tạo danh sách tất cả các ngày cần tính
 date_range AS (
