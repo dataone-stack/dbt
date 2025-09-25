@@ -96,7 +96,7 @@ total_amount AS (
     mapping.brand,
     mapping.brand_lv1,
     ord.days_to_ship
-  from `dtm.t1_shopee_shop_order_detail_total` as ord, 
+  from {{ ref('t1_shopee_shop_order_detail_total') }} as ord, 
   unnest (item_list) as i
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
   trim(CASE 
@@ -262,6 +262,7 @@ CASE
     ELSE ""
 END AS status,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
+(COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS doanh_so,
 
 COALESCE(voucher_from_seller, 0) - COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0) - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) - COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0) + COALESCE(phi_dich_vu, 0) + COALESCE(phi_thanh_toan, 0) + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as tong_phi_san
 FROM sale_order_detail 

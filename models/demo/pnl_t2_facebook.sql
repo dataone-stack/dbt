@@ -168,9 +168,9 @@ order_line as (
     vietful.ngay_da_giao,
     vietful.tracking_code,
     vietful.shipped_date as ngay_ship,
-
+    cost_price.cost_price as gia_von,
     COALESCE(
-    ROUND(
+      ROUND(
       SAFE_DIVIDE(
         case
         when json_value(item, '$.variation_info.retail_price_original') is null
@@ -182,10 +182,12 @@ order_line as (
         NULLIF(tt.total_amount, 0)
       ) * s.ship_fee), 0) as ship_fee
 
+  
   from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   left join `dtm.t1_ship_fee` s on vietful.tracking_code = s.ma_van_don
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed')
@@ -267,6 +269,7 @@ order_line_returned as (
     vietful_return.ngay_da_giao,
     vietful_return.tracking_code,
     vietful_return.shipped_date as ngay_ship,
+    cost_price.cost_price as gia_von,
     COALESCE(
       ROUND(
         SAFE_DIVIDE(
@@ -284,6 +287,7 @@ order_line_returned as (
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code and json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
   left join `dtm.t1_ship_fee` s on vietful_return.tracking_code = s.ma_van_don
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
@@ -460,7 +464,8 @@ order_line_returned as (
 
     ngay_da_giao,
     tracking_code,
-    0 AS phu_phi
+    0 AS phu_phi,
+    gia_von
     from order_line
 )
 
@@ -633,7 +638,8 @@ order_line_returned as (
 
     ngay_da_giao,
     tracking_code,
-    0 AS phu_phi
+    0 AS phu_phi,
+    gia_von
     from order_line_returned
 ),
                               
@@ -643,4 +649,4 @@ a as (
   select * from order_returned where ngay_da_giao is not null
 )
 
-select * from a -- where tracking_code = "120178784829"
+select * from a

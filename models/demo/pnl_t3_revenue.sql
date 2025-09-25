@@ -21,6 +21,7 @@ SELECT
     0 as doanh_so_moi,
     'Facebook' AS channel,
     phi_van_chuyen_thuc_te,
+    gia_von
 FROM {{ref("pnl_t2_facebook")}}
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
@@ -49,7 +50,8 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Shopee' AS channel,
-    phi_van_chuyen_thuc_te
+    phi_van_chuyen_thuc_te,
+    gia_von
 FROM {{ref("t2_shopee_order_tot")}}
 
 UNION ALL
@@ -76,7 +78,8 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel,
-    phi_van_chuyen_thuc_te
+    phi_van_chuyen_thuc_te,
+    gia_von
 FROM {{ref("t2_tiktok_order_tot")}}
 
 
@@ -106,7 +109,8 @@ SELECT
     doanh_so_cu as doanh_so_cu,
     doanh_so_moi as doanh_so_moi,
     'Facebook' AS channel,
-    0 as phi_van_chuyen_thuc_te
+    0 as phi_van_chuyen_thuc_te,
+    0 as gia_von
 FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 
 -- union all

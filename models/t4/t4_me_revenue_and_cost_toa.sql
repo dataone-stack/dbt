@@ -27,6 +27,7 @@ revenue_toa AS (
     company,
     TRIM(manager)                               AS manager,
     -- TRIM(shop)                                  AS shop,
+    SUM(COALESCE(doanh_so, 0))         AS doanh_so,
     SUM(COALESCE(doanh_thu_ke_toan, 0))         AS doanh_thu_ke_toan,
     SUM(COALESCE(gia_ban_daily_total, 0))       AS gia_ban_daily_total,
     SUM(COALESCE(tien_chiet_khau_sp, 0))        AS tien_chiet_khau_sp,
@@ -54,6 +55,7 @@ SELECT
   COALESCE(a.doanh_so_cu, 0)                  AS doanh_so_cu,
 
   -- Revenue
+  COALESCE(doanh_so, 0)         AS doanh_so,
   COALESCE(r.doanh_thu_ke_toan, 0)              AS doanh_thu_ke_toan,
   COALESCE(r.gia_ban_daily_total, 0)            AS gia_ban_daily_total,
   COALESCE(r.tien_chiet_khau_sp, 0)             AS tien_chiet_khau_sp,

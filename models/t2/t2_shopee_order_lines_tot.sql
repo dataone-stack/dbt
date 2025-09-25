@@ -62,6 +62,7 @@ order_product_summary AS (
     shopee_discount as tro_gia_shopee,
     COALESCE(i.original_price, 0) as gia_goc,
     COALESCE(i.seller_discount, 0)*-1 as seller_tro_gia,
+    COALESCE(cost_price.cost_price, 0) * i.quantity_purchased as gia_von
   FROM {{ ref('t1_shopee_shop_fee_total') }} f,
   UNNEST(items) AS i
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
@@ -77,6 +78,7 @@ order_product_summary AS (
         ELSE i.model_sku  
     END = ord.model_sku
     and f.brand = ord.brand
+  left join `google_sheet.bang_gia_von` as cost_price on i.model_sku = cost_price.product_sku
 
 
 )
@@ -134,8 +136,8 @@ SELECT
     ops.so_tien_hoan_tra,
     ops.tro_gia_shopee,
     (ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu)) as doanh_thu_shopee,
-    (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi
-
+    (f.commission_fee *-1) + (f.service_fee *-1) + (f.seller_transaction_fee *-1) + (f.order_ams_commission_fee *-1) AS phu_phi,
+    ops.gia_von
 FROM {{ ref('t1_shopee_shop_fee_total') }} f
 LEFT JOIN {{ ref('t1_shopee_shop_wallet_total') }} vi 
     ON f.order_id = vi.order_id 
@@ -147,3 +149,4 @@ LEFT JOIN {{ ref('t1_shopee_shop_order_detail_total') }} ord
 LEFT JOIN order_product_summary ops 
     ON f.order_id = ops.order_id 
     AND f.brand = ops.brand
+left join `google_sheet.bang_gia_von` as cost_price on ops.sku_code = cost_price.product_sku  
