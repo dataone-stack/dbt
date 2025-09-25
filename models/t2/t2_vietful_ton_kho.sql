@@ -7,6 +7,7 @@ WITH current_inventory AS (
     brand,
     date_record
   FROM dtm.t1_vietful_product_inventory
+  WHERE condition_type_code = 'NEW'   -- chỉ lấy hàng là NEW
   QUALIFY ROW_NUMBER() OVER (
     PARTITION BY warehouse_code, sku, partner_sku, brand -- Thêm brand
     ORDER BY date_record DESC
@@ -33,8 +34,7 @@ product_date_matrix AS (
   JOIN dtm.t1_vietful_xuat_kho_details d ON t.or_code = d.or_code
   left JOIN `dtm.t1_vietful_product_total` p ON p.sku = d.sku and t.brand = p.brand
   CROSS JOIN date_range dr
-  WHERE t.shipped_date IS NOT NULL
-    AND DATE(t.shipped_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+  where p.sku is not null
 ),
 
 daily_outbound_raw AS (

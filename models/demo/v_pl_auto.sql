@@ -20,7 +20,8 @@ chi_phi_revenue AS (
     brand,
     company,
     sum(phu_phi) as san_cost,
-    abs(sum(phi_van_chuyen_thuc_te)) as van_chuyen_cost
+    abs(sum(phi_van_chuyen_thuc_te)) as van_chuyen_cost,
+     sum(gia_von) as gia_von
   FROM `crypto-arcade-453509-i8.dtm.pnl_t3_revenue`
   GROUP BY year, month, brand, company
 ),
@@ -32,7 +33,7 @@ tong_chi_phi_bien_doi AS (
     COALESCE(a.month, r.month) as month,
     COALESCE(a.brand, r.brand) as brand,
     COALESCE(a.company, r.company) as company,
-    COALESCE(a.ads_cost, 0) + COALESCE(r.san_cost, 0) + COALESCE(r.van_chuyen_cost, 0) as total_chi_phi_bien_doi
+    COALESCE(a.ads_cost, 0) + COALESCE(r.san_cost, 0) + COALESCE(r.van_chuyen_cost, 0)+  COALESCE(r.gia_von, 0) as total_chi_phi_bien_doi
   FROM chi_phi_ads a
   FULL OUTER JOIN chi_phi_revenue r
     ON a.year = r.year 

@@ -1,4 +1,14 @@
-with a as (
+
+
+WITH excluded_accounts AS (
+  SELECT account_id FROM UNNEST([
+    1315221749155592, 7293216250736969, 1195811448247540, 1056401632089228,
+    322182883718537, 817956517039104, 757805919618691, 937351694653423,
+    1180659216429445, 1555367388753773, 929702751880751
+  ]) AS account_id
+),
+
+ a as (
 SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
@@ -7,8 +17,10 @@ SELECT
     campaign_name,
     spend,
     CASE
-        when tk.company = 'Max Eagle'
+        when tk.company = 'Max Eagle' 
         then 0
+        WHEN account_id IN (SELECT account_id FROM excluded_accounts)
+             AND DATE(date_start) BETWEEN '2025-09-19' AND '2025-09-30' THEN 0
         else COALESCE(
         CAST(
             JSON_VALUE(

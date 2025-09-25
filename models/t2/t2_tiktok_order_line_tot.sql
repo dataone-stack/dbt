@@ -20,11 +20,13 @@ WITH LineItems AS (
     SUM(CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64)) AS SKU_Subtotal_After_Discount,
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
-    mapping.gia_ban_daily AS Gia_Ban_Daily
+    mapping.gia_ban_daily AS Gia_Ban_Daily,
+    sum(cost_price.cost_price) as gia_von
   FROM {{ ref('t1_tiktok_order_tot') }} o
   CROSS JOIN UNNEST(o.line_items) AS li
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku and o.brand = mapping.brand
+  left join `google_sheet.bang_gia_von` as cost_price on JSON_VALUE(li, '$.seller_sku') = cost_price.product_sku
   GROUP BY
     o.brand,
     o.shop,
@@ -101,6 +103,7 @@ OrderData AS (
     li.SKU_Seller_Discount,
     li.SKU_Subtotal_After_Discount,
     li.Gia_Ban_Daily,
+    li.gia_von,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee') AS FLOAT64) AS Shipping_Fee_After_Discount,
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
@@ -263,6 +266,7 @@ SELECT
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) AS tien_chiet_khau_sp,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan_v2,
+  (COALESCE(gia_von, 0) * COALESCE(Quantity, 0)) as gia_von,
   CASE
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
     WHEN Order_Status = 'Shipped' THEN 'Đang giao'
