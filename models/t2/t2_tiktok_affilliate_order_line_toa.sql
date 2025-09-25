@@ -26,7 +26,7 @@ with aff_info as (
 SELECT
   aff.order_id as id_don_hang,
   json_value(item,'$.product_id') as id_san_pham,
-  json_value(item,'$.product_name') as ten_san_pham,
+  bg.san_pham as ten_san_pham,
   CASE 
     WHEN json_value(item,'$.sku_name') IS NOT NULL 
     AND TRIM(json_value(item,'$.sku_name')) != '' 
@@ -87,6 +87,7 @@ LEFT JOIN aff_info as info ON aff.order_id = info.order_id
   AND aff.shop = info.shop 
   AND aff.company = info.company
 LEFT JOIN {{ref("t1_tiktok_shop_video_info")}} vid on info.content_id = cast(vid.video_id as string)
+LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bg on json_value(item,'$.seller_sku') = bg.ma_sku
 CROSS JOIN UNNEST(COALESCE(ord.line_items, [])) AS item 
 )
 
