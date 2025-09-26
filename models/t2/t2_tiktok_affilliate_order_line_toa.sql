@@ -78,6 +78,7 @@ SELECT
 
   vid.title
 FROM {{ref("t1_tiktok_affiliate_order_total")}} AS aff
+
 LEFT JOIN {{ref("t1_tiktok_order_tot")}} AS ord ON aff.order_id = ord.order_id 
   AND aff.brand = ord.brand 
   AND aff.shop = ord.shop 
@@ -87,8 +88,9 @@ LEFT JOIN aff_info as info ON aff.order_id = info.order_id
   AND aff.shop = info.shop 
   AND aff.company = info.company
 LEFT JOIN {{ref("t1_tiktok_shop_video_info")}} vid on info.content_id = cast(vid.video_id as string)
-LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bg on json_value(item,'$.seller_sku') = bg.ma_sku
 CROSS JOIN UNNEST(COALESCE(ord.line_items, [])) AS item 
+
+LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bg on json_value(item,'$.seller_sku') = bg.ma_sku
 )
 
 select 

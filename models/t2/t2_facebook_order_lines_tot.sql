@@ -149,7 +149,7 @@ order_line as (
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   -- left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code  and 
   -- json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed')
+  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','Zalo','') and ord.status_name not in ('removed')
 ),
 
 order_line_returned as (
@@ -232,7 +232,7 @@ order_line_returned as (
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code and json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
+  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','Zalo','') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
 )
 ,order_delivered as (
     select
