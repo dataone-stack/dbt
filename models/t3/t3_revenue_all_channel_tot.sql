@@ -63,7 +63,7 @@ SELECT
     CAST(Shipped_Time as date) as ngay_ship,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
     CAST(ma_don_hang AS STRING) as order_id, 
-    status, 
+    Order_Status as status, 
     total_settlement_amount as total_amount, 
     ngay_tao_don as date_create_order, 
     gia_ban_daily_total,

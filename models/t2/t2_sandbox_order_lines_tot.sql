@@ -1,4 +1,3 @@
-
 WITH latest_delivery AS (
   SELECT *
   FROM {{ref("t1_sandbox_deliveries_total")}}

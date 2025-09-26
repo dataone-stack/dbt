@@ -465,7 +465,11 @@ order_line_returned as (
     ngay_da_giao,
     tracking_code,
     0 AS phu_phi,
-    gia_von
+    gia_von* so_luong as gia_von,
+    case
+      when gia_goc_sau_giam_gia_san_pham = 0
+      then "Quà tặng"
+    end as promotion_type
     from order_line
 )
 
@@ -639,10 +643,15 @@ order_line_returned as (
     ngay_da_giao,
     tracking_code,
     0 AS phu_phi,
-    gia_von
+    gia_von* so_luong as gia_von,
+    case
+      when gia_goc_sau_giam_gia_san_pham = 0
+      then "Quà tặng"
+    end as promotion_type
+
     from order_line_returned
 ),
-                              
+                            
 a as (
   select * from order_delivered where ngay_da_giao is not null
   union all
