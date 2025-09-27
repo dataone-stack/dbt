@@ -15,7 +15,7 @@ SELECT
     ad_id,
     cast(campaign_id as string) as campaign_id,
     campaign_name,
-    cast(spend as int64) as spend,
+    cast(spend as float64) as spend,
     CASE
         when tk.company = 'Max Eagle' 
         then 0
@@ -56,7 +56,7 @@ SELECT
     '-' as campaign_id,
     "" as campaign_name,
 
-    cast(chiphiads as int64) AS spend,
+    cast(chiphiads as float64) AS spend,
     0 AS doanhThuAds,
     'Facebook Ads' AS revenue_type,
     '-' as currency
@@ -70,7 +70,7 @@ SELECT
     a.ad_id,
     cast(b.campaign_id as string) as campaign_id,
     b.campaign_name as campaign_name,
-    cast(a.spend as int64) as spend,
+    cast(a.spend as float64) as spend,
     CAST(a.total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     'TikTok Ads' AS revenue_type,
     '-' as currency
@@ -85,7 +85,7 @@ SELECT
     '-' as campaign_id,
     "" as campaign_name,
 
-    cast(cost as int64) AS spend,
+    cast(cost as float64) AS spend,
     gross_revenue AS doanhThuAds,
     'TikTok GMVmax' AS revenue_type,
     '-' as currency
@@ -99,7 +99,7 @@ SELECT
     0 as ad_id,
     '-' as campaign_id,
     "" as campaign_name,
-    cast(expense as int64) AS spend,
+    cast(expense as float64) AS spend,
     broad_gmv AS doanhThuAds,
     'Shopee Ads' AS revenue_type,
     '-' as currency
@@ -113,7 +113,7 @@ SELECT
     0 as ad_id,
     '-' campaign_id,
     "" as campaign_name,
-    cast(chiphi as int64) AS spend,
+    cast(chiphi as float64) AS spend,
     doanhThuAds AS doanhThuAds,
     'Shopee Search' AS revenue_type,
     '-' as currency
@@ -128,7 +128,7 @@ select
   0 as ad_id,
   '-' as campaign_id,
   "" as campaign_name,
-  cast (safe_divide(spend,1000000) as int64)  as spend,
+  cast (safe_divide(spend,1000000) as float64)  as spend,
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
   currency
@@ -142,7 +142,7 @@ select
   0 as ad_id,
   '-' as campaign_id,
   "" as campaign_name,
-  cast(chiPhi as int64)  as spend,
+  cast(chiPhi as float64)  as spend,
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
   '-' AS currency
