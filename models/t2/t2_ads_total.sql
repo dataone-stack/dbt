@@ -158,7 +158,7 @@ cast (idtkqc as string) as account_id,
 "" as campaign_name,
 case
     when tien_te = 'USD'
-    then spend * 26600
+    then spend * 26700
     else spend
 end as spend,
 0 as doanhThuAds,
@@ -176,13 +176,13 @@ select
 
     case
         when account_id in ('7531919757827080209','7441124535434280976')
-        then spend * 26600
+        then spend * 26700
         else spend
     end as spend,
 
     case
         when account_id in ('7531919757827080209','7441124535434280976')
-        then doanhThuAds * 26600
+        then doanhThuAds * 26700
         else doanhThuAds
     end as doanhThuAds,
 
