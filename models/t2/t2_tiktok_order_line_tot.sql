@@ -21,7 +21,7 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily,
-    sum(cost_price.cost_price) as gia_von
+    cost_price.cost_price as gia_von
   FROM {{ ref('t1_tiktok_order_tot') }} o
   CROSS JOIN UNNEST(o.line_items) AS li
   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
@@ -43,7 +43,8 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id'),
-    mapping.gia_ban_daily
+    mapping.gia_ban_daily,
+    cost_price.cost_price
 ),
 
 ReturnLineItems AS (
@@ -104,6 +105,7 @@ OrderData AS (
     li.SKU_Subtotal_After_Discount,
     li.Gia_Ban_Daily,
     li.gia_von,
+    li.is_gift,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee') AS FLOAT64) AS Shipping_Fee_After_Discount,
     CAST(JSON_VALUE(o.payment, '$.original_shipping_fee') AS FLOAT64) AS Original_Shipping_Fee,
     CAST(JSON_VALUE(o.payment, '$.shipping_fee_seller_discount') AS FLOAT64) AS Shipping_Fee_Seller_Discount,
@@ -267,6 +269,11 @@ SELECT
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan,
   (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))) AS doanh_thu_ke_toan_v2,
   (COALESCE(gia_von, 0) * COALESCE(Quantity, 0)) as gia_von,
+  case
+  when is_gift = TRUE
+  then "Quà Tặng"
+  end as promotion_type,
+
   CASE
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
     WHEN Order_Status = 'Shipped' THEN 'Đang giao'
@@ -309,14 +316,14 @@ SELECT
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as tong_phi_san,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0)as tong_phi_san,
 
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
 LEFT JOIN {{ ref('t2_tiktok_brand_statement_transaction_order_tot') }} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 )
 
-select * from a where order_adjustment_id is not null  -- date(order_statement_time) = "2025-05-31" and brand = "Chaching"  
+select * from a where order_adjustment_id is not null   -- date(order_statement_time) = "2025-05-31" and brand = "Chaching"  
 
 
 

@@ -1,0 +1,1 @@
+select * from `google_sheet.me_gg_nguong_an`

@@ -15,7 +15,7 @@ SELECT
     ad_id,
     cast(campaign_id as string) as campaign_id,
     campaign_name,
-    spend,
+    cast(spend as float64) as spend,
     CASE
         when tk.company = 'Max Eagle' 
         then 0
@@ -56,7 +56,7 @@ SELECT
     '-' as campaign_id,
     "" as campaign_name,
 
-    chiphiads AS spend,
+    cast(chiphiads as float64) AS spend,
     0 AS doanhThuAds,
     'Facebook Ads' AS revenue_type,
     '-' as currency
@@ -70,7 +70,7 @@ SELECT
     a.ad_id,
     cast(b.campaign_id as string) as campaign_id,
     b.campaign_name as campaign_name,
-    a.spend,
+    cast(a.spend as float64) as spend,
     CAST(a.total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     'TikTok Ads' AS revenue_type,
     '-' as currency
@@ -85,7 +85,7 @@ SELECT
     '-' as campaign_id,
     "" as campaign_name,
 
-    cost AS spend,
+    cast(cost as float64) AS spend,
     gross_revenue AS doanhThuAds,
     'TikTok GMVmax' AS revenue_type,
     '-' as currency
@@ -99,7 +99,7 @@ SELECT
     0 as ad_id,
     '-' as campaign_id,
     "" as campaign_name,
-    expense AS spend,
+    cast(expense as float64) AS spend,
     broad_gmv AS doanhThuAds,
     'Shopee Ads' AS revenue_type,
     '-' as currency
@@ -113,7 +113,7 @@ SELECT
     0 as ad_id,
     '-' campaign_id,
     "" as campaign_name,
-    chiphi AS spend,
+    cast(chiphi as float64) AS spend,
     doanhThuAds AS doanhThuAds,
     'Shopee Search' AS revenue_type,
     '-' as currency
@@ -137,6 +137,20 @@ from {{ref("t1_google_ads_total")}}
 union all
 
 select 
+  date_start,
+  'nguong_an' AS account_id,
+  0 as ad_id,
+  '-' as campaign_id,
+  "" as campaign_name,
+  cast(chiPhi as float64)  as spend,
+  0 as doanhThuAds,
+  'Google Ads' as revenue_type,
+  '-' AS currency
+from {{ref("t1_google_ads_nguong_total")}}
+
+union all
+
+select 
 date(date_start) as date_start,
 cast (idtkqc as string) as account_id,
 0 as ad_id,
@@ -144,7 +158,7 @@ cast (idtkqc as string) as account_id,
 "" as campaign_name,
 case
     when tien_te = 'USD'
-    then spend * 26600
+    then spend * 26700
     else spend
 end as spend,
 0 as doanhThuAds,
@@ -162,13 +176,13 @@ select
 
     case
         when account_id in ('7531919757827080209','7441124535434280976')
-        then spend * 26600
+        then spend * 26700
         else spend
     end as spend,
 
     case
         when account_id in ('7531919757827080209','7441124535434280976')
-        then doanhThuAds * 26600
+        then doanhThuAds * 26700
         else doanhThuAds
     end as doanhThuAds,
 
