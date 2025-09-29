@@ -81,7 +81,7 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel,
-    phi_van_chuyen_thuc_te,
+    phi_van_chuyen_thuc_te * -1 as phi_van_chuyen_thuc_te,
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`

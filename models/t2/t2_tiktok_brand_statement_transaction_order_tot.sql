@@ -11,6 +11,7 @@ SELECT
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(order_create_time)) AS `order_created_time`,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(statement_create_time)) AS `order_statement_time`,
     statement_currency AS `currency`,
+    shipping_cost_amount as shipping_cost_amount,
     type,
     SAFE_CAST(settlement_amount AS FLOAT64) AS `total_settlement_amount`,
     SAFE_CAST(revenue_amount AS FLOAT64) AS `total_revenue`,
@@ -80,7 +81,8 @@ SELECT
     SUM(COALESCE(affiliate_shop_ads_commission, 0)) AS affiliate_shop_ads_commission,
     SUM(COALESCE(sfp_service_fee, 0)) AS sfp_service_fee,
     SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
-    SUM(COALESCE(voucher_xtra_service_fee, 0)) AS voucher_xtra_service_fee
+    SUM(COALESCE(voucher_xtra_service_fee, 0)) AS voucher_xtra_service_fee,
+    SUM(COALESCE(shipping_cost_amount, 0)) AS shipping_cost_amount,
 FROM transactions
 GROUP BY 
     brand,
