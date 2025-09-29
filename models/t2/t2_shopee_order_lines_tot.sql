@@ -163,7 +163,7 @@ SELECT
     ops.so_tien_hoan_tra,
     ops.tro_gia_shopee,
     (ops.gia_goc + (ops.seller_tro_gia  + ops.so_tien_hoan_tra -ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu)) as doanh_thu_shopee,
-    (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.commission_fee *-1) + (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.service_fee *-1) + (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.seller_transaction_fee *-1) + (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.order_ams_commission_fee *-1) AS phu_phi,
+    (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.commission_fee *-1) + (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.service_fee *-1) + (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.seller_transaction_fee *-1) + (safe_divide(ops.discounted_price , ta.total_tong_tien_san_pham) * f.order_ams_commission_fee) AS phu_phi,
     ops.gia_von,
     ops.promotion_type,
     --- chia tỷ lệ

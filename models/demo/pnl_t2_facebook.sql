@@ -348,7 +348,7 @@ order_line_returned as (
 
     end as tien_khach_hang_thanh_toan,
 
-    ship_fee as tong_phi_san,
+    0 as tong_phi_san,
 
     case
     when brand in ('An Cung','Chaching Beauty') and status_name = 'returned'
