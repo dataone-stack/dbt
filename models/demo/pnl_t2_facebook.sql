@@ -389,7 +389,7 @@ order_line_returned as (
     0 as phi_xtra,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
-    'Đã giao hàng' as status,
+    'Đã giao thành công' as status,
     -------------------------------------------
     case
         when gia_goc_sau_giam_gia_san_pham = 0
@@ -566,7 +566,7 @@ order_line_returned as (
     0 as phi_xtra,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
-    'Hoàn tất trả hàng' as status,
+    'Đã hoàn' as status,
     --------------------------------------------------------
 
     case

@@ -15,6 +15,21 @@ WITH return_detail AS (
   left join `google_sheet.bang_gia_von` as cost_price on i.variation_sku = cost_price.product_sku
 )
 ,
+order_detail as (
+    select order_id,
+     CASE 
+        WHEN i.model_sku = "" THEN i.item_sku
+        ELSE i.model_sku  
+    END as model_sku,
+
+    i.promotion_type,
+    brand,
+    shop,
+    company
+    from `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total`
+    cross join unnest (item_list) as i
+),
+
 
 -- Tính tổng giá daily và doanh thu kế toán theo order
 order_product_summary AS (
@@ -23,10 +38,17 @@ order_product_summary AS (
     f.brand,
     mapping.brand_lv1,
     -- rd.status as status_return,
-    SUM(COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)) AS gia_ban_daily_total,
-    SUM(
-       (COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0))
-    ) AS doanh_thu_ke_toan,
+    CASE
+        when ord.promotion_type = 'add_on_free_gift_sub'
+        then 0
+        else COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)
+    end as gia_ban_daily_total,
+    CASE
+        when ord.promotion_type = 'add_on_free_gift_sub'
+        then 0
+        else  
+        COALESCE(i.original_price, 0) - COALESCE(i.seller_discount, 0) - COALESCE(i.discount_from_voucher_seller, 0)
+    end as doanh_thu_ke_toan,
     --  CASE
     --   WHEN sum(rd.refund_amount) = 0
     --   THEN sum(rd.so_tien_hoan_tra) * -1
@@ -51,6 +73,12 @@ order_product_summary AS (
       ELSE trim(i.model_sku) 
     END = trim(cost_price.product_sku)
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
+  LEFT JOIN order_detail ord on f.order_id = ord.order_id  and
+    CASE 
+        WHEN i.model_sku = "" THEN i.item_sku
+        ELSE i.model_sku  
+    END = ord.model_sku
+    and f.brand = ord.brand
   GROUP BY f.order_id, f.brand, mapping.brand_lv1
 )
 

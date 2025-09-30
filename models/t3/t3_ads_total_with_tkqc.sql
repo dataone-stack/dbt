@@ -74,6 +74,15 @@ WITH ads_total_with_tkqc AS (
         tkqc.brand
 )
 
+
+, mess_total AS (
+    SELECT 
+        company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,brand_lv1,
+        SUM(doanhThuMess)    AS doanhThuMess
+    FROM {{ref("t2_pancake_pos_mess_total")}}
+    GROUP BY  date_insert,brand,brand_lv1,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
+)
+
 , ladipage_total AS (
     SELECT 
         company,manager_name,staff_name,date_insert,brand,channel,id_staff,ma_quan_ly,brand_lv1,
@@ -83,6 +92,8 @@ WITH ads_total_with_tkqc AS (
     FROM {{ref("t2_ladipage_facebook_total")}}
     GROUP BY  date_insert,brand,brand_lv1,channel,id_staff,ma_quan_ly,company,staff_name,manager_name
 )
+
+
 
 ,ads_ladipageFacebook_total_with_tkqc AS (
     SELECT

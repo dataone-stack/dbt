@@ -1,6 +1,7 @@
 WITH LineItems AS (
   SELECT
     o.brand,
+    mapping.brand_lv1,
     o.order_id,
     o.company,
     o.shop,
@@ -22,9 +23,9 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily,
     cost_price.cost_price as gia_von
-  FROM {{ ref('t1_tiktok_order_tot') }} o
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku and o.brand = mapping.brand
   left join `google_sheet.bang_gia_von` as cost_price on JSON_VALUE(li, '$.seller_sku') = cost_price.product_sku
   GROUP BY
@@ -44,6 +45,7 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id'),
     mapping.gia_ban_daily,
+    mapping.brand_lv1,
     cost_price.cost_price
 ),
 
@@ -59,7 +61,7 @@ ReturnLineItems AS (
         WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
         ELSE null
     END AS Cancelation_Return_Type
-  FROM {{ ref('t1_tiktok_order_return') }} r
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_return` r
   CROSS JOIN UNNEST(r.return_line_items) AS li
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
@@ -67,6 +69,7 @@ ReturnLineItems AS (
 OrderData AS (
   SELECT
     li.brand,
+    li.brand_lv1,
     li.shop,
     li.company,
     li.order_id AS Order_ID,
@@ -176,7 +179,7 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN {{ ref('t1_tiktok_order_tot') }} o
+  JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
     ON li.order_id = o.order_id
     AND li.brand = o.brand
   LEFT JOIN ReturnLineItems r
@@ -201,6 +204,7 @@ GROUP BY
 orderLine as(
 SELECT
   brand,
+  brand_lv1,
   shop,
   company,
   Order_ID as ma_don_hang,
@@ -320,10 +324,7 @@ SELECT
 
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
-LEFT JOIN {{ ref('t2_tiktok_brand_statement_transaction_order_tot') }} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 )
 
-select * from a where order_adjustment_id is not null   -- date(order_statement_time) = "2025-05-31" and brand = "Chaching"  
-
-
-
+select * from a where order_adjustment_id is not null and date(order_statement_time) = "2025-05-31" and brand = "Chaching"
