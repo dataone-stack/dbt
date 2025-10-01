@@ -197,7 +197,12 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(doanh_thu_ke_toan) as amount
+    -- case
+    --     when SUM(doanh_thu_ke_toan) < 60000
+    --     then 0
+    --     else  SUM(doanh_thu_ke_toan)
+    -- end as amount,
+     SUM(doanh_thu_ke_toan) as amount,
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
   
@@ -238,12 +243,15 @@ base_data AS (
     sku_code as attribute_2,
     ten_san_pham as attribute_3,
     promotion_type as attribute_4,
-    ben_thue as attribute_5,
-    idtkqc as attribute_6,
-    nametkqc as attribute_7,
+    -- ben_thue as attribute_5,
+    -- idtkqc as attribute_6,
+    -- nametkqc as attribute_7,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
     allocated_ads_cost as amount
   FROM chi_phi_ads_allocated
-  WHERE allocated_ads_cost > 0
+--   WHERE allocated_ads_cost > 0
 
   UNION ALL
 
