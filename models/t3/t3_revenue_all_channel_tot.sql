@@ -1,4 +1,4 @@
-SELECT 
+with a as (SELECT 
     brand, 
     brand_lv1,
     company,
@@ -104,21 +104,7 @@ SELECT
     doanh_so_moi as doanh_so_moi,
     'Facebook' AS channel
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_mapping_sandbox_pushsale_tot`
+)
 
--- union all
 
--- SELECT 
---     brand, 
---     company,
---     cast(null as date) as ngay_ship,
---     ngay_tien_ve_vi as date_create, 
---     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
---     trang_thai_don_hang as status, 
---     tien_khach_hang_thanh_toan as total_amount, 
---     ngay_data_ve as date_create_order, 
---     gia_ban_daily_total,
---     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
---     phu_phi,
---     doanh_thu_ke_toan,
---     'Facebook' AS channel
--- FROM `crypto-arcade-453509-i8`.`dtm`.`t2_sandbox_order_lines_tot`
+select * from a
