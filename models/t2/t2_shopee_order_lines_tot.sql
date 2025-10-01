@@ -9,7 +9,7 @@ WITH return_detail AS (
     status,
     refund_amount,
     return_seller_due_date
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
+  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
   UNNEST(item) AS i
 ),
 
@@ -19,9 +19,9 @@ total_amount AS (
     b.brand,
     b.brand_lv1,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` a,   
+  FROM {{ref("t1_shopee_shop_fee_total")}} a,   
   UNNEST(items) AS i
-  LEFT JOIN `dtm.t1_bang_gia_san_pham` AS b ON 
+  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS b ON 
     TRIM(CASE 
       WHEN i.model_sku = ""
       THEN i.item_sku
@@ -40,7 +40,7 @@ total_amount_exclude_return AS (
       THEN i.discounted_price 
       ELSE 0 
     END) AS total_tong_tien_san_pham_excluding_return
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` a,   
+  FROM {{ ref('t1_shopee_shop_fee_total') }} a,   
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON a.order_id = rd.order_id 
     AND i.model_sku = rd.variation_sku 
@@ -73,7 +73,7 @@ order_detail AS (
             brand,
             shop,
             company
-        FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total`
+        FROM {{ref("t1_shopee_shop_order_detail_total")}}
         CROSS JOIN UNNEST (item_list) AS i
     )
 ),
@@ -130,13 +130,13 @@ order_product_summary AS (
         CASE WHEN i.model_sku = "" THEN i.item_sku ELSE i.model_sku END DESC
     ) AS item_rank_for_all_returned
 
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,
+  FROM {{ref("t1_shopee_shop_fee_total")}} f,
   UNNEST(items) AS i
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping ON 
+  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping ON 
     CASE 
       WHEN i.model_sku = "" THEN i.item_sku
       ELSE i.model_sku  
-    END = mapping.ma_sku AND f.brand = mapping.brand
+    END = mapping.ma_sku --AND f.brand = mapping.brand
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku AND f.brand = rd.brand AND rd.status = 'ACCEPTED'
   LEFT JOIN order_detail ord ON f.order_id = ord.order_id  AND
     CASE 

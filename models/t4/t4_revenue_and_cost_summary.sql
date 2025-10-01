@@ -64,31 +64,36 @@ revenue_tot AS (
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
     
 -- Loại bỏ các đơn hàng có tổng_amount nhỏ hơn 60,000
-    case
-        when SUM(total_amount) < 60000
-        then 0
-        else SUM(total_amount)
-    end as total_amount,
-    case
-        when SUM(total_amount) < 60000
-        then 0
-        else  SUM(gia_ban_daily_total)
-    end as gia_ban_daily_total,
-    case
-        when SUM(total_amount) < 60000
-        then 0
-        else  SUM(doanh_thu_ke_toan)
-    end as doanh_thu_ke_toan,
-    case
-        when SUM(total_amount) < 60000
-        then 0
-        else  SUM(doanh_thu_ke_toan_v2)
-    end as doanh_thu_ke_toan_v2,
-    case
-        when SUM(total_amount) < 60000
-        then 0
-        else SUM(tien_chiet_khau_sp_tot) 
-    end as tien_chiet_khau_sp_tot,
+    -- case
+    --     when SUM(total_amount) < 60000
+    --     then 0
+    --     else SUM(total_amount)
+    -- end as total_amount,
+    -- case
+    --     when SUM(total_amount) < 60000
+    --     then 0
+    --     else  SUM(gia_ban_daily_total)
+    -- end as gia_ban_daily_total,
+    -- case
+    --     when SUM(total_amount) < 60000
+    --     then 0
+    --     else  SUM(doanh_thu_ke_toan)
+    -- end as doanh_thu_ke_toan,
+    -- case
+    --     when SUM(total_amount) < 60000
+    --     then 0
+    --     else  SUM(doanh_thu_ke_toan_v2)
+    -- end as doanh_thu_ke_toan_v2,
+    -- case
+    --     when SUM(total_amount) < 60000
+    --     then 0
+    --     else SUM(tien_chiet_khau_sp_tot) 
+    -- end as tien_chiet_khau_sp_tot,
+    SUM(total_amount) as total_amount,
+    SUM(gia_ban_daily_total) as gia_ban_daily_total,
+    SUM(doanh_thu_ke_toan) as doanh_thu_ke_toan,
+    SUM(doanh_thu_ke_toan_v2) as doanh_thu_ke_toan_v2,
+    SUM(tien_chiet_khau_sp_tot) as tien_chiet_khau_sp_tot,
 
     SUM(phu_phi) as phu_phi
   FROM `crypto-arcade-453509-i8`.`dtm`.`t3_revenue_all_channel_tot`
@@ -155,7 +160,7 @@ select
     r_tot.doanh_thu_ke_toan as doanh_thu_ke_toan_tot,
     r_tot.doanh_thu_ke_toan_v2 as doanh_thu_ke_toan_tot_v2,
     r_tot.tien_chiet_khau_sp_tot,
-    r_tot.phu_phi,
+    r_tot.phu_phi * -1 phu_phi,
     r_toa.doanh_thu_ke_toan_toa,
     r_toa.tien_chiet_khau_sp_toa,
     r_toa.gia_san_pham_goc_total_toa,

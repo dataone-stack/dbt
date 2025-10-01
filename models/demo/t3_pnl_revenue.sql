@@ -56,6 +56,7 @@ SELECT
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_shopee_order_lines_tot`
+where status not in ("Đã hủy", "Đang giao")
 
 UNION ALL
 
@@ -85,7 +86,7 @@ SELECT
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
-where status <>"Đã hủy"
+where status not in ("Đã hủy", "Đang giao")
 
 
 

@@ -23,7 +23,11 @@ WITH ads_total_with_tkqc AS (
         tkqc.dau_the,
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
-        ROUND(SUM(ads.doanhThuAds), 0) AS doanhThuAds,
+        case
+        when date(ads.date_start) <= '2025-09-30'
+        then ROUND(SUM(ads.doanhThuAds), 0) 
+        else 0
+        end AS doanhThuAds,
         SUM(ads.spend) * (1 + COALESCE(MAX(tkqc.phi_thue), 0)) as chi_phi_agency
     FROM (
         -- Loại bỏ trùng lặp trong t2_ads_total trước khi JOIN
