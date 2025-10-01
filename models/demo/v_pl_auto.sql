@@ -197,7 +197,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(doanh_thu_ke_toan)
+    SUM(doanh_thu_ke_toan) as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
   
@@ -219,7 +219,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(gia_von)
+    SUM(gia_von) as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
 
@@ -241,7 +241,7 @@ base_data AS (
     ben_thue as attribute_5,
     idtkqc as attribute_6,
     nametkqc as attribute_7,
-    allocated_ads_cost
+    allocated_ads_cost as amount
   FROM chi_phi_ads_allocated
   WHERE allocated_ads_cost > 0
 
@@ -262,7 +262,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(phu_phi)
+    SUM(phu_phi) as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel, order_id, sku_code, ten_san_pham, promotion_type
   
@@ -283,7 +283,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    ABS(SUM(phi_van_chuyen_thuc_te))
+    ABS(SUM(phi_van_chuyen_thuc_te)) as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel, order_id, sku_code, ten_san_pham, promotion_type
   
@@ -304,7 +304,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(gia_von)
+    SUM(gia_von) as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   WHERE promotion_type = "Quà Tặng"
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel, order_id, sku_code, ten_san_pham, promotion_type
@@ -326,7 +326,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    0
+    0 as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel
   
@@ -347,7 +347,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    0
+    0 as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel
 
@@ -369,7 +369,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    total_chi_phi_bien_doi
+    total_chi_phi_bien_doi as amount
   FROM tong_chi_phi_bien_doi
 )
 

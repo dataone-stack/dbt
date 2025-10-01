@@ -20,7 +20,7 @@ SELECT
      0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Facebook' AS channel,
-FROM {{ref("t2_facebook_order_lines_tot")}}
+FROM `crypto-arcade-453509-i8`.`dtm`.`t2_facebook_order_lines_tot`
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
 union all
@@ -48,7 +48,7 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Shopee' AS channel
-FROM {{ref("t2_shopee_order_tot")}}
+FROM `crypto-arcade-453509-i8`.`dtm`.`t2_shopee_order_lines_tot`
 
 UNION ALL
 
@@ -68,13 +68,13 @@ SELECT
     ngay_tao_don as date_create_order, 
     gia_ban_daily_total,
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
-    phu_phi,
-    total_revenue as doanh_thu_ke_toan,
+    tong_phi_san as phu_phi,
+    doanh_thu_ke_toan as doanh_thu_ke_toan,
     doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel
-FROM {{ref("t2_tiktok_order_tot")}}
+FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
 
 
 
@@ -103,7 +103,7 @@ SELECT
     doanh_so_cu as doanh_so_cu,
     doanh_so_moi as doanh_so_moi,
     'Facebook' AS channel
-FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
+FROM `crypto-arcade-453509-i8`.`dtm`.`t2_mapping_sandbox_pushsale_tot`
 
 -- union all
 
