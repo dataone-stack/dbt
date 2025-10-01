@@ -327,4 +327,4 @@ LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = tota
 LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 )
 
-select * from a where order_adjustment_id is not null and date(order_statement_time) = "2025-05-31" and brand = "Chaching"
+select * from a where order_adjustment_id is not null -- and date(order_statement_time) = "2025-05-31" and brand = "Chaching"
