@@ -17,7 +17,7 @@ SELECT
     phu_phi,
     doanh_thu_ke_toan,
     doanh_thu_ke_toan_v2,
-     0 as doanh_so_cu,
+    0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Facebook' AS channel,
     phi_van_chuyen_thuc_te,
