@@ -175,7 +175,7 @@ select
     campaign_name,
 
     case
-        when account_id in ('7531919757827080209','7441124535434280976')
+        when account_id in ('7531919757827080209','7441124535434280976','762021588532155')
         then spend * 26700
         else spend
     end as spend,

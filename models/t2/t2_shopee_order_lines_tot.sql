@@ -40,7 +40,7 @@ total_amount_exclude_return AS (
       THEN i.discounted_price 
       ELSE 0 
     END) AS total_tong_tien_san_pham_excluding_return
-  FROM {{ ref('t1_shopee_shop_fee_total') }} a,   
+  FROM {{ref("t1_shopee_shop_fee_total")}} a,   
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON a.order_id = rd.order_id 
     AND i.model_sku = rd.variation_sku 
@@ -272,13 +272,13 @@ SELECT
     -- Tổng phụ phí với logic đơn giản
     CASE 
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
-        THEN 0
+        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
         THEN 
             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.commission_fee * -1) +
             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.service_fee * -1) +
             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.seller_transaction_fee * -1) +
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.order_ams_commission_fee * -1)
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.order_ams_commission_fee * -1) 
         WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
         THEN 
             (f.commission_fee * -1) + (f.service_fee * -1) + (f.seller_transaction_fee * -1) + (f.order_ams_commission_fee * -1)
@@ -291,33 +291,33 @@ SELECT
     -- Phí vận chuyển thực tế
     CASE 
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
-        THEN 0
+        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
         THEN 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * actual_shipping_fee) - 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * buyer_paid_shipping_fee)
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * actual_shipping_fee)
         WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
         THEN actual_shipping_fee - buyer_paid_shipping_fee
+        
         ELSE 0
     END AS phi_van_chuyen_thuc_te,
     
     -- Tổng tiền đã thanh toán
     CASE 
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
-        THEN 0
+        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
-        THEN SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * vi.amount
+        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * vi.amount) - (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
         WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
-        THEN vi.amount
+        THEN vi.amount - (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
         ELSE 0
     END AS tong_tien_da_thanh_toan
 
-FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi 
+FROM {{ref("t1_shopee_shop_fee_total")}} f
+LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi 
     ON f.order_id = vi.order_id 
     AND f.brand = vi.brand
     AND vi.transaction_tab_type = 'wallet_order_income'
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` ord 
+LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} ord 
     ON f.order_id = ord.order_id 
     AND f.brand = ord.brand
 LEFT JOIN order_product_summary ops 
