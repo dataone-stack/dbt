@@ -24,7 +24,7 @@ WITH ads_total_with_tkqc AS (
         MAX(tkqc.phi_thue) as phi_thue,
         SUM(ads.spend) AS chiPhiAds,
         case
-        when date(ads.date_start) <= '2025-09-30'
+        when date(ads.date_start) <= '2025-09-30' and tkqc.channel = 'Facebook'
         then ROUND(SUM(ads.doanhThuAds), 0) 
         else 0
         end AS doanhThuAds,
