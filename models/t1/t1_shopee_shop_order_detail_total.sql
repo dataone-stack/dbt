@@ -72,3 +72,6 @@ FROM `umebeautyvietnam_shope_shop_dwh.shopee_order_detail_ume_beauty_vietnam`
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_order_detail_beana_beauty_vietnam`
+UNION ALL
+SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 'Max Eagle' as company, 'An Cung' AS brand, 'las_beauty' AS shop
+FROM `ancunghaircare_shopee_shop_dwh.shopee_order_detail_las_beauty`

@@ -45,7 +45,7 @@ SELECT
     tien_chiet_khau_sp_shopee as tien_chiet_khau_sp_tot,
     -- gia_san_pham_goc_total,
     phu_phi,
-    doanh_thu_shopee as doanh_thu_ke_toan,
+    doanh_thu_ke_toan as doanh_thu_ke_toan,
     doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
@@ -79,7 +79,7 @@ SELECT
     0 as doanh_so_moi,
     'Tiktok' AS channel
 FROM {{ ref('t2_tiktok_order_line_tot') }}
-where status not in ("Đã hủy", "Đang giao")
+-- where status not in ("Đã hủy", "Đang giao")
 
 
 
