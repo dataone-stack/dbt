@@ -69,3 +69,6 @@ FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_wallet_transaction_ume_beau
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_beana_beauty_vietnam`
+UNION ALL
+SELECT *, 'Max Eagle' as company, 'An Cung' AS brand, 'las_beauty' AS shop
+FROM `ancunghaircare_shopee_shop_dwh.shopee_payment_wallet_transaction_las_beauty`

@@ -72,3 +72,6 @@ FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_escrow_detail_ume_beauty_vi
 union all
 SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_beana_beauty_vietnam`
+union all
+SELECT order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'An Cung' AS brand, 'las_beauty' AS shop
+FROM `ancunghaircare_shopee_shop_dwh.shopee_payment_escrow_detail_las_beauty`
