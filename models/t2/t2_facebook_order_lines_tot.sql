@@ -190,7 +190,7 @@ order_line as (
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   left join {{ref("t1_ship_fee")}} s on vietful.tracking_code = s.ma_van_don
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed')
+  where ord.order_sources_name not in ('Tiktok', 'Shopee') and ord.status_name not in ('removed')
 
 ),
 
@@ -290,7 +290,7 @@ order_line_returned as (
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code and json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
   left join {{ref("t1_ship_fee")}} s on vietful_return.tracking_code = s.ma_van_don
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
+  where ord.order_sources_name not in ('Tiktok', 'Shopee') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
 )
 
 
