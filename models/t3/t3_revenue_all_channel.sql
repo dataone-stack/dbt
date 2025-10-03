@@ -1,7 +1,7 @@
 SELECT 
     '-' as manager,
     '-' AS marketing_name,
-    -- '-' as shop,
+    "Shop Facebook" as shop,
     brand,
     brand_lv1,
     status as status,
@@ -51,7 +51,7 @@ union all
 SELECT 
     tkqc.manager,
     '-' AS marketing_name,
-    -- shop.shop,
+    shop.shop,
     shop.brand,
     shop.brand_lv1,
     shop.status,
@@ -103,7 +103,7 @@ UNION ALL
 SELECT 
     tkqc.manager,
     '-' AS marketing_name,
-    -- shop.shop,
+    shop.shop,
     shop.brand,
     shop.brand_lv1,
     shop.status,
@@ -156,7 +156,7 @@ UNION ALL
 SELECT 
     manager,
     marketing_name,
-    -- '-' as shop,
+    "Shop Facebook" as shop,
     brand,
     brand_lv1,
     trang_thai_don_hang as status,
