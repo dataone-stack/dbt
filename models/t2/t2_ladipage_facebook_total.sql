@@ -19,9 +19,9 @@ WHERE od.marketer IS NOT NULL
   AND mar.company = 'One5'
   AND (
         -- Điều kiện riêng cho brand LYB
-        (od.brand = 'Chaching' AND od.order_sources_name = 'Facebook' and od.page is null)
+        (od.brand = 'Chaching' AND od.order_sources_name = 'Facebook')
         -- Các brand khác
-        OR (od.brand <> 'Chaching' AND od.order_sources_name IN ('Ladipage Facebook', 'Webcake','Website','Zalo'))
+        OR (od.brand <> 'Chaching' AND od.order_sources_name IN ('Facebook','Ladipage Facebook', 'Webcake','Website','Zalo','Instagram'))
       )
   AND (od.brand != 'UME' OR (od.brand = 'UME' AND od.status_name NOT IN ('new', 'removed')))
 GROUP BY 

@@ -59,6 +59,7 @@ SELECT
     brand, 
     brand_lv1,
     company,
+    -- shop,
     -- sku_code,
     -- ten_san_pham,
     -- gia_san_pham_goc_total,
