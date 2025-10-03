@@ -156,6 +156,7 @@ SELECT
     f.brand,
     ops.brand_lv1,
     f.company,
+    f.shop,
     DATETIME_ADD(ord.ship_by_date, INTERVAL 7 HOUR) AS ngay_ship,
    
     CASE
@@ -281,8 +282,8 @@ SELECT
             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.order_ams_commission_fee * -1) 
         WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
         THEN 
-            (f.commission_fee * -1) + (f.service_fee * -1) + (f.seller_transaction_fee * -1) + (f.order_ams_commission_fee * -1)
-        ELSE 0
+            (f.commission_fee * -1) + (f.service_fee * -1) + (f.seller_transaction_fee * -1) + (f.order_ams_commission_fee * -1) + COALESCE(f.rsf_seller_protection_fee_claim_amount)* -1
+        ELSE (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount) * -1
     END AS phu_phi,
     
     ops.gia_von,
@@ -304,12 +305,12 @@ SELECT
     -- Tổng tiền đã thanh toán
     CASE 
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
-        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
+        THEN COALESCE(f.rsf_seller_protection_fee_claim_amount)
         WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
-        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * vi.amount) - (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
+        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * vi.amount) + COALESCE(f.rsf_seller_protection_fee_claim_amount)* -1
         WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
-        THEN vi.amount - (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
-        ELSE 0
+        THEN vi.amount + COALESCE(f.rsf_seller_protection_fee_claim_amount)* -1
+        ELSE COALESCE(f.rsf_seller_protection_fee_claim_amount,0) * -1
     END AS tong_tien_da_thanh_toan
 
 FROM {{ref("t1_shopee_shop_fee_total")}} f

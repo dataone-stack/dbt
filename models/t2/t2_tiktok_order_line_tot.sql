@@ -152,6 +152,7 @@ OrderData AS (
     o.shipping_provider AS Shipping_Provider_Name,
     o.buyer_message AS Buyer_Message,
     o.buyer_email AS Buyer_Username,
+    o.order_type,
     JSON_VALUE(o.recipient_address, '$.name') AS Recipient,
     JSON_VALUE(o.recipient_address, '$.phone_number') AS Phone_Number,
     (SELECT JSON_VALUE(d, '$.address_name')
@@ -277,6 +278,7 @@ SELECT
   when is_gift = TRUE
   then "Quà Tặng"
   end as promotion_type,
+  order_type,
 
   CASE
     WHEN Cancelation_Return_Type = 'return_refund' THEN 'Đã hoàn'
@@ -297,7 +299,12 @@ SELECT
     ord.*,
     trans.order_statement_time,
     trans.order_adjustment_id,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.total_settlement_amount, 0) as total_settlement_amount,
+    case
+        when order_type = "ZERO_LOTTERY"
+        then trans.total_settlement_amount
+        else COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.total_settlement_amount, 0)
+    end as total_settlement_amount,
+    --  as total_settlement_amount,
     
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_cost_amount, 0) AS phi_van_chuyen_thuc_te,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) AS phi_van_chuyen_tro_gia_tu_san,
@@ -325,6 +332,7 @@ SELECT
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
 LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+-- where trans.type <>"LOGISTICS_REIMBURSEMENT"
 )
 
 select * from a where order_adjustment_id is not null -- and date(order_statement_time) = "2025-05-31" and brand = "Chaching"
