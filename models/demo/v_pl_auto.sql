@@ -12,7 +12,8 @@ sku_revenue_for_allocation AS (
     sku_code,
     ten_san_pham,
     promotion_type,
-    SUM(doanh_thu_ke_toan) as sku_revenue
+    SUM(doanh_thu_ke_toan) as sku_revenue,
+    COUNT(DISTINCT order_id) AS count_sku_revenue
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY year, month, brand, company, channel, order_id, sku_code, ten_san_pham, promotion_type
 ),
@@ -25,7 +26,8 @@ total_revenue_by_group AS (
     brand,
     company,
     channel,
-    SUM(sku_revenue) as total_group_revenue
+    SUM(sku_revenue) as total_group_revenue,
+    COUNT(DISTINCT order_id) AS count_group_order,
   FROM sku_revenue_for_allocation
   GROUP BY year, month, brand, company, channel
 ),
@@ -66,7 +68,12 @@ chi_phi_ads_allocated AS (
       WHEN t.total_group_revenue > 0 
       THEN (s.sku_revenue / t.total_group_revenue) * a.total_ads_cost
       ELSE 0 
-    END as allocated_ads_cost
+    END as allocated_ads_cost,
+    CASE 
+      WHEN t.count_group_order > 0 
+      THEN (s.count_sku_revenue / t.count_group_order) * a.total_ads_cost
+      ELSE 0
+    END as allocated_ads_cost_count_order
   FROM sku_revenue_for_allocation s
   LEFT JOIN total_revenue_by_group t
     ON s.year = t.year 
@@ -221,12 +228,12 @@ base_data AS (
     sku_code as attribute_2,
     ten_san_pham as attribute_3,
     promotion_type as attribute_4,
-    "" as attribute_5,
+    status as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
     SUM(gia_von) as amount
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
-  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
+  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type,status
 
   UNION ALL
   
@@ -238,7 +245,7 @@ base_data AS (
     company,
     channel,
     'Layer 2: Chi Phí Biến Đổi',
-    '2. Ads',
+    '2. Ads (sum revenue)',
     order_id as attribute_1,
     sku_code as attribute_2,
     ten_san_pham as attribute_3,
@@ -250,6 +257,31 @@ base_data AS (
     "" as attribute_6,
     "" as attribute_7,
     allocated_ads_cost as amount
+  FROM chi_phi_ads_allocated
+--   WHERE allocated_ads_cost > 0
+
+  UNION ALL
+   
+  -- **PHẦN MỚI: Chi phí Ads đã được phân bổ theo SKU**
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    channel,
+    'Layer 2: Chi Phí Biến Đổi',
+    '2. Ads (count order)',
+    order_id as attribute_1,
+    sku_code as attribute_2,
+    ten_san_pham as attribute_3,
+    promotion_type as attribute_4,
+    -- ben_thue as attribute_5,
+    -- idtkqc as attribute_6,
+    -- nametkqc as attribute_7,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    allocated_ads_cost_count_order as amount
   FROM chi_phi_ads_allocated
 --   WHERE allocated_ads_cost > 0
 
