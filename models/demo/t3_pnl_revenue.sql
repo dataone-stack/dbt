@@ -47,7 +47,7 @@ SELECT
     tien_chiet_khau_sp_shopee as tien_chiet_khau_sp_tot,
     -- gia_san_pham_goc_total,
     phu_phi *-1 as phu_phi,
-    doanh_thu_shopee as doanh_thu_ke_toan,
+    doanh_thu_ke_toan as doanh_thu_ke_toan,
     doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
