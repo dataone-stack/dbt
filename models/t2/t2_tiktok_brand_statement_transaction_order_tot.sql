@@ -5,7 +5,7 @@ SELECT
     shop,
     case
     when order_id is null and adjustment_id is not null
-    then adjustment_id
+    then adjustment_order_id
     else order_id
     end AS `order_adjustment_id`,
 

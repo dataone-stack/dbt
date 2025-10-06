@@ -335,4 +335,4 @@ LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction
 -- where trans.type <>"LOGISTICS_REIMBURSEMENT"
 )
 
-select * from a where order_adjustment_id is not null -- and date(order_statement_time) = "2025-05-31" and brand = "Chaching"
+select * from a -- where order_adjustment_id is not null -- and date(order_statement_time) = "2025-05-31" and brand = "Chaching"
