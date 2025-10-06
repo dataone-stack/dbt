@@ -28,7 +28,7 @@ WHERE mar.company = 'One5'
         -- Các brand khác
         OR (od.brand <> 'Chaching' AND od.order_sources_name IN ('Facebook','Ladipage Facebook', 'Webcake'))
       )
-  AND (od.brand != 'UME' OR (od.brand = 'UME' AND od.status_name NOT IN ('new', 'removed')))
+  AND ((od.brand != 'UME' and od.status_name NOT IN ('removed')) OR (od.brand = 'UME' AND od.status_name NOT IN ('new', 'removed')))
 GROUP BY 
   DATE(DATE_ADD(od.inserted_at, INTERVAL 7 HOUR)),
   mar.company,
