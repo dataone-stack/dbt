@@ -149,7 +149,8 @@ order_line as (
   0 as voucher_from_seller,
   0 as phi_co_dinh,
   CASE
-    WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned', 'returning') THEN 'Đã hoàn'
+    --WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned', 'returning') THEN 'Đã hoàn'
+    WHEN status_name in ('returned', 'returning') THEN 'Đã hoàn'
     WHEN status_name in ('shipped','shipped') THEN 'Đang giao'
     WHEN status_name = 'canceled' THEN 'Đã hủy'
     WHEN status_name = 'delivered' THEN 'Đã giao thành công'
