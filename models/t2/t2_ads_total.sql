@@ -175,13 +175,13 @@ select
     campaign_name,
 
     case
-        when account_id in ('7531919757827080209','7441124535434280976','762021588532155')
+        when account_id in ('7531919757827080209','7441124535434280976','762021588532155','7490628408758910993')
         then spend * 26700
         else spend
     end as spend,
 
     case
-        when account_id in ('7531919757827080209','7441124535434280976')
+        when account_id in ('7531919757827080209','7441124535434280976','7490628408758910993')
         then doanhThuAds * 26700
         else doanhThuAds
     end as doanhThuAds,
