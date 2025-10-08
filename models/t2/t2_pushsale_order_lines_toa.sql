@@ -65,14 +65,16 @@ orderline AS (
         dt.quantity AS so_luong,
         -- dt.price AS don_gia,
 
-        CASE
-            WHEN dt.price < 1000 THEN curr.rate * dt.price
+        CASE 
+            WHEN ord.customer_type = 1 AND dt.price < 1000 THEN ((dt.price * 0.9) - bangGia.phi_don_us) *25000 -- TRƯỜNG HỢP 1: LÀ KHÁCH HÀNG CŨ Áp dụng giảm giá 10% vào dt.price trước khi tính toán 
+            WHEN ord.customer_type = 0 AND dt.price < 1000 THEN (dt.price - bangGia.phi_don_us) *25000             -- TRƯỜNG HỢP 2: KHÁCH HÀNG MỚI
             ELSE dt.price
         END AS don_gia,
 
-        CASE
-            WHEN dt.total_price < 1000 THEN curr.rate * dt.total_price
-            ELSE dt.total_price
+        CASE 
+            WHEN ord.customer_type = 1 AND dt.quantity * dt.price < 1000 THEN ((dt.price * 0.9) - bangGia.phi_don_us)* dt.quantity *25000 -- TRƯỜNG HỢP 1: LÀ KHÁCH HÀNG CŨ Áp dụng giảm giá 10% vào dt.price trước khi tính toán 
+            WHEN ord.customer_type = 0 AND dt.quantity * dt.price < 1000 THEN (dt.price - bangGia.phi_don_us)* dt.quantity *25000             -- TRƯỜNG HỢP 2: KHÁCH HÀNG MỚI
+            ELSE dt.price * dt.quantity
         END AS thanh_tien,
 
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm

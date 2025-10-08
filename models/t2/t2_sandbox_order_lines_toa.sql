@@ -59,14 +59,16 @@ orderline AS (
         dt.item_name AS san_pham,
         dt.quantity AS so_luong,
 
-        CASE
-            WHEN dt.price < 1000 THEN curr.rate * dt.price
+        CASE 
+            WHEN ord.customer_type = 1 AND dt.price < 1000 THEN ((dt.price * 0.9) - bangGia.phi_don_us) *25000 -- TRƯỜNG HỢP 1: LÀ KHÁCH HÀNG CŨ Áp dụng giảm giá 10% vào dt.price trước khi tính toán 
+            WHEN ord.customer_type = 0 AND dt.price < 1000 THEN (dt.price - bangGia.phi_don_us) *25000             -- TRƯỜNG HỢP 2: KHÁCH HÀNG MỚI
             ELSE dt.price
         END AS don_gia,
 
-        CASE
-            WHEN dt.quantity * dt.price < 1000 THEN curr.rate * dt.quantity * dt.price
-            ELSE dt.quantity * dt.price
+        CASE 
+            WHEN ord.customer_type = 1 AND dt.quantity * dt.price < 1000 THEN ((dt.price * 0.9) - bangGia.phi_don_us)* dt.quantity *25000 -- TRƯỜNG HỢP 1: LÀ KHÁCH HÀNG CŨ Áp dụng giảm giá 10% vào dt.price trước khi tính toán 
+            WHEN ord.customer_type = 0 AND dt.quantity * dt.price < 1000 THEN (dt.price - bangGia.phi_don_us)* dt.quantity *25000             -- TRƯỜNG HỢP 2: KHÁCH HÀNG MỚI
+            ELSE dt.price * dt.quantity
         END AS thanh_tien,
         
         CASE 
@@ -183,11 +185,11 @@ orderline AS (
         0 AS phi_co_dinh,
         0 AS seller_tro_gia,
         0 AS san_tro_gia,
-        0 AS tong_phi_san,
+        bangGia.phi_don_us AS tong_phi_san,
         ord.total_discount AS tong_chiet_khau_don_hang,
         ord.total_discount_product AS tong_giam_gia_san_pham_don_hang,
 
-        COALESCE ( curr.rate,0) as ty_gia_usd,
+        COALESCE (curr.rate, 0) as ty_gia_usd,
         ord.delivery_province_name,
         ord.delivery_district_name,
         ord.delivery_ward_name,
