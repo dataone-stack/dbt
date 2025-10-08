@@ -33,7 +33,7 @@ a AS (
   WHERE mar.company = 'One5'
     AND od.order_sources_name IN ('Facebook', 'Ladipage Facebook', 'Webcake','Instagram','Zalo')
     
-    AND od.status_name NOT IN ('removed')
+    AND od.status_name NOT IN ('removed','canceled')
   GROUP BY 
     DATE(DATE_ADD(od.inserted_at, INTERVAL 7 HOUR)),
     mar.company,
