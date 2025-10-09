@@ -16,7 +16,7 @@ a AS (
     'Facebook' AS channel,
     mar.company,
     od.brand,
-    '' AS brand_lv1,
+    od.brand AS brand_lv1,
     '' AS loai_khach_hang,
     mar.marketing_name AS staff_name,
     mar.ma_nhan_vien AS id_staff,
@@ -32,7 +32,7 @@ a AS (
     AND od.brand = mar.brand
   WHERE mar.company = 'One5'
     AND od.order_sources_name IN ('Facebook', 'Ladipage Facebook', 'Webcake','Instagram','Zalo')
-    
+    AND LOWER(od.note) NOT LIKE '%hủy%'
     AND od.status_name NOT IN ('removed','canceled')
   GROUP BY 
     DATE(DATE_ADD(od.inserted_at, INTERVAL 7 HOUR)),

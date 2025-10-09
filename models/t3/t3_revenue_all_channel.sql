@@ -73,7 +73,7 @@ SELECT
     giam_gia_san,
     seller_tro_gia,
     san_tro_gia,
-    tong_phi_san,
+    phu_phi_shopee AS tong_phi_san,
 
     CAST(ma_don_hang AS string) AS ma_don_hang,
     ngay_tao_don,
@@ -96,7 +96,7 @@ LEFT JOIN `dtm.t2_tkqc_total` AS tkqc
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
-
+WHERE shop.status NOT IN ("Đã hủy", "Đã hoàn")
 
 UNION ALL
 
@@ -149,7 +149,7 @@ LEFT JOIN `dtm.t2_tkqc_total` AS tkqc
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
-
+WHERE shop.status NOT IN ("Đã hủy", "Đã hoàn")
 
 UNION ALL   
 
@@ -199,3 +199,4 @@ SELECT
     'Facebook' AS channel,
     ho_ten AS ten_khach_hang,
 FROM {{ref("t2_mapping_sandbox_pushsale_toa")}}
+WHERE trang_thai_don_hang NOT IN ("Hủy đăng đơn")

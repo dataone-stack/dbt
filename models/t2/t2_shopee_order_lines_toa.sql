@@ -264,5 +264,6 @@ END AS status,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
 (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS doanh_so,
 
-COALESCE(voucher_from_seller, 0)* -1 - COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0)* -1 - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) - COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0)* -1 + COALESCE(phi_dich_vu, 0)* -1 + COALESCE(phi_thanh_toan, 0)* -1 + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as tong_phi_san
+COALESCE(voucher_from_seller, 0)* -1 - COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0)* -1 - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) - COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0)* -1 + COALESCE(phi_dich_vu, 0)* -1 + COALESCE(phi_thanh_toan, 0)* -1 + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as tong_phi_san,
+COALESCE(phi_co_dinh, 0)* -1 + COALESCE(phi_dich_vu, 0)* -1 + COALESCE(phi_thanh_toan, 0)* -1 + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as phu_phi_shopee
 FROM sale_order_detail 
