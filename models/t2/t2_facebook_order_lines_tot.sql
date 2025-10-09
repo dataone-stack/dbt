@@ -668,7 +668,8 @@ with total_price as (
   select
     id,
     brand,
-    sum(total_price) as total_amount
+    sum(total_price) as total_amount,
+    sum(total_price_after_sub_discount) as gia_tri_don_hang
   from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total`
   group by id,brand
 ),
@@ -846,8 +847,19 @@ order_line as (
         *
         safe_cast(json_value(item, '$.quantity') as int64),
         NULLIF(tt.total_amount, 0)
-      ) * s.ship_fee), 0) as ship_fee
-
+      ) * s.ship_fee), 0) as ship_fee,
+       CASE
+    --WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned', 'returning') THEN 'Đã hoàn'
+    when tt.gia_tri_don_hang <= 60000 then 'Đổi size'
+    WHEN ord.status_name in ('returned', 'returning') THEN 'Đã hoàn'
+    WHEN ord.status_name in ('shipped','shipped') THEN 'Đang giao'
+    WHEN ord.status_name = 'canceled' THEN 'Đã hủy'
+    WHEN ord.status_name = 'delivered' THEN 'Đã giao thành công'
+    WHEN ord.status_name in ('new', 'packing', 'submitted','waitting', 'packing','pending') THEN 'Đăng đơn'
+    ELSE 'Khác'
+  END AS status_don_hang
+      
+    
   
   from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
@@ -947,7 +959,17 @@ order_line_returned as (
           *
           safe_cast(json_value(item, '$.quantity') as int64),
           NULLIF(tt.total_amount, 0)
-        ) * s.ship_fee), 0) as ship_fee
+        ) * s.ship_fee), 0) as ship_fee,
+           CASE
+    --WHEN LOWER(note_print) LIKE '%ds%' OR LOWER(note_print) LIKE '%đổi size%' OR LOWER(note_print) like "%thu hồi%" or status_name in ('returned', 'returning') THEN 'Đã hoàn'
+    when tt.gia_tri_don_hang <= 60000 then 'Đổi size'
+    WHEN ord.status_name in ('returned', 'returning') THEN 'Đã hoàn'
+    WHEN ord.status_name in ('shipped','shipped') THEN 'Đang giao'
+    WHEN ord.status_name = 'canceled' THEN 'Đã hủy'
+    WHEN ord.status_name = 'delivered' THEN 'Đã giao thành công'
+    WHEN ord.status_name in ('new', 'packing', 'submitted','waitting', 'packing','pending') THEN 'Đăng đơn'
+    ELSE 'Khác'
+  END AS status_don_hang
 
   from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
   unnest (items) as item
@@ -1055,6 +1077,7 @@ order_line_returned as (
     0 as phi_xtra,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
+   status_don_hang,
     'Đã giao thành công' as status,
     -------------------------------------------
     case
@@ -1232,6 +1255,7 @@ order_line_returned as (
     0 as phi_xtra,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
+    status_don_hang,
     'Đã hoàn' as status,
     --------------------------------------------------------
 
