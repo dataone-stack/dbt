@@ -68,7 +68,7 @@ SELECT
 
     CAST(Shipped_Time as date) as ngay_ship,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
-    CAST(ma_don_hang AS STRING) as order_id, 
+    CAST(adjustment_id AS STRING) as order_id, 
     '' as tracking_code,
     Order_Status as status, 
     total_settlement_amount as total_amount, 
