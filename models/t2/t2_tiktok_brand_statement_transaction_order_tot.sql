@@ -92,6 +92,8 @@ SELECT
     SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
     SUM(COALESCE(voucher_xtra_service_fee, 0)) AS voucher_xtra_service_fee,
     SUM(COALESCE(shipping_cost_amount, 0)) AS shipping_cost_amount,
+    SUM(COALESCE(vat_withheld_by_tiktok_shop, 0)) AS vat_amount,
+    SUM(COALESCE(pit_withheld_by_tiktok_shop, 0)) AS pit_amount
 FROM transactions
 GROUP BY 
     brand,
