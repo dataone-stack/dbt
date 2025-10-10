@@ -68,7 +68,7 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.seller_shipping_fee_discount_amount') AS FLOAT64) AS `seller_shipping_fee_discount`,
     NULL AS `estimated_package_weight`,
     NULL AS `actual_package_weight`
-FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_brand_statement_transaction_order_tot` WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 
+FROM {{ref("t1_tiktok_brand_statement_transaction_order_tot")}}  WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 
 )
 ,a as(
 SELECT 
@@ -92,6 +92,8 @@ SELECT
     SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
     SUM(COALESCE(voucher_xtra_service_fee, 0)) AS voucher_xtra_service_fee,
     SUM(COALESCE(shipping_cost_amount, 0)) AS shipping_cost_amount,
+    SUM(COALESCE(vat_withheld_by_tiktok_shop, 0)) AS vat_amount,
+    SUM(COALESCE(pit_withheld_by_tiktok_shop, 0)) AS pit_amount
 FROM transactions
 GROUP BY 
     brand,

@@ -670,7 +670,7 @@ with total_price as (
     brand,
     sum(total_price) as total_amount,
     sum(total_price_after_sub_discount) as gia_tri_don_hang
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total`
+  from {{ref("t1_pancake_pos_order_total")}}
   group by id,brand
 ),
 
@@ -685,7 +685,7 @@ vietful_delivery_date as (
      FROM UNNEST(status_trackings) AS status
      WHERE JSON_VALUE(status, '$.statusCode') = '71'
      LIMIT 1) AS ngay_da_giao
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total` v
+  from {{ref("t1_vietful_xuatkho_total")}} v
   where sale_channel_code = 'PANCAKE'
 ),
 vietful_delivery_returned_date as (
@@ -701,7 +701,7 @@ vietful_delivery_returned_date as (
       FROM UNNEST(status_trackings) AS status
       WHERE JSON_VALUE(status, '$.statusCode') = '83'
       LIMIT 1) AS ngay_da_giao
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
+  FROM {{ref("t1_vietful_xuatkho_total")}}
   WHERE sale_channel_code = 'PANCAKE'
     AND EXISTS (
         SELECT 1
@@ -728,7 +728,7 @@ vietful_delivery_returned_date as (
        FROM UNNEST(status_trackings) AS status
        WHERE JSON_VALUE(status, '$.statusCode') = '81'
        LIMIT 1) AS ngay_da_giao
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_xuatkho_total`
+  FROM {{ref("t1_vietful_xuatkho_total")}}
   WHERE sale_channel_code = 'PANCAKE'
     AND EXISTS (
         SELECT 1
@@ -861,13 +861,13 @@ order_line as (
       
     
   
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
+  from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
-  left join `dtm.t1_ship_fee` s on vietful.tracking_code = s.ma_van_don
+  left join {{ref("t1_ship_fee")}} s on vietful.tracking_code = s.ma_van_don
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed')
 
 ),
@@ -971,13 +971,13 @@ order_line_returned as (
     ELSE 'Khác'
   END AS status_don_hang
 
-  from `crypto-arcade-453509-i8`.`dtm`.`t1_pancake_pos_order_total` as ord,
+  from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
-  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code and json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
-  left join `dtm.t1_ship_fee` s on vietful_return.tracking_code = s.ma_van_don
+  left join {{ref("t1_ship_fee")}} s on vietful_return.tracking_code = s.ma_van_don
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
 )
 

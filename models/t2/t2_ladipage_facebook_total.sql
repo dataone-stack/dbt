@@ -16,7 +16,7 @@ a AS (
     'Facebook' AS channel,
     mar.company,
     od.brand,
-    od.brand AS brand_lv1,
+    '' AS brand_lv1,
     '' AS loai_khach_hang,
     mar.marketing_name AS staff_name,
     mar.ma_nhan_vien AS id_staff,
