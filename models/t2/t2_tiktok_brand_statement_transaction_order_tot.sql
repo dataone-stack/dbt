@@ -9,6 +9,12 @@ SELECT
     else order_id
     end AS `order_adjustment_id`,
 
+    case
+    when order_id is null and adjustment_id is not null
+    then adjustment_id
+    else order_id
+    end AS `adjustment_id`,
+
 
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(order_create_time)) AS `order_created_time`,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(statement_create_time)) AS `order_statement_time`,
@@ -71,6 +77,7 @@ SELECT
     company,
     datetime_add(safe_cast(order_statement_time as datetime), INTERVAL 7 HOUR) as order_statement_time,
     order_adjustment_id,
+    adjustment_id,
     currency,
     type,
     SUM(COALESCE(total_settlement_amount, 0)) as total_settlement_amount,
@@ -92,6 +99,7 @@ GROUP BY
     company,
     order_statement_time,
     order_adjustment_id,
+    adjustment_id,
     currency,
     type
 )

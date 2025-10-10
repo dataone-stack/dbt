@@ -299,6 +299,7 @@ SELECT
     ord.*,
     trans.order_statement_time,
     trans.order_adjustment_id,
+    trans.adjustment_id,
     case
         when order_type = "ZERO_LOTTERY"
         then trans.total_settlement_amount
