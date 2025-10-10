@@ -126,7 +126,7 @@ SELECT
     giam_gia_san,
     seller_tro_gia,
     san_tro_gia,
-    tong_phi_san * -1,
+    tong_phi_san, --Số âm sẵn rồi
     CAST(ma_don_hang AS string) AS ma_don_hang,
     ngay_tao_don,
     sku_code,
