@@ -22,9 +22,9 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily
-  FROM {{ref("t1_tiktok_order_tot")}} o
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.shop,
@@ -57,9 +57,9 @@ ReturnLineItems AS (
         WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
         ELSE null
     END AS Cancelation_Return_Type
-  FROM {{ref("t1_tiktok_order_return")}} r
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_return` r
   CROSS JOIN UNNEST(r.return_line_items) AS li
-  left join {{ref("t1_bang_gia_san_pham")}} AS mapping on json_value(li,'$.seller_sku') = mapping.ma_sku
+  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping on json_value(li,'$.seller_sku') = mapping.ma_sku
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
 
@@ -174,14 +174,14 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN {{ref("t1_tiktok_order_tot")}} o
+  JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
     ON li.order_id = o.order_id
     AND li.brand = o.brand
   LEFT JOIN ReturnLineItems r
     ON li.order_id = r.order_id
     AND li.SKU_ID = r.SKU_ID
     and li.brand = r.brand
-    left join {{ref("t1_bang_gia_san_pham")}} AS mapping on li.Seller_SKU = mapping.ma_sku
+    left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping on li.Seller_SKU = mapping.ma_sku
 ),
 
 OrderTotal as (
@@ -279,33 +279,43 @@ SELECT
 END AS status,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
-)
-
+),
+a as (
 SELECT
     ord.*,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0) AS phi_van_chuyen_thuc_te,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) AS phi_van_chuyen_tro_gia_tu_san,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee * -1, 0) AS phi_thanh_toan,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee * -1, 0) AS phi_hoa_hong_shop,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission * -1, 0) AS phi_hoa_hong_tiep_thi_lien_ket,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission * -1, 0) AS phi_hoa_hong_quang_cao_cua_hang,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee * -1, 0) AS phi_dich_vu,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0) AS phi_thanh_toan,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) AS phi_hoa_hong_shop,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0) AS phi_hoa_hong_tiep_thi_lien_ket,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0) AS phi_hoa_hong_quang_cao_cua_hang,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) AS phi_dich_vu,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS phi_ship,
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee  * -1, 0) as phi_xtra,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as phi_xtra,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) as thue_gtgt,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) as thue_tncn,
+
     0 as voucher_from_seller,
     0 as phi_co_dinh,
     gia_san_pham_goc_total - seller_tro_gia - san_tro_gia -  COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
 
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee * -1, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee * -1, 0) as tong_phi_san
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0)+
+    
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee , 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission , 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0)+
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) as tong_phi_san
 
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
-LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+
+)
+
+select * from a
