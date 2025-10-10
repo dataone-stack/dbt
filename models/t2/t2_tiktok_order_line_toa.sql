@@ -22,9 +22,9 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
+  FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
+  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.shop,
@@ -57,9 +57,9 @@ ReturnLineItems AS (
         WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
         ELSE null
     END AS Cancelation_Return_Type
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_return` r
+  FROM {{ref("t1_tiktok_order_return")}} r
   CROSS JOIN UNNEST(r.return_line_items) AS li
-  left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping on json_value(li,'$.seller_sku') = mapping.ma_sku
+  left join {{ref("t1_bang_gia_san_pham")}} AS mapping on json_value(li,'$.seller_sku') = mapping.ma_sku
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
 
@@ -174,14 +174,14 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
+  JOIN {{ref("t1_tiktok_order_tot")}} o
     ON li.order_id = o.order_id
     AND li.brand = o.brand
   LEFT JOIN ReturnLineItems r
     ON li.order_id = r.order_id
     AND li.SKU_ID = r.SKU_ID
     and li.brand = r.brand
-    left join `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping on li.Seller_SKU = mapping.ma_sku
+    left join {{ref("t1_bang_gia_san_pham")}} AS mapping on li.Seller_SKU = mapping.ma_sku
 ),
 
 OrderTotal as (
@@ -314,7 +314,7 @@ SELECT
 
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 
 )
 

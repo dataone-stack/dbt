@@ -23,9 +23,9 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily,
     cost_price.cost_price as gia_von
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
+  FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
+  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku --and o.brand = mapping.brand
   left join `google_sheet.bang_gia_von` as cost_price on JSON_VALUE(li, '$.seller_sku') = cost_price.product_sku
   GROUP BY
@@ -61,7 +61,7 @@ ReturnLineItems AS (
         WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
         ELSE null
     END AS Cancelation_Return_Type
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_return` r
+  FROM {{ref("t1_tiktok_order_return")}} r
   CROSS JOIN UNNEST(r.return_line_items) AS li
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
@@ -180,7 +180,7 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
+  JOIN {{ref("t1_tiktok_order_tot")}} o
     ON li.order_id = o.order_id
     AND li.brand = o.brand
   LEFT JOIN ReturnLineItems r
@@ -316,6 +316,8 @@ SELECT
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) AS phi_dich_vu,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS phi_ship,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as phi_xtra,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) as thue_gtgt,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) as thue_tncn,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
     gia_san_pham_goc_total - seller_tro_gia - san_tro_gia -  COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
@@ -328,11 +330,13 @@ SELECT
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0)+
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)+
-    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0)as tong_phi_san,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) +
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) +
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) as tong_phi_san,
 
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
-LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 -- where trans.type <>"LOGISTICS_REIMBURSEMENT"
 )
 

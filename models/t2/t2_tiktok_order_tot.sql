@@ -22,9 +22,9 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily,
     sum(cost_price.cost_price) as cost_price
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
+  FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
-  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping
+  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   left join `google_sheet.bang_gia_von` as cost_price on JSON_VALUE(li, '$.seller_sku') = cost_price.product_sku
   GROUP BY
@@ -58,9 +58,9 @@ ReturnLineItems AS (
         WHEN 'RETURN_OR_REFUND_REQUEST_COMPLETE' THEN 'return_refund'
         ELSE null
     END AS Cancelation_Return_Type
-  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_return` r
+  FROM {{ref("t1_tiktok_order_return")}} r
   CROSS JOIN UNNEST(r.return_line_items) AS li
-  left join  `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping 
+  left join {{ref("t1_bang_gia_san_pham")}} AS mapping 
   on json_value(li,'$.seller_sku') = mapping.ma_sku
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 )
@@ -195,13 +195,13 @@ OrderData AS (
     'Unchecked' AS Checked_Status,
     NULL AS Checked_Marked_by
   FROM LineItems li
-  JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` o
+  JOIN {{ref("t1_tiktok_order_tot")}} o
     ON li.order_id = o.order_id
   LEFT JOIN ReturnLineItems r
     ON li.order_id = r.order_id
     AND li.SKU_ID = r.SKU_ID
     and li.brand = r.brand
-  left join  `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` as mapping on
+  left join {{ref("t1_bang_gia_san_pham")}} as mapping on
   li.Seller_SKU = mapping.ma_sku
 )
 --select * from OrderData where Order_ID = 579785176962401968
@@ -336,7 +336,7 @@ a AS (
         
         -- (trans.transaction_fee + trans.tiktok_shop_commission_fee  + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.customer_shipping_fee + trans.voucher_xtra_service_fee) as phu_phi
         trans.total_revenue - trans.total_settlement_amount as phu_phi
-   FROM `dtm.t2_tiktok_brand_statement_transaction_order_tot` AS trans
+   FROM {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} AS trans
     LEFT JOIN  order_total AS ord 
         ON ord.ma_don_hang = trans.order_adjustment_id
         -- AND ord.brand = trans.brand
