@@ -95,14 +95,18 @@ orderline AS (
         -- Nhân sự liên quan
         CASE 
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
-            ELSE mar.marketing_name
+            ELSE COALESCE(mar.marketing_name, ord.marketing_display_name)
         END AS marketing_name,
-    
+
+        CASE 
+            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN 'admin'
+            ELSE COALESCE(ord.marketing_user_name, mar.marketer_name)
+        END AS marketing_user_name,
         mar.ma_nhan_vien,
+
+
         COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly) AS ma_quan_ly,
         COALESCE(mar.manager, mar2.manager) AS manager,
-
-        ord.marketing_user_name,
         ord.sale_display_name AS sale_name,
         ord.sale_user_name AS sale_user_name,
 
