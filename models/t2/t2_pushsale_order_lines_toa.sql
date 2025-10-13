@@ -130,7 +130,7 @@ orderline AS (
         ord.time_take_care_work AS care_don,
         ord.note_accountant AS ghi_chu_ke_toan,
         '-' AS ngay_muon_nhan_hang,
-        
+
         -- Nhân sự liên quan
         CASE 
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
@@ -142,13 +142,6 @@ orderline AS (
             ELSE COALESCE(ord.marketing_user_name, mar.marketer_name)
         END AS ma_nhan_vien,
 
-        -- Nhân sự liên quan
-        CASE 
-            WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn vị'
-            ELSE mar.marketing_name
-        END AS marketing_name,
-    
-        mar.ma_nhan_vien,
         COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly) AS ma_quan_ly,
         COALESCE(mar.manager, mar2.manager) AS manager,
 
