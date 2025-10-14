@@ -10,7 +10,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.nametkqc,
         COALESCE(campaign_team.brand, tkqc.brand) as brand,
         CASE 
-            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Mâm Xôi'
+            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Cà Phê Mâm Xôi'
             ELSE COALESCE(campaign_team.brand, tkqc.brand)
         END AS brand_lv1,
         tkqc.channel,
@@ -56,7 +56,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
         COALESCE(campaign_team.brand, tkqc.brand),
         CASE 
-            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Mâm Xôi'
+            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Cà Phê Mâm Xôi' 
             ELSE COALESCE(campaign_team.brand, tkqc.brand)
         END,
         tkqc.channel,
