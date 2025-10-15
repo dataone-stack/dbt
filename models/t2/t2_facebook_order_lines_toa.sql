@@ -8,13 +8,24 @@ with total_price as (
   from {{ref("t1_pancake_pos_order_total")}}
   group by id,brand,company,json_value(customer, '$.name')
 )
-
+,order_marketer_fix AS (
+  SELECT 
+    od.*,
+    CASE
+      WHEN od.marketer IS NULL THEN 'NULL'
+      WHEN JSON_VALUE(od.marketer, '$.name') NOT IN (
+        SELECT DISTINCT marketer_name FROM {{ref("t1_marketer_facebook_total")}}
+      ) THEN 'NULL'
+      ELSE JSON_VALUE(od.marketer, '$.name')
+    END AS marketer_fixed
+  FROM {{ref("t1_pancake_pos_order_total")}} AS od
+)
 ,
 order_line as (
   select
     ord.id,
     ord.brand,
-    ord.company,
+    coalesce(mapBangGia.company_lv1, ord.company) as company,
     ord.inserted_at,
     ord.status_name,
     ord.note_print,
@@ -80,10 +91,13 @@ order_line as (
     tt.customer_name,
     mapBangGia.gia_ban_daily,
     mapBangGia.brand_lv1,
-  from {{ref("t1_pancake_pos_order_total")}} as ord,
+    mar.manager,
+    mar.marketing_name
+  from order_marketer_fix as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
+  left join {{ref("t1_marketer_facebook_total")}} mar on json_value(ord.marketer,'$.name') = mar.marketer_name and ord.brand = mar.brand
   where ord.order_sources_name not in ('Tiktok', 'Shopee') and ord.status_name not in ('removed')
 )
 
@@ -178,7 +192,9 @@ order_line as (
   when brand in ('Chaching Beauty','An Cung')or gia_goc = 0
   then ((gia_sp_sau_giam_gia * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) 
   else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) 
-  end AS doanh_thu_ke_toan
+  end AS doanh_thu_ke_toan,
+  manager,
+  marketing_name
 from order_line
 
 ),

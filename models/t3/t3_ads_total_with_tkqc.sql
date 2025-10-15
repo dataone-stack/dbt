@@ -9,10 +9,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.idtkqc,
         tkqc.nametkqc,
         COALESCE(campaign_team.brand, tkqc.brand) as brand,
-        CASE 
-            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Cà Phê Mâm Xôi'
-            ELSE COALESCE(campaign_team.brand, tkqc.brand)
-        END AS brand_lv1,
+        COALESCE(campaign_team.brand, tkqc.brand) AS brand_lv1,
         tkqc.channel,
         ads.currency,
         tkqc.company,
@@ -55,10 +52,7 @@ WITH ads_total_with_tkqc AS (
         COALESCE(campaign_team.manager, tkqc.manager),
         COALESCE(campaign_team.manager_code, tkqc.ma_quan_ly),
         COALESCE(campaign_team.brand, tkqc.brand),
-        CASE 
-            WHEN COALESCE(campaign_team.brand, tkqc.brand) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Cà Phê Mâm Xôi' 
-            ELSE COALESCE(campaign_team.brand, tkqc.brand)
-        END,
+        COALESCE(campaign_team.brand, tkqc.brand),
         tkqc.channel,
         ads.revenue_type,
         ads.currency,
@@ -144,11 +138,7 @@ ads_extended AS (
         COALESCE(ads.ma_quan_ly, ladi.ma_quan_ly) as ma_quan_ly,
         COALESCE(ads.brand, ladi.brand) as brand,
         --Brand cho báo cáo ME
-        CASE 
-            WHEN COALESCE(ads.brand, ladi.brand_lv1) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm Xôi'
-            ELSE COALESCE(ads.brand, ladi.brand_lv1)
-        END AS brand_lv1,
-
+        COALESCE(ads.brand, ladi.brand_lv1) AS brand_lv1,
         COALESCE(ads.channel, ladi.channel) as channel,
         ads.currency,
         COALESCE(ads.company, ladi.company) as company,

@@ -41,17 +41,17 @@ orderline AS (
             COALESCE(ord.delivery_province_name, '')
         ) AS dia_chi,
         ord.delivery_province_name AS tinh_giao_hang,
-        
-        -- CASE
-        --     WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách cũ'
-        --     WHEN ord.reason_to_create = 'FOR_TAKE_CARE' OR ord.reason_to_create = 'FROM_OLD' OR ord.reason_to_create = 'TAKECARE' OR ord.reason_to_create = 'OLD_ORDER' THEN 'Khách cũ'
-        --     ELSE 'Khách mới'
+
+        -- CASE 
+        --     WHEN ord.customer_type = 0 THEN 'Khách mới'
+        --     WHEN ord.customer_type = 1 THEN 'Khách cũ'
+        --     ELSE 'Không xác định'
         -- END AS loai_khach_hang,
 
-        CASE 
-            WHEN ord.customer_type = 0 THEN 'Khách mới'
-            WHEN ord.customer_type = 1 THEN 'Khách cũ'
-            ELSE 'Không xác định'
+        CASE
+            WHEN LOWER(ord.source_name) LIKE '%khách cũ%' THEN 'Khách cũ'
+            WHEN ord.reason_to_create IN ('FOR_TAKE_CARE', 'FROM_OLD', 'OLD_ORDER', 'TAKECARE') THEN 'Khách cũ'
+            ELSE 'Khách mới'
         END AS loai_khach_hang,
 
         CASE

@@ -1,6 +1,6 @@
 SELECT 
-    '-' as manager,
-    '-' AS marketing_name,
+    manager,
+    marketing_name,
     "Shop Facebook" as shop,
     brand,
     brand_lv1,
