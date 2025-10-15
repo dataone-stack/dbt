@@ -44,7 +44,8 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id'),
     mapping.gia_ban_daily,
-    mapping.brand_lv1
+    mapping.brand_lv1,
+    mapping.san_pham
 ),
 
 ReturnLineItems AS (
