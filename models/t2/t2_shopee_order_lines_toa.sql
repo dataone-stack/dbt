@@ -58,7 +58,8 @@ total_amount AS (
         THEN i.item_sku
     ELSE i.model_sku
   END as sku,
-    i.item_name,
+    --i.item_name,
+    mapping.san_pham as item_name,
     i.model_name,
     i.quantity_purchased,
     i.original_price,

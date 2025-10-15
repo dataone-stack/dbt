@@ -56,7 +56,8 @@ orderline AS (
 
         -- Sản phẩm cụ thể
         dt.item_code AS sku,
-        dt.item_name AS san_pham,
+        --dt.item_name AS san_pham,
+        bangGia.san_pham,
         dt.quantity AS so_luong,
 
         CASE 
