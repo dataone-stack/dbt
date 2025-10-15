@@ -21,6 +21,7 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64) AS SKU_Refund_Amount,
     JSON_VALUE(li, '$.package_id') AS Package_ID,
     mapping.gia_ban_daily AS Gia_Ban_Daily,
+    mapping.company_lv1,
     sum(cost_price.cost_price) as cost_price
   FROM {{ref("t1_tiktok_order_tot")}} o
   CROSS JOIN UNNEST(o.line_items) AS li
@@ -42,7 +43,8 @@ WITH LineItems AS (
     CAST(JSON_VALUE(li, '$.original_price') AS FLOAT64),
     CAST(JSON_VALUE(li, '$.sale_price') AS FLOAT64),
     JSON_VALUE(li, '$.package_id'),
-    mapping.gia_ban_daily
+    mapping.gia_ban_daily,
+    mapping.company_lv1
 )
 --select * from LineItems where Order_ID = 579785176962401968
 ,
@@ -71,6 +73,7 @@ OrderData AS (
   SELECT
     li.brand,
     li.company,
+    li.company_lv1,
     li.order_id AS Order_ID,
     CASE o.order_status
       WHEN 'CANCELLED' THEN 'Canceled'
@@ -212,6 +215,7 @@ SELECT
   brand,
   brand as brand_lv1,
   company,
+  company_lv1,
   Order_ID as ma_don_hang,
   Order_Status,
   Order_Substatus,
@@ -299,6 +303,7 @@ order_total AS (
         brand,
         brand as brand_lv1,
         company,
+        company_lv1,
         ma_don_hang,
         Order_Status,
         ngay_tao_don,
@@ -313,6 +318,7 @@ order_total AS (
     GROUP BY
         brand,
         brand_lv1,
+        company_lv1,
         company,
         ma_don_hang,
         Order_Status,

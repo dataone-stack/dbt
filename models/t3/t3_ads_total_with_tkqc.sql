@@ -13,6 +13,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.channel,
         ads.currency,
         tkqc.company,
+        tkqc.company_lv1,
         tkqc.ben_thue,
         tkqc.dau_the,
         MAX(tkqc.phi_thue) as phi_thue,
@@ -33,13 +34,13 @@ WITH ads_total_with_tkqc AS (
             currency,
             spend,
             doanhThuAds
-        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total`
+        FROM {{ref("t2_ads_total")}}
     ) AS ads
-    RIGHT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tkqc_total` AS tkqc
+    RIGHT JOIN {{ref("t2_tkqc_total")}} AS tkqc
         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
         AND DATE(ads.date_start) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
-    LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_ads_campaign_by_team` AS campaign_team
+    LEFT JOIN {{ref("t1_ads_campaign_by_team")}} AS campaign_team
         ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
         AND ads.account_id = campaign_team.account_id
         AND tkqc.end_date <= DATE('2025-08-31')
@@ -59,6 +60,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.company,
         tkqc.ben_thue,
         tkqc.phi_thue,
+        tkqc.company_lv1,
         tkqc.dau_the,
         campaign_team.brand,
         tkqc.brand
@@ -97,6 +99,7 @@ ladi_unmatched AS (
         ladi.channel AS channel,
         '' AS currency,
         ladi.company AS company,
+        one.company_lv1,
         'build' AS ben_thue,
         NULL AS dau_the,
         NULL AS phi_thue,
@@ -104,6 +107,7 @@ ladi_unmatched AS (
         0 AS doanhThuAds,
         0 AS chi_phi_agency
     FROM ladipage_total AS ladi
+    left join {{ref("t1_one_mapping_company")}} one on ladi.brand_lv1 = one.new_brand
     WHERE NOT EXISTS (
         SELECT 1
         FROM ads_total_with_tkqc AS ads
@@ -142,6 +146,7 @@ ads_extended AS (
         COALESCE(ads.channel, ladi.channel) as channel,
         ads.currency,
         COALESCE(ads.company, ladi.company) as company,
+        ads.company_lv1,
         ads.ben_thue,
         ads.dau_the,
         ads.phi_thue,
@@ -241,6 +246,7 @@ SELECT
         ELSE ads.revenue_type
     END AS loaiDoanhThu,
     ads.company,
+    ads.company_lv1,
     ads.ben_thue,
     ads.phi_thue,
     ads.dau_the,

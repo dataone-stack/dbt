@@ -63,6 +63,7 @@ orderline AS (
         dt.item_code AS sku,
         --dt.item_name AS san_pham,
         bangGia.san_pham ,
+        
         dt.quantity AS so_luong,
         -- dt.price AS don_gia,
 
@@ -208,6 +209,7 @@ orderline AS (
         
         bangGia.brand,
         bangGia.brand_lv1,
+        bangGia.company_lv1,
         'Max Eagle' AS company,
         CASE 
             WHEN (source.channel IS NULL OR source.channel = '') THEN 'Facebook'

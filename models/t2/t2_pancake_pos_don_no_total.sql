@@ -125,6 +125,7 @@ WHERE EXISTS (
     tt.province,
     tt.commune,
     mapBangGia.gia_ban_daily,
+    mapBangGia.company_lv1,
     -- Flag thiếu hàng dựa trên added_to_cart_quantity
     case
       when json_value(item,'$.added_to_cart_quantity') = '0'
@@ -144,6 +145,7 @@ select
   DATETIME_ADD(updated_at, INTERVAL 7 HOUR) as ngay_hoan_thanh,
   brand,
   company,
+  company_lv1,
   customer_name,
   order_sources_name as channel,
   con_thieu,

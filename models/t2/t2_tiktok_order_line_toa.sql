@@ -3,6 +3,7 @@ WITH LineItems AS (
   o.shop,
     mapping.brand,
     mapping.brand_lv1,
+    mapping.company_lv1,
     o.company,
     o.order_id,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
@@ -45,7 +46,8 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.package_id'),
     mapping.gia_ban_daily,
     mapping.brand_lv1,
-    mapping.san_pham
+    mapping.san_pham,
+    mapping.company_lv1
 ),
 
 ReturnLineItems AS (
@@ -70,6 +72,7 @@ OrderData AS (
     li.shop,
     mapping.brand,
     mapping.brand_lv1,
+    mapping.company_lv1,
     li.company,
     li.order_id AS Order_ID,
     CASE o.order_status
@@ -202,6 +205,7 @@ SELECT
   shop,
   brand,
   brand_lv1,
+  company_lv1,
   company,
   Order_ID as ma_don_hang,
   Order_Status,
