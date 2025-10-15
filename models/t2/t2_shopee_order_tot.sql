@@ -22,6 +22,7 @@ order_product_summary AS (
     f.order_id,
     f.brand,
     mapping.brand_lv1,
+    mapping.company_lv1,
     -- rd.status as status_return,
     SUM(COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)) AS gia_ban_daily_total,
     SUM(
@@ -51,7 +52,7 @@ order_product_summary AS (
       ELSE trim(i.model_sku) 
     END = trim(cost_price.product_sku)
   LEFT JOIN return_detail rd ON f.order_id = rd.order_id AND i.model_sku = rd.variation_sku and f.brand = rd.brand and rd.status = 'ACCEPTED'
-  GROUP BY f.order_id, f.brand, mapping.brand_lv1
+  GROUP BY f.order_id, f.brand, mapping.brand_lv1,mapping.company_lv1
 )
 
 -- select * from order_product_summary where order_id ="250728BU40UX1A"
@@ -60,6 +61,7 @@ order_product_summary AS (
 SELECT 
     f.brand,
     ops.brand_lv1,
+    ops.company_lv1,
     f.company,
     CASE
     -- WHEN LOWER(ops.status_return) = 'accepted' THEN 'Đã hoàn'

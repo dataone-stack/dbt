@@ -206,13 +206,14 @@ WITH ads_daily AS (
     -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
+    company_lv1,
     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads, -- Tổng chi phí quảng cáo, thay NULL bằng 0
     SUM(COALESCE(doanhThuAds, 0)) + SUM(COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads, -- Tổng doanh thu từ trình quảng cáo: doanh thu Ads + doanh thu từ Ladi
     SUM(COALESCE(doanhThuAds, 0)) AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0)) AS doanhThuLadi,
   FROM {{ ref("t3_ads_total_with_tkqc") }}
   WHERE chiPhiAds IS NOT NULL
-  GROUP BY date_start, brand, channel,company
+  GROUP BY date_start, brand, channel,company,company_lv1
 ),
 --CTE cir_max_monthly tính toán trung bình chỉ số cir_max
 cir_max_monthly AS (
@@ -243,6 +244,7 @@ revenue_toa AS (
         brand,
         -- brand_lv1,
         company,
+        company_lv1,
         channel,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_toa,
         SUM(tien_chiet_khau_sp ) AS tien_chiet_khau_sp_toa,
@@ -252,7 +254,7 @@ revenue_toa AS (
 
     FROM {{ ref('t3_revenue_all_channel') }}
  --status NOT IN  ('Đã hủy')
-    GROUP BY DATE(ngay_tao_don), brand, channel, company --,ten_san_pham,sku_code
+    GROUP BY DATE(ngay_tao_don), brand, channel, company ,company_lv1--,ten_san_pham,sku_code
 ),
 -- CTE revenue_tot tổng hợp doanh thu
 revenue_tot AS (
@@ -261,6 +263,7 @@ revenue_tot AS (
     -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
+    company_lv1,
     FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
     
 -- Loại bỏ các đơn hàng có tổng_amount nhỏ hơn 60,000
@@ -301,13 +304,14 @@ revenue_tot AS (
     SUM(phu_phi) as phu_phi
   FROM {{ ref("t3_revenue_all_channel_tot") }}
   WHERE date_create IS NOT NULL
-  GROUP BY date_start, brand, channel, company
+  GROUP BY date_start, brand, channel, company,company_lv1
 )
 select
     coalesce(a.date_start, cast(r_tot.date_start as date), cast(r_toa.date_start as date)) as date_start,
     coalesce(a.brand, r_tot.brand, r_toa.brand) as brand,
     coalesce(a.channel, r_tot.channel, r_toa.channel) as channel,
     coalesce(a.company, r_tot.company , r_toa.company) as company,
+    coalesce(a.company_lv1, r_tot.company_lv1 , r_toa.company_lv1) as company_lv1,
     coalesce(a.chi_phi_ads, 0) as chi_phi_ads,
     coalesce(a.doanh_thu_trinh_ads, 0) as doanh_thu_trinh_ads,
     coalesce(a.doanhthuads, 0) as doanhthuads,
@@ -326,7 +330,7 @@ select
     r_toa.tien_chiet_khau_sp_toa,
     r_toa.gia_san_pham_goc_total_toa,
     r_toa.gia_ban_daily_total_toa,
-    r_toa.tien_khach_hang_thanh_toan_toa,
+    r_toa.tien_khach_hang_thanh_toan_toa
 
 from revenue_tot r_tot
 full outer join 

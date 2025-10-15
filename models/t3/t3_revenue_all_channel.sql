@@ -6,6 +6,7 @@ SELECT
     brand_lv1,
     status as status,
     company,
+    company_lv1,
 
     phi_van_chuyen_thuc_te,
     phi_van_chuyen_tro_gia_tu_san,
@@ -56,6 +57,7 @@ SELECT
     shop.brand_lv1,
     shop.status,
     shop.company,
+    shop.company_lv1,
     phi_van_chuyen_thuc_te,
     phi_van_chuyen_tro_gia_tu_san,
     phi_thanh_toan,
@@ -108,7 +110,7 @@ SELECT
     shop.brand_lv1,
     shop.status,
     shop.company,
-
+    shop.company_lv1,
     phi_van_chuyen_thuc_te,
     phi_van_chuyen_tro_gia_tu_san,
     phi_thanh_toan * -1,
@@ -161,7 +163,7 @@ SELECT
     brand_lv1,
     trang_thai_don_hang as status,
     company,
-
+    company_lv1,
     phi_van_chuyen_thuc_te,
     phi_van_chuyen_tro_gia_tu_san,
     phi_thanh_toan,

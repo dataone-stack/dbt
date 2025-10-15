@@ -75,7 +75,7 @@ SELECT
   aff.brand,
   aff.shop,
   aff.company,
-
+bg.company_lv1,
   vid.title
 FROM {{ref("t1_tiktok_affiliate_order_total")}} AS aff
 

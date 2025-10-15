@@ -40,6 +40,7 @@ total_amount AS (
     detail.buyer_user_name ,
     mapping.brand,
     mapping.brand_lv1,
+    mapping.company_lv1,
     detail.company,
     detail.buyer_paid_shipping_fee ,
     detail.commission_fee ,
@@ -96,6 +97,7 @@ total_amount AS (
     ord.buyer_cancel_reason,
     mapping.brand,
     mapping.brand_lv1,
+    mapping.company_lv1,
     ord.days_to_ship
   from {{ ref('t1_shopee_shop_order_detail_total') }} as ord, 
   unnest (item_list) as i
@@ -114,6 +116,7 @@ total_amount AS (
     detail.buyer_user_name AS ten_nguoi_mua,
     detail.brand,
     detail.brand_lv1,
+    detail.company_lv1,
     detail.company,
     detail.model_sku,
     detail.item_sku,
@@ -180,6 +183,7 @@ SELECT
   ten_nguoi_mua,
   brand,
   brand_lv1,
+  company_lv1,
   company,
   ngay_return,
   ngay_tien_ve_vi,
