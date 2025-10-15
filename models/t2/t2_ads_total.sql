@@ -138,11 +138,15 @@ union all
 
 select 
   date_start,
-  'nguong_an' AS account_id,
+  cast(idtkqc as string) AS account_id,
   0 as ad_id,
   '-' as campaign_id,
   "" as campaign_name,
-  cast(chiPhi as float64)  as spend,
+  case
+  when cast(idtkqc as string) in ('1271178195','4142173605','9451868664')
+  then cast(chiPhi as float64)
+  else cast(chiPhi * 26700 as float64)
+  end as spend,
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
   '-' AS currency

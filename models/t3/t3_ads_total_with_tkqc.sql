@@ -145,7 +145,7 @@ ads_extended AS (
         COALESCE(ads.brand, ladi.brand) as brand,
         --Brand cho báo cáo ME
         CASE 
-            WHEN COALESCE(ads.brand, ladi.brand_lv1) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH')  THEN 'Mâm Xôi'
+            WHEN COALESCE(ads.brand, ladi.brand_lv1) IN ('Cà Phê Mâm Xôi','MEG','NATURAL HEALTH') THEN 'Cà Phê Mâm Xôi' 
             ELSE COALESCE(ads.brand, ladi.brand_lv1)
         END AS brand_lv1,
 
