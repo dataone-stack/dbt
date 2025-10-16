@@ -35,9 +35,11 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.transaction_fee_amount') AS FLOAT64) AS `transaction_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(supplementary_component, '$.fbm_shipping_cost_amount') AS FLOAT64) AS `seller_shipping_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.actual_shipping_fee_amount') AS FLOAT64) AS `actual_shipping_fee`,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.refunded_customer_shipping_fee_amount') AS FLOAT64) AS `refunded_customer_shipping_fee_amount`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.platform_shipping_fee_discount_amount') AS FLOAT64) AS `platform_shipping_fee_discount`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.customer_paid_shipping_fee_amount') AS FLOAT64) AS `customer_shipping_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(supplementary_component, '$.retail_delivery_fee_refund_amount') AS FLOAT64) AS `refund_customer_shipping_fee`,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(supplementary_component, '$.failed_delivery_subsidy_amount') AS FLOAT64) AS `failed_delivery_subsidy_amount`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.return_shipping_fee_amount') AS FLOAT64) AS `actual_return_shipping_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.platform_commission_amount') AS FLOAT64) AS `tiktok_shop_commission_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.shipping_fee_subsidy_amount') AS FLOAT64) AS `shipping_fee_subsidy`,
@@ -67,7 +69,12 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(supplementary_component, '$.platform_cofunded_discount_refund_amount') AS FLOAT64) AS `refund_of_platform_co_funded_voucher_discounts`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.seller_shipping_fee_discount_amount') AS FLOAT64) AS `seller_shipping_fee_discount`,
     NULL AS `estimated_package_weight`,
-    NULL AS `actual_package_weight`
+    NULL AS `actual_package_weight`,
+
+
+
+
+
 FROM {{ref("t1_tiktok_brand_statement_transaction_order_tot")}}  WHERE DATE(TIMESTAMP(order_create_time)) >= '2024-03-01' 
 )
 ,a as(
@@ -85,15 +92,23 @@ SELECT
     SUM(COALESCE(actual_shipping_fee, 0)) AS actual_shipping_fee,
     SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
     SUM(COALESCE(transaction_fee, 0)) AS transaction_fee,
+    SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
+    
     SUM(COALESCE(tiktok_shop_commission_fee, 0)) AS tiktok_shop_commission_fee,
+    SUM(COALESCE(shipping_cost_amount, 0)) AS shipping_cost_amount,
     SUM(COALESCE(affiliate_commission, 0)) AS affiliate_commission,
     SUM(COALESCE(affiliate_shop_ads_commission, 0)) AS affiliate_shop_ads_commission,
+    SUM(COALESCE(affiliate_partner_commission, 0)) AS affiliate_partner_commission,
     SUM(COALESCE(sfp_service_fee, 0)) AS sfp_service_fee,
-    SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
     SUM(COALESCE(voucher_xtra_service_fee, 0)) AS voucher_xtra_service_fee,
-    SUM(COALESCE(shipping_cost_amount, 0)) AS shipping_cost_amount,
     SUM(COALESCE(vat_withheld_by_tiktok_shop, 0)) AS vat_amount,
-    SUM(COALESCE(pit_withheld_by_tiktok_shop, 0)) AS pit_amount
+    SUM(COALESCE(pit_withheld_by_tiktok_shop, 0)) AS pit_amount,
+    SUM(COALESCE(actual_return_shipping_fee, 0)) AS actual_return_shipping_fee,
+    SUM(COALESCE(failed_delivery_subsidy_amount, 0)) AS failed_delivery_subsidy_amount,
+    SUM(COALESCE(customer_refund, 0)) AS customer_refund,
+    SUM(COALESCE(refunded_customer_shipping_fee_amount, 0)) AS refunded_customer_shipping_fee_amount
+
+
 FROM transactions
 GROUP BY 
     brand,
