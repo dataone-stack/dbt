@@ -59,7 +59,7 @@ total_amount AS (
         THEN i.item_sku
     ELSE i.model_sku
   END as sku,
-    --i.item_name,
+    i.item_name as ten_sp_nguon,
     mapping.san_pham as item_name,
     i.model_name,
     i.quantity_purchased,
@@ -122,6 +122,7 @@ total_amount AS (
     detail.item_sku,
     detail.sku,
     detail.item_name,
+    detail.ten_sp_nguon,
     detail.model_name,
     detail.quantity_purchased,
     safe_divide(detail.original_price,detail.quantity_purchased) AS gia_san_pham_goc,
@@ -195,6 +196,7 @@ SELECT
   order_status,
   order_id as ma_don_hang,
   item_name as ten_san_pham,
+  ten_sp_nguon,
   model_name,
     CASE 
         -- Case 1: With parentheses, e.g., "Trắng,XS (dưới 50kg)" or "Den,S (50kg-60kg)"
