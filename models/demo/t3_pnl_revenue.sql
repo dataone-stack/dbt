@@ -46,7 +46,7 @@ SELECT
     gia_ban_daily_total,
     tien_chiet_khau_sp_shopee as tien_chiet_khau_sp_tot,
     -- gia_san_pham_goc_total,
-    phu_phi *-1 as phu_phi,
+    tong_chi_phi *-1 as phu_phi,
     doanh_thu_ke_toan as doanh_thu_ke_toan,
     doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
@@ -82,7 +82,7 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel,
-    phi_van_chuyen_thuc_te * -1 as phi_van_chuyen_thuc_te,
+    0 as phi_van_chuyen_thuc_te,
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`

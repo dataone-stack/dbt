@@ -24,6 +24,13 @@ with aff_info as (
 )
 , order_line as (
 SELECT
+    JSON_VALUE(
+    (SELECT value 
+     FROM UNNEST(JSON_QUERY_ARRAY(ord.recipient_address, '$.district_info')) AS value
+     WHERE JSON_VALUE(value, '$.address_level') = 'L1'
+    ), 
+    '$.address_name'
+  ) AS city_name,
   aff.order_id as id_don_hang,
   json_value(item,'$.product_id') as id_san_pham,
   bg.san_pham as ten_san_pham,

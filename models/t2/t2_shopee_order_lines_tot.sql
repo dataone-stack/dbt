@@ -288,6 +288,32 @@ SELECT
         ELSE (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount) * -1
     END AS phu_phi,
     
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount)
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.commission_fee * -1) +
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.service_fee * -1) +
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.seller_transaction_fee * -1) +
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.order_ams_commission_fee * -1) + 
+
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.buyer_paid_shipping_fee) + 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.shopee_shipping_rebate) + 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.actual_shipping_fee * -1) + 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.reverse_shipping_fee * -1) + 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.final_return_to_seller_shipping_fee * -1) + 
+            
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_vat_tax * -1) + 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_pit_tax * -1) 
+        
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN 
+            (f.commission_fee * -1) + (f.service_fee * -1) + (f.seller_transaction_fee * -1) + (f.order_ams_commission_fee * -1) + COALESCE(f.rsf_seller_protection_fee_claim_amount)* -1 + 
+            (f.buyer_paid_shipping_fee)  + (f.shopee_shipping_rebate)  + (f.actual_shipping_fee * -1)  + (f.reverse_shipping_fee * -1) + (f.final_return_to_seller_shipping_fee * -1) + (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
+        ELSE (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount) * -1
+    END AS tong_chi_phi,
+
     ops.gia_von,
     ops.promotion_type,
     
