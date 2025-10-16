@@ -31,6 +31,7 @@ SELECT
     ngay_tao_don,
     sku_code,
     ten_san_pham,
+    ten_sp_nguon,
     CAST(so_luong AS INT64) AS so_luong,
     
     status_dang_don,
@@ -81,6 +82,7 @@ SELECT
     ngay_tao_don,
     sku_code,
     ten_san_pham,
+    ten_sp_nguon,
     CAST(so_luong AS INT64) AS so_luong,
     shop.status as status_dang_don,
     gia_san_pham_goc,
@@ -133,6 +135,7 @@ SELECT
     ngay_tao_don,
     sku_code,
     ten_san_pham,
+    ten_sp_nguon,
     CAST(so_luong AS INT64) AS so_luong,
     shop.status as status_dang_don,
 
@@ -188,6 +191,7 @@ SELECT
     ngay_chot_don as ngay_tao_don,
     sku as sku_code,
     san_pham as ten_san_pham,
+    ten_sp_nguon,
     CAST(so_luong AS INT64) AS so_luong,
     trang_thai_don_hang as status_dang_don,
 
