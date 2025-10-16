@@ -2,7 +2,7 @@ WITH LineItems AS (
   SELECT
     o.brand,
     mapping.brand_lv1,
-    mapping.company_lv1,
+    -- mapping.company_lv1,
     o.order_id,
     o.company,
     o.shop,
@@ -47,7 +47,7 @@ WITH LineItems AS (
     JSON_VALUE(li, '$.package_id'),
     mapping.gia_ban_daily,
     mapping.brand_lv1,
-    mapping.company_lv1,
+    -- mapping.company_lv1,
     cost_price.cost_price
 ),
 
@@ -72,7 +72,7 @@ OrderData AS (
   SELECT
     li.brand,
     li.brand_lv1,
-    li.company_lv1,
+    -- li.company_lv1,
     li.shop,
     li.company,
     li.order_id AS Order_ID,
@@ -209,7 +209,7 @@ orderLine as(
 SELECT
   brand,
   brand_lv1,
-  company_lv1,
+--   company_lv1,
   shop,
   company,
   Order_ID as ma_don_hang,

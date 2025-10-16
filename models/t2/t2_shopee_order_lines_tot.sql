@@ -83,7 +83,7 @@ order_product_summary AS (
     f.order_id,
     f.brand,
     mapping.brand_lv1,
-    mapping.company_lv1,
+    -- mapping.company_lv1,
     CASE 
       WHEN i.model_sku = "" THEN i.item_sku
       ELSE i.model_sku  
@@ -156,7 +156,7 @@ a AS (
 SELECT 
     f.brand,
     ops.brand_lv1,
-    ops.company_lv1,
+    -- ops.company_lv1,
     f.company,
     f.shop,
     DATETIME_ADD(ord.ship_by_date, INTERVAL 7 HOUR) AS ngay_ship,

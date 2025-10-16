@@ -91,7 +91,7 @@ order_line as (
     tt.customer_name,
     mapBangGia.gia_ban_daily,
     mapBangGia.brand_lv1,
-    mapBangGia.company_lv1,
+    -- mapBangGia.company_lv1,
     mar.manager,
     mar.marketing_name
   from order_marketer_fix as ord,
@@ -109,7 +109,7 @@ order_line as (
   brand,
   brand_lv1,
   company,
-  company_lv1,
+--   company_lv1,
   customer_name,
   status_name,
   activated_promotion_advances,
