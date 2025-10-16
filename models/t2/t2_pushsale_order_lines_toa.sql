@@ -209,7 +209,7 @@ orderline AS (
         
         bangGia.brand,
         bangGia.brand_lv1,
-        bangGia.company_lv1,
+        -- bangGia.company_lv1,
         'Max Eagle' AS company,
         CASE 
             WHEN (source.channel IS NULL OR source.channel = '') THEN 'Facebook'
