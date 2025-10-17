@@ -181,7 +181,7 @@ SELECT
     tien_khach_hang_thanh_toan,
     tien_sp_sau_tro_gia,
     gia_dich_vu_vc as phi_ship,
-    giam_gia_san_pham as giam_gia_seller,
+    giam_gia_san_pham + chiet_khau as giam_gia_seller,
     0 as giam_gia_san,
     seller_tro_gia,
     san_tro_gia,
