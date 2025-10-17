@@ -52,7 +52,7 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Shopee' AS channel,
-    phi_van_chuyen_thuc_te,
+    0 as phi_van_chuyen_thuc_te,
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_shopee_order_lines_tot`
