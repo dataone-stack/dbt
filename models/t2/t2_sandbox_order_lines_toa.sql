@@ -99,18 +99,18 @@ orderline AS (
         ord.note_accountant AS ghi_chu_ke_toan,
         '-' AS ngay_muon_nhan_hang,
 
-        -- Nhân sự liên quan
+-- Nhân sự liên quan
         CASE 
             WHEN (ord.marketing_display_name IS NULL OR ord.marketing_display_name = '') THEN 'Admin Đơn Vị'
             ELSE COALESCE(mar.marketing_name, ord.marketing_display_name)
         END AS marketing_name,
 
         CASE 
-            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN 'admin'
+            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN CONCAT('admin', ord.team)
             ELSE COALESCE(ord.marketing_user_name, mar.marketer_name)
         END AS marketing_user_name,
         CASE 
-            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN 'admin'
+            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly)
             ELSE mar.ma_nhan_vien
         END AS ma_nhan_vien,
 

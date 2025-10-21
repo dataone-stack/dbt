@@ -140,11 +140,11 @@ orderline AS (
         END AS marketing_name,
 
         CASE 
-            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN 'admin'
+            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN CONCAT('admin', ord.team)
             ELSE COALESCE(ord.marketing_user_name, mar.marketer_name)
         END AS marketing_user_name,
         CASE 
-            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN 'admin'
+            WHEN (ord.marketing_user_name IS NULL OR ord.marketing_user_name = '') THEN COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly)
             ELSE mar.ma_nhan_vien
         END AS ma_nhan_vien,
 
