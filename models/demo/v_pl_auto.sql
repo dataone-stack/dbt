@@ -81,7 +81,6 @@ sku_count_per_order AS (
   FROM sku_revenue_for_allocation
   GROUP BY year, month, brand, company, channel, order_id
 ),
-
 chi_phi_ads_allocated AS (
   SELECT 
     s.year,
