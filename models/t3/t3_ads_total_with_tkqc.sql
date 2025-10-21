@@ -214,6 +214,7 @@ ads_extended AS (
     FULL OUTER JOIN ads_extended AS ads
         ON ladi.date_insert = ads.date_start
         AND ads.ma_nhan_vien = ladi.id_staff
+        AND ads.staff = ladi.staff_name
         AND ads.ma_quan_ly = ladi.ma_quan_ly
         AND ads.brand = ladi.brand
         AND ads.brand_lv1 = ladi.brand_lv1
