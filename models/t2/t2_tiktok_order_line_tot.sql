@@ -341,6 +341,13 @@ SELECT
                 COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) 
     end as tong_phi_san,
 
+    case
+        when order_type = "ZERO_LOTTERY"
+        then trans.vat_amount + trans.pit_amount
+        else COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) 
+    end as tax,
+
 
     -- COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0)+
     -- COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_cost_amount, 0)+
