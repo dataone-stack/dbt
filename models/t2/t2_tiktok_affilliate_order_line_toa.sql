@@ -19,18 +19,19 @@ with aff_info as (
         company,
         safe_divide(cast(json_value(skus[OFFSET(0)], '$.shop_ads_commission_rate') as int64),10000) as shop_ads_commission_rate,
         safe_divide(cast(json_value(skus[OFFSET(0)], '$.commission_rate') as int64),10000) as commission_rate
-    from {{ref("t1_tiktok_affiliate_order_total")}}
+    from `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_affiliate_order_total`
     where ARRAY_LENGTH(skus) > 0  -- <-- đảm bảo mảng có phần tử
 )
 , order_line as (
 SELECT
-    JSON_VALUE(
-    (SELECT value 
-     FROM UNNEST(JSON_QUERY_ARRAY(ord.recipient_address, '$.district_info')) AS value
-     WHERE JSON_VALUE(value, '$.address_level') = 'L1'
-    ), 
-    '$.address_name'
-  ) AS city_name,
+  --   JSON_VALUE(
+  --   (SELECT value 
+  --    FROM UNNEST(JSON_QUERY_ARRAY(ord.recipient_address, '$.district_info')) AS value
+  --    WHERE JSON_VALUE(value, '$.address_level') = 'L1'
+  --   ), 
+  --   '$.address_name'
+  -- ) AS city_name,
+  city.string_field_1 as city_name,
   aff.order_id as id_don_hang,
   json_value(item,'$.product_id') as id_san_pham,
   bg.san_pham as ten_san_pham,
@@ -84,9 +85,9 @@ SELECT
   aff.company,
 bg.company_lv1,
   vid.title
-FROM {{ref("t1_tiktok_affiliate_order_total")}} AS aff
+FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_affiliate_order_total` AS aff
 
-LEFT JOIN {{ref("t1_tiktok_order_tot")}} AS ord ON aff.order_id = ord.order_id 
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` AS ord ON aff.order_id = ord.order_id 
   AND aff.brand = ord.brand 
   AND aff.shop = ord.shop 
   AND aff.company = ord.company
@@ -94,10 +95,17 @@ LEFT JOIN aff_info as info ON aff.order_id = info.order_id
   AND aff.brand = info.brand 
   AND aff.shop = info.shop 
   AND aff.company = info.company
-LEFT JOIN {{ref("t1_tiktok_shop_video_info")}} vid on info.content_id = cast(vid.video_id as string)
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_shop_video_info` vid on info.content_id = cast(vid.video_id as string)
 CROSS JOIN UNNEST(COALESCE(ord.line_items, [])) AS item 
 
-LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bg on json_value(item,'$.seller_sku') = bg.ma_sku
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` bg on json_value(item,'$.seller_sku') = bg.ma_sku
+left join `google_sheet.chuan_hoa_city` city on JSON_VALUE(
+    (SELECT value 
+     FROM UNNEST(JSON_QUERY_ARRAY(ord.recipient_address, '$.district_info')) AS value
+     WHERE JSON_VALUE(value, '$.address_level') = 'L1'
+    ), 
+    '$.address_name'
+  ) = city.string_field_0
 )
 
 select 
