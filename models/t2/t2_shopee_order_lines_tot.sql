@@ -314,6 +314,16 @@ SELECT
         ELSE (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount) * -1
     END AS tong_chi_phi,
 
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_vat_tax * -1) + 
+            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_pit_tax * -1) 
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN 
+            (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
+    END AS tax,
+
     ops.gia_von,
     ops.promotion_type,
     
