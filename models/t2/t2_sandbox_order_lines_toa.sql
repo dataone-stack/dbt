@@ -26,6 +26,7 @@ orderline AS (
         DATETIME_ADD(ord.time_order_submit, INTERVAL 7 HOUR) AS ngay_dang_don,
         DATETIME_ADD(ord.update_time, INTERVAL 7 HOUR) AS ngay_cap_nhat,
         DATETIME_ADD(de.ngay_cap_nhat, INTERVAL 7 hour) as ngay_tien_ve_vi,
+        DATETIME_ADD(ord.time_sale_receiving_data, INTERVAL 7 hour) as ngay_sale_nhan_data,
 
         -- Kho và phương thức giao hàng
         ord.warehouse_name AS kho,
@@ -116,8 +117,8 @@ orderline AS (
 
         COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly) AS ma_quan_ly,
         COALESCE(mar.manager, mar2.manager) AS manager,
-        ord.sale_display_name AS sale_name,
-        ord.sale_user_name AS sale_user_name,
+        COALESCE(sales.sale_name, ord.sale_display_name) AS sale_name,
+        COALESCE(sales.sale_user_name, ord.sale_user_name) AS sale_user_name,
 
         -- Nguồn tạo đơn
         ord.source_name,
@@ -236,7 +237,11 @@ orderline AS (
     ) mar2 ON mar.marketer_name IS NULL AND ord.team = mar2.team_account
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar2.start_date)
         AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
-        
+
+    LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_sales_facebook_total` sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_name) 
+        AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(sales.start_date)
+        AND (sales.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(sales.end_date))
+
     LEFT JOIN {{ref("t1_pushsale_source_name")}} source ON trim(ord.source_name) = TRIM(source.source_name) and  TRIM(ord.marketing_user_name) =  TRIM(source.marketing_user_name)
     LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
     ORDER BY ngay_chot_don ASC
