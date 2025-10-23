@@ -26,6 +26,7 @@ orderline AS (
         DATETIME_ADD(ord.time_order_submit, INTERVAL 7 HOUR) AS ngay_dang_don,
         DATETIME_ADD(ord.update_time, INTERVAL 7 HOUR) AS ngay_cap_nhat,
         DATETIME_ADD(de.update_date, INTERVAL 7 hour) as ngay_tien_ve_vi,
+        DATETIME_ADD(ord.time_sale_receiving_data, INTERVAL 7 hour) as ngay_sale_nhan_data,
 
         -- Kho và phương thức giao hàng
         ord.warehouse_name AS kho,
