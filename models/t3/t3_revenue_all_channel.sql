@@ -52,7 +52,7 @@ union all
 
 SELECT 
     tkqc.manager,
-    '-' AS marketing_name,
+    tkqc.staff AS marketing_name,
     shop.shop,
     shop.brand,
     shop.brand_lv1,
@@ -106,7 +106,7 @@ UNION ALL
 
 SELECT 
     tkqc.manager,
-    '-' AS marketing_name,
+    tkqc.staff AS marketing_name,
     shop.shop,
     shop.brand,
     shop.brand_lv1,
