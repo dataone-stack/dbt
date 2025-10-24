@@ -248,7 +248,7 @@ orderline AS (
     LEFT JOIN {{ ref('t1_pushsale_order_total') }} ord ON dt.order_number = ord.order_number
     LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} bangGia ON TRIM(dt.item_code) = TRIM(bangGia.ma_sku)
     LEFT JOIN deliveries de on dt.order_number = de.order_number
-    LEFT JOIN {{ ref('t1_sales_facebook_total') }} sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_name) 
+    LEFT JOIN {{ ref('t1_sales_facebook_total') }} sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_user_name) 
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(sales.start_date)
         AND (sales.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(sales.end_date))
 
