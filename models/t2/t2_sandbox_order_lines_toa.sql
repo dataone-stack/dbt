@@ -238,7 +238,7 @@ orderline AS (
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar2.start_date)
         AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
 
-    LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_sales_facebook_total` sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_name) 
+    LEFT JOIN {{ ref('t1_sales_facebook_total') }} sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_name) 
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(sales.start_date)
         AND (sales.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(sales.end_date))
 
