@@ -1,6 +1,7 @@
 SELECT 
     manager,
     marketing_name,
+    "-" AS sale_name,
     "Shop Facebook" as shop,
     brand,
     brand_lv1,
@@ -53,6 +54,7 @@ union all
 SELECT 
     tkqc.manager,
     tkqc.staff AS marketing_name,
+    "-" AS sale_name,
     shop.shop,
     shop.brand,
     shop.brand_lv1,
@@ -107,6 +109,7 @@ UNION ALL
 SELECT 
     tkqc.manager,
     tkqc.staff AS marketing_name,
+    "-" AS sale_name,
     shop.shop,
     shop.brand,
     shop.brand_lv1,
@@ -161,6 +164,7 @@ UNION ALL
 SELECT 
     manager,
     marketing_name,
+    sale_name,
     "Shop Facebook" as shop,
     brand,
     brand_lv1,
