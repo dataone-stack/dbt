@@ -1,1 +1,1 @@
-SELECT * FROM `crypto-arcade-453509-i8.google_sheet.me_sales` WHERE sale_user_name IS NOT NULL
+SELECT * FROM `crypto-arcade-453509-i8.google_sheet.me_sale` WHERE sale_user_name IS NOT NULL
