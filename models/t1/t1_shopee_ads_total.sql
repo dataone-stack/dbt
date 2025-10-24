@@ -10,6 +10,12 @@ select * ,'lyb_cosmetic_sp' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cp
 union all
 select * ,'chaching_beauty' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
 union all
+select * ,'chaching_fashion' as idtkqc from `chachingfashion_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chachingfashion`
+union all
+select * ,'lyb_fashion' as idtkqc from `lybfashion_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_fashion`
+
+
+union all
 select * ,'be20_keo_ngam_trang_da_sp' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_keo_ngam_trang_da`
 union all
 select * ,'beana_beauty_vietnam_sp' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_beana_beauty_vietnam`
