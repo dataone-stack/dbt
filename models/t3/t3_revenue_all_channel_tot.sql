@@ -85,7 +85,7 @@ SELECT
     0 as doanh_so_moi,
     'Tiktok' AS channel
 FROM {{ ref('t2_tiktok_order_line_tot') }}
--- where status not in ("Đã hủy", "Đang giao")
+where status not in ("Đã hủy", "Đang giao")
 
 
 
