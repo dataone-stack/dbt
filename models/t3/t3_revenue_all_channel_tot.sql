@@ -87,8 +87,6 @@ SELECT
 FROM {{ ref('t2_tiktok_order_line_tot') }}
 -- where status not in ("Đã hủy", "Đang giao")
 
-
-
 union all
 
 SELECT 
