@@ -52,6 +52,7 @@ WITH LineItems AS (
     cost_price.cost_price
 ),
 
+
 ReturnLineItems AS (
   SELECT
     r.order_id,
@@ -69,6 +70,7 @@ ReturnLineItems AS (
   CROSS JOIN UNNEST(r.return_line_items) AS li
   where r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
+
 
 
 -- Tạo OrderData cho các dòng order thông thường
@@ -186,6 +188,7 @@ OrderData AS (
     AND li.brand = o.brand
 ),
 
+
 -- Tạo ReturnData cho các dòng return
 ReturnData AS (
   SELECT
@@ -294,12 +297,14 @@ ReturnData AS (
     AND r.return_status = 'RETURN_OR_REFUND_REQUEST_COMPLETE'
 ),
 
+
 -- UNION ALL để kết hợp order lines và return lines
 CombinedData AS (
   SELECT * FROM OrderData
   UNION ALL
   SELECT * FROM ReturnData
 ),
+
 
 OrderTotal as (
 SELECT
@@ -316,122 +321,295 @@ GROUP BY
     line_type
 ),
 
+
 orderLine as(
-SELECT
-  brand,
-  brand_lv1,
-  shop,
-  company,
-  Order_ID as ma_don_hang,
-  Order_Status,
-  Order_Substatus,
-  Cancelation_Return_Type,
-  Normal_or_Preorder,
-  SKU_ID,
-  Seller_SKU as sku_code,
-  Product_Name as ten_san_pham,
-  Variation,
-  Quantity as so_luong,
-  Sku_Quantity_of_Return,
-  SKU_Unit_Original_Price,
-  SKU_Subtotal_Before_Discount,
-  SKU_Platform_Discount as san_tro_gia,
-  SKU_Seller_Discount as seller_tro_gia,
-  0 as giam_gia_seller,
-  0 as giam_gia_san,
-  SKU_Subtotal_After_Discount,
-  Shipping_Fee_After_Discount,
-  Original_Shipping_Fee,
-  Shipping_Fee_Seller_Discount,
-  Shipping_Fee_Platform_Discount,
-  Payment_Platform_Discount,
-  Taxes,
-  Order_Amount,
-  Order_Refund_Amount,
-  Created_Time as ngay_tao_don,
-  Paid_Time,
-  RTS_Time,
-  Shipped_Time,
-  Delivered_Time,
-  Cancelled_Time,
-  Cancel_By,
-  Cancel_Reason,
-  Fulfillment_Type,
-  Warehouse_Name,
-  Tracking_ID,
-  Delivery_Option,
-  Shipping_Provider_Name,
-  Buyer_Message,
-  Buyer_Username,
-  Recipient,
-  Phone_Number,
-  Country,
-  Province,
-  District,
-  Commune,
-  Detail_Address,
-  Additional_Address_Information,
-  Payment_Method,
-  Weight_kg,
-  Product_Category,
-  Package_ID,
-  Seller_Note,
-  Checked_Status,
-  Checked_Marked_by,
-  Gia_Ban_Daily AS gia_ban_daily,
-  COALESCE(SKU_Unit_Original_Price, 0) AS gia_san_pham_goc,
-  COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0) AS gia_san_pham_goc_total,
-  (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_tro_gia,
+  SELECT
+    brand,
+    brand_lv1,
+    shop,
+    company,
+    Order_ID as ma_don_hang,
+    Order_Status,
+    Order_Substatus,
+    Cancelation_Return_Type,
+    Normal_or_Preorder,
+    SKU_ID,
+    Seller_SKU as sku_code,
+    Product_Name as ten_san_pham,
+    Variation,
+    Quantity as so_luong,
+    Sku_Quantity_of_Return,
+    SKU_Unit_Original_Price,
+    SKU_Subtotal_Before_Discount,
+    SKU_Platform_Discount as san_tro_gia,
+    SKU_Seller_Discount as seller_tro_gia,
+    0 as giam_gia_seller,
+    0 as giam_gia_san,
+    SKU_Subtotal_After_Discount,
+    Shipping_Fee_After_Discount,
+    Original_Shipping_Fee,
+    Shipping_Fee_Seller_Discount,
+    Shipping_Fee_Platform_Discount,
+    Payment_Platform_Discount,
+    Taxes,
+    Order_Amount,
+    Order_Refund_Amount,
+    Created_Time as ngay_tao_don,
+    Paid_Time,
+    RTS_Time,
+    Shipped_Time,
+    Delivered_Time,
+    Cancelled_Time,
+    Cancel_By,
+    Cancel_Reason,
+    Fulfillment_Type,
+    Warehouse_Name,
+    Tracking_ID,
+    Delivery_Option,
+    Shipping_Provider_Name,
+    Buyer_Message,
+    Buyer_Username,
+    Recipient,
+    Phone_Number,
+    Country,
+    Province,
+    District,
+    Commune,
+    Detail_Address,
+    Additional_Address_Information,
+    Payment_Method,
+    Weight_kg,
+    Product_Category,
+    Package_ID,
+    Seller_Note,
+    Checked_Status,
+    Checked_Marked_by,
+    Gia_Ban_Daily AS gia_ban_daily,
+    COALESCE(SKU_Unit_Original_Price, 0) AS gia_san_pham_goc,
+    COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0) AS gia_san_pham_goc_total,
+    (COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0) AS tien_sp_sau_tro_gia,
+    
+    CASE
+        WHEN line_type = 'return_line' THEN Gia_Ban_Daily * Quantity * -1
+        WHEN Order_Status = 'Canceled' THEN 0
+        ELSE Gia_Ban_Daily * Quantity
+    END AS gia_ban_daily_total,
+
+
+    CASE
+        WHEN line_type = 'return_line' THEN (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) * -1
+        WHEN Order_Status = 'Canceled' THEN 0
+        ELSE (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))
+    END AS tien_chiet_khau_sp,
+
+
+    CASE
+        WHEN line_type = 'return_line' THEN ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) * -1
+        WHEN Order_Status = 'Canceled' THEN 0
+        ELSE ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))
+    END AS doanh_thu_ke_toan,
+
+
+    (COALESCE(gia_von, 0) * COALESCE(Quantity, 0)) as gia_von,
+
+
+    CASE
+      WHEN is_gift = TRUE THEN "Quà Tặng"
+      ELSE NULL
+    END as promotion_type,
+    
+    order_type,
+    line_type,
+
+
+    CASE
+      WHEN line_type = 'return_line' THEN 'Đã hoàn'
+      WHEN Order_Status = 'Shipped' THEN 'Đang giao'
+      WHEN Order_Status = 'AWAITING_COLLECTION' THEN 'Đang giao'
+      WHEN Order_Status = 'AWAITING_SHIPMENT' THEN 'Đang giao'
+      WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
+      WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
+      WHEN Order_Status = 'UNPAID' THEN 'Đăng đơn'
+      WHEN Order_Status = 'IN_TRANSIT' THEN 'Đang giao'
+      ELSE 'Khác'
+    END AS status
+
+
+  FROM CombinedData
+  ORDER BY Order_ID, line_type, SKU_ID
+),
+
+
+-- *** PHẦN QUAN TRỌNG - JOIN VỚI TRANSACTION TABLE DỰA TRÊN total_revenue ***
+final_result as (
+  SELECT
+    ord.*,
+    trans.order_statement_time,
+    trans.order_adjustment_id,
+    trans.adjustment_id,
+    
+    -- Tính total_settlement_amount theo tỷ lệ
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.total_settlement_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.total_settlement_amount, 0)
+    END as total_settlement_amount,
+    
+    -- Phí vận chuyển trợ giá từ sàn (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) AS phi_van_chuyen_tro_gia_tu_san,
+    
+    -- Phí thanh toán (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.transaction_fee, 0) AS phi_thanh_toan,
+    
+    -- Phí hoa hồng shop (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) AS phi_hoa_hong_shop,
+    
+    -- Phí hoa hồng tiếp thị liên kết (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0) AS phi_hoa_hong_tiep_thi_lien_ket,
+    
+    -- Phí hoa hồng quảng cáo của hàng (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0) AS phi_hoa_hong_quang_cao_cua_hang,
+    
+    -- Phí dịch vụ (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) AS phi_dich_vu,
+    
+    -- Phí ship (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS phi_ship,
+    
+    -- Phí xtra (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) as phi_xtra,
+    
+    -- Thuế GTGT (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) as thue_gtgt,
+    
+    -- Thuế TNCN (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) as thue_tncn,
+    
+    -- Affiliate partner commission (theo tỷ lệ)
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_partner_commission, 0) as affiliate_partner_commission,
+    
+    0 as voucher_from_seller,
+    0 as phi_co_dinh,
+    
+    -- Tiền khách hàng thanh toán
+    ord.gia_san_pham_goc_total - ord.seller_tro_gia - ord.san_tro_gia - COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
+
+
+    -- Tổng phí sàn
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.tiktok_shop_commission_fee + trans.shipping_cost_amount + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.voucher_xtra_service_fee + trans.vat_amount + trans.pit_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_cost_amount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_shop_ads_commission, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_partner_commission, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) 
+    END as tong_phi_san,
+
+
+    -- Tax
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.vat_amount + trans.pit_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) 
+    END as tax,
+
+
+    -- Phí vận chuyển thực tế
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.shipping_cost_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_cost_amount, 0)
+    END as phi_van_chuyen_thuc_te,
+
+
+    -- Seller shipping fee
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.actual_shipping_fee + trans.platform_shipping_fee_discount + trans.customer_shipping_fee + trans.actual_return_shipping_fee + trans.refunded_customer_shipping_fee_amount + trans.failed_delivery_subsidy_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_return_shipping_fee, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.refunded_customer_shipping_fee_amount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.failed_delivery_subsidy_amount, 0)
+    END as seller_shipping_fee,
+
+
+    -- Actual shipping fee
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.actual_shipping_fee
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0)
+    END as actual_shipping_fee,
+
+
+    -- Platform shipping fee discount
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.platform_shipping_fee_discount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.platform_shipping_fee_discount, 0)
+    END as platform_shipping_fee_discount,
+
+
+    -- Customer shipping fee
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.customer_shipping_fee
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0)
+    END as customer_shipping_fee,
+
+
+    -- Actual return shipping fee
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.actual_return_shipping_fee
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_return_shipping_fee, 0)
+    END as actual_return_shipping_fee,
+
+
+    -- Refunded customer shipping fee amount
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.refunded_customer_shipping_fee_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.refunded_customer_shipping_fee_amount, 0)
+    END as refunded_customer_shipping_fee_amount,
+
+
+    -- Failed delivery subsidy amount
+    CASE
+        WHEN ord.order_type = "ZERO_LOTTERY"
+        THEN trans.failed_delivery_subsidy_amount
+        ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.failed_delivery_subsidy_amount, 0)
+    END as failed_delivery_subsidy_amount
+
+
+  FROM orderLine ord
+  LEFT JOIN OrderTotal total 
+    ON ord.brand = total.brand 
+    AND ord.ma_don_hang = total.Order_ID
+    AND ord.line_type = total.line_type
   
-  -- Logic tính toán dựa trên line_type
-  CASE
-      WHEN line_type = 'return_line' THEN Gia_Ban_Daily * Quantity * -1
-      WHEN Order_Status = 'Canceled' THEN 0
-      ELSE Gia_Ban_Daily * Quantity
-  END AS gia_ban_daily_total,
-
-  CASE
-      WHEN line_type = 'return_line' THEN (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) * -1
-      WHEN Order_Status = 'Canceled' THEN 0
-      ELSE (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))
-  END AS tien_chiet_khau_sp,
-
-  CASE
-      WHEN line_type = 'return_line' THEN ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) * -1
-      WHEN Order_Status = 'Canceled' THEN 0
-      ELSE ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))
-  END AS doanh_thu_ke_toan,
-
-  (COALESCE(gia_von, 0) * COALESCE(Quantity, 0)) as gia_von,
-
-  CASE
-    WHEN is_gift = TRUE THEN "Quà Tặng"
-    ELSE NULL
-  END as promotion_type,
-  
-  order_type,
-  line_type,
-
-  -- Status với logic rõ ràng cho return lines
-  CASE
-    WHEN line_type = 'return_line' THEN 'Đã hoàn'
-    WHEN Order_Status = 'Shipped' THEN 'Đang giao'
-    WHEN Order_Status = 'AWAITING_COLLECTION' THEN 'Đang giao'
-    WHEN Order_Status = 'AWAITING_SHIPMENT' THEN 'Đang giao'
-    WHEN Order_Status = 'Canceled' THEN 'Đã hủy'
-    WHEN Order_Status = 'COMPLETED' THEN 'Đã giao thành công'
-    WHEN Order_Status = 'UNPAID' THEN 'Đăng đơn'
-    WHEN Order_Status = 'IN_TRANSIT' THEN 'Đang giao'
-    ELSE 'Khác'
-  END AS status
-
-FROM CombinedData
-ORDER BY Order_ID, line_type, SKU_ID
+  -- *** THAY ĐỔI QUAN TRỌNG: JOIN DỰA TRÊN total_revenue ***
+  LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans 
+    ON ord.brand = trans.brand 
+    AND ord.ma_don_hang = trans.order_adjustment_id
+    AND (
+      -- Mapping cho order lines: total_revenue >= 0 (transaction dương)
+      (ord.line_type = 'order_line' AND COALESCE(trans.total_revenue, 0) >= 0)
+      OR
+      -- Mapping cho return lines: total_revenue < 0 (transaction âm - refund)
+      (ord.line_type = 'return_line' AND trans.total_revenue < 0)
+    )
 )
 
--- Phần còn lại giữ nguyên như code gốc
-SELECT * FROM orderLine
 
+SELECT * FROM final_result
 
 
 
