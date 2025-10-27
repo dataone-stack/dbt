@@ -30,6 +30,7 @@ order_line as (
     ord.status_name,
     ord.note_print,
     ord.activated_promotion_advances,
+    json_value(ord.assigning_seller,'$.name') as seller_name,
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp_nguon,
     mapBangGia.san_pham as ten_sp,
@@ -197,7 +198,8 @@ order_line as (
   else ((gia_goc * so_luong) - khuyen_mai_dong_gia - giam_gia_don_hang + phi_van_chuyen) 
   end AS doanh_thu_ke_toan,
   manager,
-  marketing_name
+  marketing_name,
+  seller_name
 from order_line
 
 ),

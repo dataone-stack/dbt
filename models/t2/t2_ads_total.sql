@@ -13,6 +13,7 @@ WITH excluded_accounts AS (
 SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    account_name,
     ad_id,
     cast(campaign_id as string) as campaign_id,
     campaign_name,
@@ -53,6 +54,7 @@ UNION ALL
 SELECT
     date_start,
     idtkqc as account_id,
+    '-' as account_name,
     0 as ad_id,
     '-' as campaign_id,
     "" as campaign_name,
@@ -68,6 +70,7 @@ UNION ALL
 SELECT
     DATE(DATETIME_ADD(DATETIME(a.stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(a.account_id AS STRING) AS account_id,
+    account_name,
     a.ad_id,
     cast(b.campaign_id as string) as campaign_id,
     b.campaign_name as campaign_name,
@@ -82,6 +85,7 @@ UNION ALL
 SELECT
     DATE(DATETIME_ADD(DATETIME(stat_time_day), INTERVAL 7 HOUR)) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    account_name,
     0 as ad_id,
     '-' as campaign_id,
     "" as campaign_name,
@@ -97,6 +101,7 @@ UNION ALL
 SELECT
     DATE(date) AS date_start,
     CAST(idtkqc AS STRING) AS account_id,
+    '-' as account_name,
     0 as ad_id,
     '-' as campaign_id,
     "" as campaign_name,
@@ -111,6 +116,7 @@ UNION ALL
 SELECT
     DATE(date_start) AS date_start,
     CAST(account_id AS STRING) AS account_id,
+    '-' as account_name,
     0 as ad_id,
     '-' campaign_id,
     "" as campaign_name,
@@ -126,6 +132,7 @@ union all
 select 
   segment_date as date_start,
   CAST(account_id AS STRING) AS account_id,
+  '-' as account_name,
   0 as ad_id,
   '-' as campaign_id,
   "" as campaign_name,
@@ -140,6 +147,7 @@ union all
 select 
   date_start,
   cast(idtkqc as string) AS account_id,
+  '-' as account_name,
   0 as ad_id,
   '-' as campaign_id,
   "" as campaign_name,
@@ -158,6 +166,7 @@ union all
 select 
 date(date_start) as date_start,
 cast (idtkqc as string) as account_id,
+'-' as account_name,
 0 as ad_id,
 '-' as campaign_id,
 "" as campaign_name,
@@ -175,6 +184,7 @@ from `google_sheet.buiducan_google_ads`
 select 
     date_start,
     account_id,
+    account_name,
     ad_id,
     campaign_id,
     campaign_name,

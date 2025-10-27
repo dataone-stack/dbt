@@ -1,7 +1,7 @@
 SELECT 
     manager,
     marketing_name,
-    "-" AS sale_name,
+    seller_name AS sale_name,
     "Shop Facebook" as shop,
     brand,
     brand_lv1,
