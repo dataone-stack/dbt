@@ -269,7 +269,7 @@ order_line_returned as (
     vietful_return.ngay_da_giao,
     vietful_return.tracking_code,
     vietful_return.shipped_date as ngay_ship,
-    cost_price.cost_price as gia_von,
+    cost_price.cost_price * -1 as gia_von,
     COALESCE(
       ROUND(
         SAFE_DIVIDE(
