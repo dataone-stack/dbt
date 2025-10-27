@@ -16,7 +16,7 @@ SELECT
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     phu_phi,
     doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Facebook' AS channel,
@@ -48,7 +48,7 @@ SELECT
     -- gia_san_pham_goc_total,
     tong_chi_phi *-1 as phu_phi,
     doanh_thu_ke_toan as doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Shopee' AS channel,
@@ -56,7 +56,7 @@ SELECT
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_shopee_order_lines_tot`
-where status not in ("Đã hủy", "Đang giao")
+-- where status not in ("Đã hủy", "Đang giao")
 
 UNION ALL
 
@@ -83,7 +83,7 @@ SELECT
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     tong_phi_san *-1 as phu_phi,
     doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel,
@@ -91,7 +91,7 @@ SELECT
     gia_von,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
-where status not in ("Đã hủy", "Đang giao")
+-- where status not in ("Đã hủy", "Đang giao")
 
 
 

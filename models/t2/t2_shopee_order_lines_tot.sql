@@ -118,8 +118,10 @@ order_product_summary AS (
     COALESCE(i.original_price, 0) AS gia_goc,
     COALESCE(i.seller_discount, 0)*-1 AS seller_tro_gia,
     CASE
-        WHEN ord.promotion_type = 'add_on_free_gift_sub' OR (rd.return_id IS NOT NULL AND rd.return_id != "")
-        THEN 0
+        WHEN ord.promotion_type = 'add_on_free_gift_sub'
+            THEN 0
+        WHEN (rd.return_id IS NOT NULL AND rd.return_id != "")
+            THEN COALESCE(cost_price.cost_price, 0) * i.quantity_purchased *-1
         ELSE COALESCE(cost_price.cost_price, 0) * i.quantity_purchased
     END AS gia_von,
     COALESCE(i.discounted_price,0) AS discounted_price,
