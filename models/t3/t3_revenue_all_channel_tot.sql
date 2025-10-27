@@ -19,7 +19,7 @@ with a as (SELECT
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     phu_phi,
     doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
      0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Facebook' AS channel,
@@ -50,7 +50,7 @@ SELECT
     -- gia_san_pham_goc_total,
     phu_phi,
     doanh_thu_ke_toan as doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Shopee' AS channel
@@ -80,7 +80,7 @@ SELECT
     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     tong_phi_san as phu_phi,
     doanh_thu_ke_toan as doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel
@@ -111,7 +111,7 @@ SELECT
 
     phu_phi,
     doanh_thu_ke_toan,
-    doanh_thu_ke_toan_v2,
+    0 as doanh_thu_ke_toan_v2,
     doanh_so_cu as doanh_so_cu,
     doanh_so_moi as doanh_so_moi,
     'Facebook' AS channel
