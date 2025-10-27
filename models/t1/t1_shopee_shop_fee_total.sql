@@ -37,6 +37,9 @@ UNION ALL
 SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_be20_keo_ngam_trang_da`
 UNION ALL
+SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang_sp' AS shop
+FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_ca_phe_mam_xoi_chinh_hang`
+UNION ALL
 SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_belle_beauty_vietnam`
 -- UNION ALL
