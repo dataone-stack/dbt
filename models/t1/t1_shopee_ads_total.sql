@@ -20,6 +20,8 @@ select * ,'be20_keo_ngam_trang_da_sp' as idtkqc from `be20keongamtrangda_shopee_
 union all
 select * ,'beana_beauty_vietnam_sp' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_beana_beauty_vietnam`
 union all
+select * ,'ca_phe_mam_xoi_store_sp' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_mam_xoi_store`
+union all
 select * ,'be20_viet_nam_store_sp' as idtkqc from `be20vietnamstore_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_viet_nam_store`
 union all
 select * ,'belle_beauty_vietnam_sp' as idtkqc from `bellebeautyvietnam_shopee_ads_dwh.shopee_cpc_ads_daily_performance_belle_beauty_vietnam`
