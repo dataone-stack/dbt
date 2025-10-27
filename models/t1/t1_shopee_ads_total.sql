@@ -18,6 +18,8 @@ select * ,'lyb_fashion' as idtkqc from `lybfashion_shopee_ads_dwh.shopee_cpc_ads
 union all
 select * ,'be20_keo_ngam_trang_da_sp' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_keo_ngam_trang_da`
 union all
+select * ,'ca_phe_mam_xoi_chinh_hang_sp' as idtkqc from `be20keongamtrangda_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_mam_xoi_chinh_hang`
+union all
 select * ,'beana_beauty_vietnam_sp' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_beana_beauty_vietnam`
 union all
 select * ,'ca_phe_mam_xoi_store_sp' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_mam_xoi_store`
