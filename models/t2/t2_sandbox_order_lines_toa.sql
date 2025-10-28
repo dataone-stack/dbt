@@ -54,6 +54,7 @@ orderline AS (
             WHEN ord.reason_to_create IN ('FOR_TAKE_CARE', 'FROM_OLD', 'OLD_ORDER', 'TAKECARE') THEN 'Khách cũ'
             ELSE 'Khách mới'
         END AS loai_khach_hang,
+        ord.reason_to_create,
 
         CASE
             WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' OR ord.reason_to_create = 'ECOMMERCE' THEN 'Sàn TMDT liên kết'
