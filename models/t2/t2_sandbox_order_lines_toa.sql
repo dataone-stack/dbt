@@ -211,10 +211,10 @@ orderline AS (
         ord.delivery_address,
         ord.is_delete
         
-    FROM {{ref("t1_sandbox_order_detail_total")}} dt
-    LEFT JOIN {{ref("t1_sandbox_order_total")}} ord ON dt.order_number = ord.order_number
+    FROM {{ref("t1_sandbox_order_total")}} ord
+    LEFT JOIN  {{ref("t1_sandbox_order_detail_total")}} dt ON dt.order_number = ord.order_number
     LEFT JOIN {{ref("t1_bang_gia_san_pham")}} bangGia ON TRIM(dt.item_code) = TRIM(bangGia.ma_sku)
-    LEFT JOIN deliveries de on dt.order_number = de.order_number
+    LEFT JOIN deliveries de on ord.order_number = de.order_number
 
     -- Gắn thông tin marketer cho từng đơn dựa trên marketing_user_name và ngày chốt đơn đúng trong khoảng thời gian marketer sử dụng account đó
     LEFT JOIN {{ref("t1_marketer_facebook_total")}} mar 

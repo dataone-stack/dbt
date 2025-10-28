@@ -1,0 +1,1 @@
+select * from crypto-arcade-453509-i8.google_sheet.plan_bussiness_monthly_by_sku
