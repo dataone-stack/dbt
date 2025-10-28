@@ -55,6 +55,7 @@ orderline AS (
             ELSE 'Khách mới'
         END AS loai_khach_hang,
         ord.reason_to_create,
+        ord.order_confirm_name,
 
         CASE
             WHEN ord.reason_to_create = 'FROM_API_SHOPEE' OR ord.reason_to_create = 'FROM_API_TIKTOK' OR ord.reason_to_create = 'ECOMMERCE' THEN 'Sàn TMDT liên kết'
