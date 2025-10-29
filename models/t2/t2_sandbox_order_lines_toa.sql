@@ -241,8 +241,8 @@ orderline AS (
         AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
 
     LEFT JOIN {{ ref('t1_sales_facebook_total') }} sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_user_name) 
-        AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(sales.start_date)
-        AND (sales.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(sales.end_date))
+        AND DATE(DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR)) >= DATE(sales.start_date)
+        AND (sales.end_date IS NULL OR DATE(DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR)) <= DATE(sales.end_date))
 
     LEFT JOIN {{ref("t1_pushsale_source_name")}} source ON trim(ord.source_name) = TRIM(source.source_name) and  TRIM(ord.marketing_user_name) =  TRIM(source.marketing_user_name)
     LEFT JOIN {{ref("t1_pushsale_currency_rates")}} curr ON curr.currency_code = 'USD'
