@@ -113,8 +113,8 @@ orderline AS (
             ELSE mar.ma_nhan_vien
         END AS ma_nhan_vien,
 
-        COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly) AS ma_quan_ly,
-        COALESCE(mar.manager, mar2.manager) AS manager,
+        COALESCE(mar.ma_quan_ly, mar2.ma_quan_ly,sales.ma_quan_ly) AS ma_quan_ly,
+        COALESCE(mar.manager, mar2.manager,sales.manager) AS manager,
 
         COALESCE(sales.sale_name, ord.sale_display_name) AS sale_name,
         COALESCE(sales.sale_user_name, ord.sale_user_name) AS sale_user_name,
