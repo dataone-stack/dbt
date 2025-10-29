@@ -21,9 +21,11 @@ FROM `chaching_beauty_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_trang_da`
+where date(datetime_add(create_time, INTERVAL 7 hour)) <= '2025-10-20'
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang_sp' AS shop
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_ca_phe_mam_xoi_chinh_hang`
+where date(datetime_add(create_time, INTERVAL 7 hour)) >= '2025-10-21'
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_belle_beauty_vietnam`
@@ -72,9 +74,11 @@ FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_wallet_transaction_ume_beau
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_beana_beauty_vietnam`
+where date(datetime_add(create_time, INTERVAL 7 hour)) <= '2025-10-20'
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_store_sp' AS shop
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_ca_phe_mam_xoi_store`
+where date(datetime_add(create_time, INTERVAL 7 hour)) >= '2025-10-21'
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'An Cung' AS brand, 'las_beauty' AS shop
 FROM `ancunghaircare_shopee_shop_dwh.shopee_payment_wallet_transaction_las_beauty`

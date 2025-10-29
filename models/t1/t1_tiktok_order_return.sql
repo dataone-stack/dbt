@@ -31,3 +31,5 @@ UNION ALL
 SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_tt' AS shop, * FROM `umebeautyvietnam_tiktok_shop_dwh.tiktok_shop_ume_beauty_vietnam_return_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_tt' AS shop, * FROM `lybcosmeticvn_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_return_order`
+UNION ALL
+SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_shop_tt' AS shop, * FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_return_order`

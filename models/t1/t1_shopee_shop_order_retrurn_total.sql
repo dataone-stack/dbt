@@ -44,10 +44,10 @@ SELECT order_id, return_seller_due_date, return_id, update_time, status, item, a
 FROM `be20vietnamstore_shopee_shop_dwh.shopee_return_be20_viet_nam_store`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop
-FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_beana_beauty_vietnam`
+FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_beana_beauty_vietnam` where date(datetime_add(update_time, INTERVAL 7 hour)) <= '2025-10-20'
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_store_sp' AS shop
-FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_store`
+FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_store` where date(datetime_add(update_time, INTERVAL 7 hour)) >= '2025-10-21'
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_return_belle_beauty_vietnam`

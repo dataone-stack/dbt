@@ -10,7 +10,7 @@ WITH a AS (
    
     COUNT(DISTINCT IF(LOWER(sale_user_name) LIKE '%cskh%', ma_don_so, NULL)) AS so_lead_cskh
 
-  FROM {{ref("t2_sandbox_order_lines_toa")}}
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t2_sandbox_order_lines_toa`
   WHERE ngay_data_ve IS NOT NULL
   GROUP BY DATE(ngay_data_ve), sale_name, sale_user_name,manager, ma_quan_ly
 )
@@ -27,9 +27,13 @@ b AS (
     manager,
     ma_quan_ly,
     COUNT(DISTINCT ma_don_so) AS so_sale,
+    COUNT(DISTINCT IF(loai_khach_hang = 'Khách cũ', ma_don_so, NULL)) AS so_sale_cu,
+    COUNT(DISTINCT IF(loai_khach_hang = 'Khách mới' , ma_don_so, NULL)) AS so_sale_moi,
+
     SUM(IFNULL(doanh_so_cu,0)) AS doanh_so_cu,
-    SUM(IFNULL(doanh_so_moi,0)) AS doanh_so_moi
-  FROM {{ref("t2_sandbox_order_lines_toa")}}
+    SUM(IFNULL(doanh_so_moi,0)) AS doanh_so_moi,
+    SUM(IFNULL(doanh_so,0)) AS doanh_so
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t2_sandbox_order_lines_toa`
   WHERE ngay_chot_don IS NOT NULL and order_confirm_name = 'Chốt đơn'
   GROUP BY DATE(ngay_chot_don), sale_name, sale_user_name,manager, ma_quan_ly
 -- select * from b WHERE sale_user_name = 
@@ -47,8 +51,11 @@ c AS (
     (a.so_lead_sale + a.so_lead_cskh) AS so_lead,
   
     COALESCE(b.so_sale, 0) AS so_sale,
+    COALESCE(b.so_sale_cu, 0) AS so_sale_cu,
+    COALESCE(b.so_sale_moi, 0) AS so_sale_moi,
     COALESCE(b.doanh_so_cu, 0) AS doanh_so_cu,
-    COALESCE(b.doanh_so_moi, 0) AS doanh_so_moi
+    COALESCE(b.doanh_so_moi, 0) AS doanh_so_moi,
+    COALESCE(b.doanh_so, 0) AS doanh_so
   FROM a
   LEFT JOIN b
     ON a.ngay_tao_contact = b.ngay_chot_don
@@ -63,9 +70,12 @@ SELECT
   ma_quan_ly,
   SUM(so_lead) AS so_lead,
   SUM(so_sale) AS so_sale,
+  sum(so_sale_cu) as so_sale_cu,
+  sum(so_sale_moi) as so_sale_moi,
   SUM(doanh_so_cu) AS doanh_so_cu,
-  SUM(doanh_so_moi) AS doanh_so_moi
+  SUM(doanh_so_moi) AS doanh_so_moi,
+  SUM(doanh_so) AS doanh_so
 FROM c
 
 GROUP BY ngay_tao_contact,sale_name, sale_user_name,manager,ma_quan_ly
-ORDER BY so_lead desc
+ORDER BY so_lead desc 
