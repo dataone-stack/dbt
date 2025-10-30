@@ -73,7 +73,12 @@ ladipage_total AS (
     SELECT 
         company,
         manager_name,
-        staff_name,
+        case
+        when staff_name = 'Admin Đơn Vị'
+        then (SELECT STRING_AGG(CONCAT(UPPER(SUBSTR(word, 1, 1)), LOWER(SUBSTR(word, 2))) , ' ') FROM UNNEST(SPLIT(manager_name, ' ')) AS word)
+        else staff_name
+        end as staff_name,
+        
         date_insert,
         brand,
         channel,
