@@ -1,5 +1,38 @@
-SELECT *,'Chaching' as brand FROM `crypto-arcade-453509-i8.chaching_vietful_dwh.vietful_inbound_request_lyb`
-UNION ALL
-SELECT *,'LYB' as brand FROM `crypto-arcade-453509-i8.lyb_vietful_dwh.vietful_inbound_request_lyb`
-UNION ALL
-SELECT *,'UME' as brand FROM `crypto-arcade-453509-i8.ume_vietful_dwh.vietful_inbound_request_lyb`
+SELECT 
+    ir_id,
+    ir_code,
+    warehouse_code,
+    ir_status,
+    ir_status_name,
+    actual_arrival_date,
+    finished_date,
+    condition_type_code,
+    partner_ir_code,
+    ir_type,
+    ir_type_name,
+    or_id,
+    or_code,
+    country_code,
+    currency_code,
+    supplier_name,
+    partner_branch_code,
+    partner_address_book_code,
+    created_date,
+    brand,
+    -- Các trường từ details JSON
+    JSON_EXTRACT_SCALAR(detail_item, '$.sku') AS sku,
+    JSON_EXTRACT_SCALAR(detail_item, '$.partnerSKU') AS partnerSKU,
+    JSON_EXTRACT_SCALAR(detail_item, '$.unitCode') AS unitCode,
+    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.expectQty') AS INT64) AS expectQty,
+    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.refQty') AS INT64) AS refQty,
+    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.actualQty') AS INT64) AS actualQty,
+    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.exceptionQty') AS INT64) AS exceptionQty,
+    JSON_EXTRACT_SCALAR(detail_item, '$.serials') AS serials,
+    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.price') AS FLOAT64) AS price,
+    JSON_EXTRACT_SCALAR(detail_item, '$.note') AS note,
+    JSON_EXTRACT_SCALAR(detail_item, '$.categoryCode') AS categoryCode,
+    JSON_EXTRACT_SCALAR(detail_item, '$.categoryName') AS categoryName
+FROM 
+    {{ ref('t1_vietful_nhapkho_total') }},
+    UNNEST(details) AS detail_item
+WHERE details IS NOT NULL
