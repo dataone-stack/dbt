@@ -12,5 +12,7 @@
 -- union all
 -- select * ,7 as id from `chaching_beauty_tiktok_gmvmax_dwh.tiktok_ads_gmv_max_campaign_overview_report`
 select *, 1 as id from `team_a_tien_tiktok_gmvmax_dwh.tiktok_ads_gmv_max_campaign_overview_report`
+-- union all
+-- select * ,2 as id from `team_maxeagle_tiktok_gmvmax_dwh.tiktok_ads_gmv_max_campaign_overview_report`
 union all
-select * ,2 as id from `team_maxeagle_tiktok_gmvmax_dwh.tiktok_ads_gmv_max_campaign_overview_report`
+select * ,2 as id from `team_me_tiktok_gmvmax_dwh.tiktok_ads_gmv_max_campaign_overview_report`
