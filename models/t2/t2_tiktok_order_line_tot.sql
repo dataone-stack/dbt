@@ -410,8 +410,8 @@ orderLine as(
     END AS doanh_thu_ke_toan,
 
 
-    (COALESCE(gia_von, 0) * COALESCE(Quantity, 0)) as gia_von,
-
+    (COALESCE(gia_von, 0) * COALESCE(Quantity, 0)) as gia_von_total,
+    COALESCE(gia_von, 0) as gia_von,
 
     CASE
       WHEN is_gift = TRUE THEN "Quà Tặng"
@@ -516,6 +516,7 @@ final_result as (
       ELSE ord.doanh_thu_ke_toan
     END AS doanh_thu_ke_toan,
     
+    ord.gia_von_total,
     ord.gia_von,
     ord.promotion_type,
     ord.order_type,
