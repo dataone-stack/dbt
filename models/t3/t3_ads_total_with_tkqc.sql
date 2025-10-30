@@ -111,7 +111,7 @@ ladi_unmatched AS (
         0 AS doanhThuAds,
         0 AS chi_phi_agency
     FROM ladipage_total AS ladi
-    left join {{ref("t1_one_mapping_company")}} one on ladi.brand_lv1 = one.new_brand
+    
     WHERE NOT EXISTS (
         SELECT 1
         FROM ads_total_with_tkqc AS ads
