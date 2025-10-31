@@ -19,20 +19,25 @@ SELECT
     partner_address_book_code,
     created_date,
     brand,
-    -- Các trường từ details JSON
-    JSON_EXTRACT_SCALAR(detail_item, '$.sku') AS sku,
-    JSON_EXTRACT_SCALAR(detail_item, '$.partnerSKU') AS partnerSKU,
-    JSON_EXTRACT_SCALAR(detail_item, '$.unitCode') AS unitCode,
-    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.expectQty') AS INT64) AS expectQty,
-    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.refQty') AS INT64) AS refQty,
-    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.actualQty') AS INT64) AS actualQty,
-    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.exceptionQty') AS INT64) AS exceptionQty,
-    JSON_EXTRACT_SCALAR(detail_item, '$.serials') AS serials,
-    CAST(JSON_EXTRACT_SCALAR(detail_item, '$.price') AS FLOAT64) AS price,
-    JSON_EXTRACT_SCALAR(detail_item, '$.note') AS note,
-    JSON_EXTRACT_SCALAR(detail_item, '$.categoryCode') AS categoryCode,
-    JSON_EXTRACT_SCALAR(detail_item, '$.categoryName') AS categoryName
+    
+    -- ============ THÔNG TIN TỪ GRNS (Goods Receipt Note) ============
+    JSON_EXTRACT_SCALAR(grn_item, '$.code') AS grn_code,
+    TIMESTAMP(JSON_EXTRACT_SCALAR(grn_item, '$.startTime')) AS grn_start_time,
+    TIMESTAMP(JSON_EXTRACT_SCALAR(grn_item, '$.endTime')) AS grn_end_time,
+    
+    -- ============ CHI TIẾT SẢN PHẨM TRONG GRNS ============
+    JSON_EXTRACT_SCALAR(grn_detail, '$.productName') AS product_name,
+    JSON_EXTRACT_SCALAR(grn_detail, '$.sku') AS sku,
+    JSON_EXTRACT_SCALAR(grn_detail, '$.partnerSKU') AS partnerSKU,
+    JSON_EXTRACT_SCALAR(grn_detail, '$.unitCode') AS unitCode,
+    JSON_EXTRACT_SCALAR(grn_detail, '$.unitName') AS unitName,
+    JSON_EXTRACT_SCALAR(grn_detail, '$.conditionTypeCode') AS conditionTypeCode,
+    JSON_EXTRACT_SCALAR(grn_detail, '$.conditionTypeName') AS conditionTypeName,
+    CAST(JSON_EXTRACT_SCALAR(grn_detail, '$.qty') AS INT64) AS qty
+    
 FROM 
     {{ ref('t1_vietful_nhapkho_total') }},
-    UNNEST(details) AS detail_item
-WHERE details IS NOT NULL
+    UNNEST(grns) AS grn_item,
+    UNNEST(JSON_EXTRACT_ARRAY(grn_item, '$.details')) AS grn_detail
+WHERE 
+    grns IS NOT NULL
