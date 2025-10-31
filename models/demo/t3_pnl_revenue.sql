@@ -21,9 +21,7 @@ SELECT
     0 as doanh_so_moi,
     'Facebook' AS channel,
     phi_van_chuyen_thuc_te,
-    gia_von_total,
     gia_von,
-    so_luong,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`pnl_t2_facebook`
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
@@ -90,10 +88,7 @@ SELECT
     0 as doanh_so_moi,
     'Tiktok' AS channel,
     0 as phi_van_chuyen_thuc_te,
-    gia_von_total,
     gia_von,
-    so_luong,
-    
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
 -- where status not in ("Đã hủy", "Đang giao")
