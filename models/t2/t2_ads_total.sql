@@ -140,7 +140,21 @@ select
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
   currency
-from {{ref("t1_google_ads_total")}}
+from {{ref("t1_google_ads_total")}} where date(segment_date) <= '2025-09-30'
+
+union all
+select 
+  date_start,
+  CAST(idtkqc AS STRING) AS account_id,
+  '-' as account_name,
+  0 as ad_id,
+  '-' as campaign_id,
+  "" as campaign_name,
+  chiphi as spend,
+  0 as doanhThuAds,
+  'Google Ads' as revenue_type,
+  'VND' as currency
+from `google_sheet.me_gg_tuminh`
 
 union all
 

@@ -5,7 +5,12 @@ WITH a AS (
     sale_user_name,
     manager,
     ma_quan_ly,
-    COUNT(DISTINCT IF(LOWER(sale_user_name) LIKE '%sale%' , ma_don_so, NULL)) AS so_lead_sale,
+    COUNT(DISTINCT IF(
+      LOWER(sale_user_name) LIKE '%sale%' 
+      AND NOT ((ma_don_code = '' AND ket_qua_tac_nghiep_telesale = 'Chốt đơn') or ket_qua_tac_nghiep_telesale = 'Trùng số' ),
+      ma_don_so,
+      NULL
+    )) AS so_lead_sale,
 
    
     COUNT(DISTINCT IF(LOWER(sale_user_name) LIKE '%cskh%', ma_don_so, NULL)) AS so_lead_cskh

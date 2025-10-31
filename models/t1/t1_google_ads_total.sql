@@ -1,3 +1,4 @@
+
 select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_ume_googleads_khoavu1211`
 union all
 select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_ume_googleads_buiducan541992_dwh`
@@ -51,3 +52,4 @@ union all
 select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_caphemamxoi_googleads_mariegodfrey97790`
 union all
 select segments.date as segment_date,account_id,metrics.costMicros as spend,metrics.conversionsValue,customer.currencyCode as currency from `team_maxeagle_google_ads_dwh.me_be20_googleads_mailbiendongsoduqa01`
+
