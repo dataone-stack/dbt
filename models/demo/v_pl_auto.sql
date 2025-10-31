@@ -29,7 +29,7 @@ order_revenue AS (
   FROM sku_revenue_for_allocation
   GROUP BY year, month, brand, company, channel, order_id
 ),
--- CTE để tính doanh thu kế toán theo group để làm mẫu số
+-- CTE để tính doanh thu kế toán theo group chi tiết - SỬA LẠI
 doanh_thu_ke_toan_base AS (
   SELECT 
     EXTRACT(YEAR FROM DATE(date_create)) as year,
@@ -37,10 +37,14 @@ doanh_thu_ke_toan_base AS (
     brand,
     company,
     channel,
+    order_id,
+    sku_code,
+    promotion_type,
     SUM(doanh_thu_ke_toan) as total_revenue_base
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
-  GROUP BY year, month, brand, company, channel
+  GROUP BY year, month, brand, company, channel, order_id, sku_code, promotion_type
 ),
+
 
 -- CTE để tính tổng doanh thu theo brand, company, channel, month, year
 total_revenue_by_group AS (
@@ -51,10 +55,11 @@ total_revenue_by_group AS (
     company,
     channel,
     SUM(sku_revenue) as total_group_revenue,
-    COUNT(DISTINCT order_id) AS total_order_count  -- ← Đếm số đơn hàng unique
+    COUNT(DISTINCT order_id) AS total_order_count
   FROM sku_revenue_for_allocation
   GROUP BY year, month, brand, company, channel
 ),
+
 
 -- CTE để lấy tổng chi phí ads theo brand, company, channel, month, year
 chi_phi_ads_total AS (
@@ -64,10 +69,11 @@ chi_phi_ads_total AS (
     brand,
     company,
     channel,
-    SUM(chiPhiAds) as total_ads_cost  -- ← TỔNG HỢP TẤT CẢ
+    SUM(chiPhiAds) as total_ads_cost
   FROM `crypto-arcade-453509-i8.dtm.t3_ads_total_with_tkqc`
-  GROUP BY year, month, brand, company, channel  -- ← BỎ ben_thue, idtkqc, nametkqc
+  GROUP BY year, month, brand, company, channel
 ),
+
 
 sku_count_per_order AS (
   SELECT 
@@ -92,13 +98,13 @@ chi_phi_ads_allocated AS (
     s.sku_code,
     s.ten_san_pham,
     s.promotion_type,
-    -- Phương thức 1: Theo doanh thu SKU (giữ nguyên)
+    -- Phương thức 1: Theo doanh thu SKU
     CASE 
       WHEN t.total_group_revenue > 0 
       THEN (s.sku_revenue / t.total_group_revenue) * a.total_ads_cost
       ELSE 0 
     END as allocated_ads_cost,
-    -- Phương thức 2: SỬA LẠI - Chia đều cho đơn hàng, sau đó chia cho số SKU
+    -- Phương thức 2: Chia đều cho đơn hàng, sau đó chia cho số SKU
     CASE 
       WHEN t.total_order_count > 0 AND sc.sku_count_in_order > 0
       THEN (a.total_ads_cost / t.total_order_count) / sc.sku_count_in_order
@@ -124,7 +130,7 @@ chi_phi_ads_allocated AS (
     AND s.brand = a.brand 
     AND s.company = a.company
     AND s.channel = a.channel
-  LEFT JOIN sku_count_per_order sc  -- ← JOIN thêm CTE mới
+  LEFT JOIN sku_count_per_order sc
     ON s.year = sc.year 
     AND s.month = sc.month 
     AND s.brand = sc.brand 
@@ -133,7 +139,8 @@ chi_phi_ads_allocated AS (
     AND s.order_id = sc.order_id
 ),
 
--- CTE để tính tổng chi phí biến đổi từ các bảng khác nhau (đã update)
+
+-- CTE để tính tổng chi phí biến đổi từ các bảng khác nhau
 chi_phi_revenue AS (
   SELECT 
     EXTRACT(YEAR FROM DATE(date_create)) as year,
@@ -143,12 +150,13 @@ chi_phi_revenue AS (
     channel,
     SUM(phu_phi) as san_cost,
     ABS(SUM(phi_van_chuyen_thuc_te)) as van_chuyen_cost,
-    SUM(gia_von) as gia_von
+    SUM(gia_von_total) as gia_von
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY year, month, brand, company, channel
 ),
 
--- Tính tổng chi phí biến đổi (đã update để sử dụng ads cost đã phân bổ)
+
+-- Tính tổng chi phí biến đổi
 tong_chi_phi_bien_doi AS (
   SELECT 
     COALESCE(a.year, r.year) as year,
@@ -166,6 +174,7 @@ tong_chi_phi_bien_doi AS (
     AND a.channel = r.channel
   GROUP BY year, month, brand, company, channel, r.san_cost, r.van_chuyen_cost, r.gia_von
 ),
+
 
 -- CTE tính tỷ lệ phần trăm
 ty_le_phan_tram AS (
@@ -196,8 +205,9 @@ ty_le_phan_tram AS (
     AND r.month = c.month 
     AND r.brand = c.brand 
     AND r.company = c.company
-    AND r.channel = c.channel
+    AND r.channel = r.channel
 ),
+
 
 base_data AS (
   -- Layer 0: Doanh Thu bán hàng
@@ -223,6 +233,7 @@ base_data AS (
   
   UNION ALL
 
+
   SELECT 
     EXTRACT(YEAR FROM DATE(date_create_order)) as year,
     EXTRACT(MONTH FROM DATE(date_create_order)) as month,
@@ -244,6 +255,7 @@ base_data AS (
   GROUP BY EXTRACT(YEAR FROM DATE(date_create_order)), EXTRACT(MONTH FROM DATE(date_create_order)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
   
   UNION ALL
+
 
   -- Layer 1: Doanh Thu
   SELECT 
@@ -283,15 +295,11 @@ base_data AS (
     status as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    -- case
-    --     when SUM(doanh_thu_ke_toan) < 60000
-    --     then 0
-    --     else  SUM(doanh_thu_ke_toan)
-    -- end as amount,
-     SUM(doanh_thu_ke_toan) as amount,
-     0  as percent
+    SUM(doanh_thu_ke_toan) as amount,
+    0  as percent
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
-  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type,status
+  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type, status
+
 
   UNION ALL
   
@@ -310,20 +318,20 @@ base_data AS (
     status as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    case
-        when status = "Đã hoàn"
-        then SUM(doanh_thu_ke_toan)
-        else  0
-    end as amount,
-    --  SUM(doanh_thu_ke_toan) as amount,
-     0  as percent
+    CASE
+        WHEN status = "Đã hoàn"
+        THEN SUM(doanh_thu_ke_toan)
+        ELSE 0
+    END as amount,
+    0  as percent
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
-  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type,status
+  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type, status
   
   UNION ALL
   
--- Layer 2: Chi Phí Biến Đổi với percentage
-    SELECT 
+  -- Layer 2: Chi Phí Biến Đổi với percentage - ĐÃ SỬA
+  -- 1. Giá vốn
+  SELECT 
     EXTRACT(YEAR FROM DATE(r.date_create)) as year,
     EXTRACT(MONTH FROM DATE(r.date_create)) as month,
     r.brand,
@@ -335,29 +343,34 @@ base_data AS (
     r.sku_code as attribute_2,
     r.ten_san_pham as attribute_3,
     r.promotion_type as attribute_4,
-    ""as attribute_5,
+    "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(r.gia_von) as amount,
+    SUM(r.gia_von_total) as amount,
     -- Tính % giá vốn trên doanh thu kế toán
     CASE 
         WHEN b.total_revenue_base > 0 
-        THEN ROUND((SUM(r.gia_von) / b.total_revenue_base) * 100, 2)
+        THEN ROUND((SUM(r.gia_von_total) / b.total_revenue_base) * 100, 2)
         ELSE 0 
     END as percent
-    FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue` r
-    LEFT JOIN doanh_thu_ke_toan_base b
+  FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue` r
+  LEFT JOIN doanh_thu_ke_toan_base b
     ON EXTRACT(YEAR FROM DATE(r.date_create)) = b.year 
     AND EXTRACT(MONTH FROM DATE(r.date_create)) = b.month 
     AND r.brand = b.brand 
     AND r.company = b.company
     AND r.channel = b.channel
-    GROUP BY EXTRACT(YEAR FROM DATE(r.date_create)), EXTRACT(MONTH FROM DATE(r.date_create)), r.brand, r.company, r.order_id, r.sku_code, r.channel, r.ten_san_pham, r.promotion_type, b.total_revenue_base
+    AND r.order_id = b.order_id 
+    AND r.sku_code = b.sku_code
+    AND r.promotion_type = b.promotion_type
+  GROUP BY EXTRACT(YEAR FROM DATE(r.date_create)), EXTRACT(MONTH FROM DATE(r.date_create)), r.brand, r.company, r.order_id, r.sku_code, r.channel, r.ten_san_pham, r.promotion_type, b.total_revenue_base
 
-    UNION ALL
 
-    -- 2. Ads (sum revenue) với percentage
-    SELECT 
+  UNION ALL
+
+
+  -- 2. Ads (sum revenue) - ĐÃ SỬA
+  SELECT 
     a.year,
     a.month,
     a.brand,
@@ -379,52 +392,61 @@ base_data AS (
         THEN ROUND((a.allocated_ads_cost / b.total_revenue_base) * 100, 2)
         ELSE 0 
     END as percent
-    FROM chi_phi_ads_allocated a
-    LEFT JOIN doanh_thu_ke_toan_base b
+  FROM chi_phi_ads_allocated a
+  LEFT JOIN doanh_thu_ke_toan_base b
     ON a.year = b.year 
     AND a.month = b.month 
     AND a.brand = b.brand 
     AND a.company = b.company
     AND a.channel = b.channel
+    AND a.order_id = b.order_id 
+    AND a.sku_code = b.sku_code
+    AND a.promotion_type = b.promotion_type
 
-    UNION ALL
 
-    -- 2b. Ads (count order) - Phân bổ theo số đơn hàng
-    SELECT 
-        a.year,
-        a.month,
-        a.brand,
-        a.company,
-        a.channel,
-        'Layer 2: Chi Phí Biến Đổi',
-        '2b. Ads (count order)',
-        a.order_id as attribute_1,
-        a.sku_code as attribute_2,
-        a.ten_san_pham as attribute_3,
-        a.promotion_type as attribute_4,
-        "" as attribute_5,
-        "" as attribute_6,
-        "" as attribute_7,
-        a.allocated_ads_cost_count_order as amount,
-        -- Tính % ads cost (theo đơn) trên doanh thu kế toán
-        CASE 
-            WHEN b.total_revenue_base > 0 
-            THEN ROUND((a.allocated_ads_cost_count_order / b.total_revenue_base) * 100, 2)
-            ELSE 0 
-        END as percent
-    FROM chi_phi_ads_allocated a
-    LEFT JOIN doanh_thu_ke_toan_base b
+  UNION ALL
+
+
+  -- 2b. Ads (count order) - ĐÃ SỬA
+  SELECT 
+    a.year,
+    a.month,
+    a.brand,
+    a.company,
+    a.channel,
+    'Layer 2: Chi Phí Biến Đổi',
+    '2b. Ads (count order)',
+    a.order_id as attribute_1,
+    a.sku_code as attribute_2,
+    a.ten_san_pham as attribute_3,
+    a.promotion_type as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    a.allocated_ads_cost_count_order as amount,
+    -- Tính % ads cost (theo đơn) trên doanh thu kế toán
+    CASE 
+        WHEN b.total_revenue_base > 0 
+        THEN ROUND((a.allocated_ads_cost_count_order / b.total_revenue_base) * 100, 2)
+        ELSE 0 
+    END as percent
+  FROM chi_phi_ads_allocated a
+  LEFT JOIN doanh_thu_ke_toan_base b
     ON a.year = b.year 
     AND a.month = b.month 
     AND a.brand = b.brand 
     AND a.company = b.company
     AND a.channel = b.channel
+    AND a.order_id = b.order_id 
+    AND a.sku_code = b.sku_code
+    AND a.promotion_type = b.promotion_type
 
 
-    UNION ALL
+  UNION ALL
 
-    -- 3. Sàn với percentage
-    SELECT 
+
+  -- 3. Sàn - ĐÃ SỬA
+  SELECT 
     EXTRACT(YEAR FROM DATE(r.date_create)) as year,
     EXTRACT(MONTH FROM DATE(r.date_create)) as month,
     r.brand,
@@ -446,19 +468,24 @@ base_data AS (
         THEN ROUND((SUM(r.phu_phi) / b.total_revenue_base) * 100, 2)
         ELSE 0 
     END as percent
-    FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue` r
-    LEFT JOIN doanh_thu_ke_toan_base b
+  FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue` r
+  LEFT JOIN doanh_thu_ke_toan_base b
     ON EXTRACT(YEAR FROM DATE(r.date_create)) = b.year 
     AND EXTRACT(MONTH FROM DATE(r.date_create)) = b.month 
     AND r.brand = b.brand 
     AND r.company = b.company
     AND r.channel = b.channel
-    GROUP BY EXTRACT(YEAR FROM DATE(r.date_create)), EXTRACT(MONTH FROM DATE(r.date_create)), r.brand, r.company, r.channel, r.order_id, r.sku_code, r.ten_san_pham, r.promotion_type, b.total_revenue_base
+    AND r.order_id = b.order_id 
+    AND r.sku_code = b.sku_code
+    AND r.promotion_type = b.promotion_type
+  GROUP BY EXTRACT(YEAR FROM DATE(r.date_create)), EXTRACT(MONTH FROM DATE(r.date_create)), r.brand, r.company, r.channel, r.order_id, r.sku_code, r.ten_san_pham, r.promotion_type, b.total_revenue_base
 
-    UNION ALL
 
-    -- 4. Vận chuyển với percentage
-    SELECT 
+  UNION ALL
+
+
+  -- 4. Vận chuyển - ĐÃ SỬA
+  SELECT 
     EXTRACT(YEAR FROM DATE(r.date_create)) as year,
     EXTRACT(MONTH FROM DATE(r.date_create)) as month,
     r.brand,
@@ -480,16 +507,20 @@ base_data AS (
         THEN ROUND((ABS(SUM(r.phi_van_chuyen_thuc_te)) / b.total_revenue_base) * 100, 2)
         ELSE 0 
     END as percent
-    FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue` r
-    LEFT JOIN doanh_thu_ke_toan_base b
+  FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue` r
+  LEFT JOIN doanh_thu_ke_toan_base b
     ON EXTRACT(YEAR FROM DATE(r.date_create)) = b.year 
     AND EXTRACT(MONTH FROM DATE(r.date_create)) = b.month 
     AND r.brand = b.brand 
     AND r.company = b.company
     AND r.channel = b.channel
-    GROUP BY EXTRACT(YEAR FROM DATE(r.date_create)) ,EXTRACT(MONTH FROM DATE(r.date_create)), r.brand, r.company, r.channel, r.order_id, r.sku_code, r.ten_san_pham, r.promotion_type, b.total_revenue_base
+    AND r.order_id = b.order_id 
+    AND r.sku_code = b.sku_code
+    AND r.promotion_type = b.promotion_type
+  GROUP BY EXTRACT(YEAR FROM DATE(r.date_create)), EXTRACT(MONTH FROM DATE(r.date_create)), r.brand, r.company, r.channel, r.order_id, r.sku_code, r.ten_san_pham, r.promotion_type, b.total_revenue_base
   
   UNION ALL
+
 
   SELECT 
     EXTRACT(YEAR FROM DATE(date_create)),
@@ -513,6 +544,7 @@ base_data AS (
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel, order_id, sku_code, ten_san_pham, promotion_type
   
   UNION ALL
+
 
   SELECT 
     EXTRACT(YEAR FROM DATE(date_create)),
@@ -556,9 +588,10 @@ base_data AS (
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel
 
+
   UNION ALL
   
-  -- Sử dụng CTE để tính tổng chi phí biến đổi
+  -- Tổng chi phí biến đổi
   SELECT 
     year,
     month,
@@ -578,9 +611,10 @@ base_data AS (
     0  as percent
   FROM tong_chi_phi_bien_doi
 
+
   UNION ALL
   
-  -- Sử dụng CTE để tính tổng chi phí biến đổi
+  -- Thu nhập thuần
   SELECT 
     year,
     month,
@@ -597,15 +631,13 @@ base_data AS (
     "" as attribute_6,
     "" as attribute_7,
     net_income as amount,
-    net_profit_margin_pct as percent,
+    net_profit_margin_pct as percent
   FROM ty_le_phan_tram
   WHERE net_income IS NOT NULL
-
-
 )
 
+
 -- Final SELECT với aggregation
--- Final SELECT với aggregation đúng cách
 SELECT 
   year,
   month,
@@ -625,7 +657,7 @@ SELECT
   -- Không dùng AVERAGE cho percentage, dùng logic tính lại
   CASE 
     WHEN layer_name = 'Layer 2: Chi Phí Biến Đổi' AND SUM(amount) > 0
-    THEN MAX(percent) -- Lấy giá trị percentage đã tính sẵn
+    THEN MAX(percent)
     ELSE AVG(percent)
   END as percent
 FROM base_data
@@ -633,5 +665,3 @@ WHERE amount IS NOT NULL
   AND month >= 6 
   AND year >= 2025
 GROUP BY year, month, brand, company, channel, layer_name, metric_name, attribute_1, attribute_2, attribute_3, attribute_4, attribute_5, attribute_6, attribute_7
-
-

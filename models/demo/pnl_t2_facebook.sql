@@ -465,7 +465,8 @@ order_line_returned as (
     ngay_da_giao,
     tracking_code,
     0 AS phu_phi,
-    gia_von* so_luong as gia_von,
+    gia_von* so_luong as gia_von_total,
+    gia_von,
     case
       when gia_goc_sau_giam_gia_san_pham = 0
       then "Quà tặng"
