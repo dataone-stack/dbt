@@ -121,9 +121,16 @@ order_product_summary AS (
         WHEN ord.promotion_type = 'add_on_free_gift_sub'
             THEN 0
         WHEN (rd.return_id IS NOT NULL AND rd.return_id != "")
-            THEN COALESCE(cost_price.cost_price, 0) * i.quantity_purchased *-1
-        ELSE COALESCE(cost_price.cost_price, 0) * i.quantity_purchased
+            THEN 0
+        ELSE COALESCE(cost_price.cost_price, 0)
     END AS gia_von,
+    CASE
+        WHEN ord.promotion_type = 'add_on_free_gift_sub'
+            THEN 0
+        WHEN (rd.return_id IS NOT NULL AND rd.return_id != "")
+            THEN 0
+        ELSE COALESCE(cost_price.cost_price, 0) * i.quantity_purchased
+    END AS gia_von_total,
     COALESCE(i.discounted_price,0) AS discounted_price,
     COALESCE(rd.return_id,"") AS return_id,
     -- THÊM ROW_NUMBER ĐỂ XỬ LÝ TRONG CTE NÀY LUÔN
@@ -325,8 +332,31 @@ SELECT
         THEN 
             (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
     END AS tax,
+    
+    -- CASE 
+    --     WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+    --     THEN  ops.gia_von 
+    --     WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+    --     THEN ops.gia_von *-1
+    --     WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+    --     THEN 
+    --        ops.gia_von *-1
+    --     ELSE ops.gia_von *-1
+    -- END AS gia_von,
+
+    -- CASE 
+    --     WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+    --     THEN  ops.gia_von_total 
+    --     WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+    --     THEN ops.gia_von_total *-1
+    --     WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+    --     THEN 
+    --        ops.gia_von_total *-1
+    --     ELSE ops.gia_von_total *-1
+    -- END AS gia_von_total,
 
     ops.gia_von,
+    ops.gia_von_total,
     ops.promotion_type,
     
     -- Phí vận chuyển thực tế
