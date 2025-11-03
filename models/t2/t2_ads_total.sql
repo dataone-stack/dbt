@@ -140,7 +140,7 @@ select
   0 as doanhThuAds,
   'Google Ads' as revenue_type,
   currency
-from {{ref("t1_google_ads_total")}} where date(segment_date) <= '2025-09-30'
+from {{ref("t1_google_ads_total")}} where date(segment_date)
 
 union all
 select 
