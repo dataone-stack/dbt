@@ -233,51 +233,205 @@ SELECT
   -- 4. Tồn kho sau khi hàng về
   COALESCE(ci.ton_kho_hien_tai, 0) + COALESCE(ea.incoming_qty, 0) AS ton_kho_sau_khi_hang_ve,
 
-  -- 5. STOCKOUT RISK STATUS (CẬP NHẬT - Tính daily_sales_rate một lần)
-  CASE
-    WHEN COALESCE(a.thuc_te_ban, 0) = 0 
-    THEN '⚪ KHÔNG CÓ DATA BÁN - Không đánh giá được'
+--   -- 5. STOCKOUT RISK STATUS (CẬP NHẬT - Tính daily_sales_rate một lần)
+--   CASE
+--     WHEN COALESCE(a.thuc_te_ban, 0) = 0 
+--     THEN '⚪ KHÔNG CÓ DATA BÁN - Không đánh giá được'
     
-    WHEN ea.next_arrival_date IS NULL THEN
-      CASE
-        WHEN COALESCE(ci.ton_kho_hien_tai, 0) = 0 
-        THEN '🔴 HẾT HÀNG + KHÔNG CÓ ĐƠN NHẬP - Cần lên đơn GẤP'
+--     WHEN ea.next_arrival_date IS NULL THEN
+--       CASE
+--         WHEN COALESCE(ci.ton_kho_hien_tai, 0) = 0 
+--         THEN '🔴 HẾT HÀNG + KHÔNG CÓ ĐƠN NHẬP - Cần lên đơn GẤP'
         
-        WHEN COALESCE(ci.ton_kho_hien_tai, 0) >= 
-          (a.thuc_te_ban / 
-            CASE 
-              WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
-                   AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
-              THEN EXTRACT(DAY FROM CURRENT_DATE())
-              ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
-            END
-          ) * COALESCE(plt.lead_time, 30) * 2
-        THEN '🟢 TỒN KHO ĐỦ - Đủ dùng >60 ngày, chưa cần nhập'
+--         WHEN COALESCE(ci.ton_kho_hien_tai, 0) >= 
+--           (a.thuc_te_ban / 
+--             CASE 
+--               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--               THEN EXTRACT(DAY FROM CURRENT_DATE())
+--               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--             END
+--           ) * COALESCE(plt.lead_time, 30) * 2
+--         THEN '🟢 TỒN KHO ĐỦ - Đủ dùng >60 ngày, chưa cần nhập'
         
-        WHEN COALESCE(ci.ton_kho_hien_tai, 0) >= 
-          (a.thuc_te_ban / 
-            CASE 
-              WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
-                   AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
-              THEN EXTRACT(DAY FROM CURRENT_DATE())
-              ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
-            END
-          ) * COALESCE(plt.lead_time, 30)
-        THEN '🟠 TỒN KHO VỪA ĐỦ - Đủ dùng 30-60 ngày, nên lên đơn ngay'
+--         WHEN COALESCE(ci.ton_kho_hien_tai, 0) >= 
+--           (a.thuc_te_ban / 
+--             CASE 
+--               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--               THEN EXTRACT(DAY FROM CURRENT_DATE())
+--               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--             END
+--           ) * COALESCE(plt.lead_time, 30)
+--         THEN '🟠 TỒN KHO VỪA ĐỦ - Đủ dùng 30-60 ngày, nên lên đơn ngay'
         
-        WHEN COALESCE(ci.ton_kho_hien_tai, 0) < 
-          (a.thuc_te_ban / 
-            CASE 
-              WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
-                   AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
-              THEN EXTRACT(DAY FROM CURRENT_DATE())
-              ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
-            END
-          ) * COALESCE(plt.lead_time, 30)
-        THEN '🔴 TỒN KHO THIẾU - Đủ dùng <30 ngày, cần lên đơn GẤP'
+--         WHEN COALESCE(ci.ton_kho_hien_tai, 0) < 
+--           (a.thuc_te_ban / 
+--             CASE 
+--               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--               THEN EXTRACT(DAY FROM CURRENT_DATE())
+--               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--             END
+--           ) * COALESCE(plt.lead_time, 30)
+--         THEN '🔴 TỒN KHO THIẾU - Đủ dùng <30 ngày, cần lên đơn GẤP'
         
-        ELSE '⚪ KHÔNG XÁC ĐỊNH'
-      END
+--         ELSE '⚪ KHÔNG XÁC ĐỊNH'
+--       END
+    
+--     WHEN DATE_ADD(
+--            ci.current_date, 
+--            INTERVAL CAST(ROUND(
+--              COALESCE(ci.ton_kho_hien_tai, 0) / 
+--              (a.thuc_te_ban / 
+--                CASE 
+--                  WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                       AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--                  THEN EXTRACT(DAY FROM CURRENT_DATE())
+--                  ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--                END
+--              )
+--            ) AS INT64) DAY
+--          ) < ea.next_arrival_date
+--     THEN '🔴 SẼ HẾT HÀNG TRƯỚC KHI NHẬP VỀ - Nguy cơ cao'
+    
+--     WHEN DATE_ADD(
+--            ci.current_date, 
+--            INTERVAL CAST(ROUND(
+--              COALESCE(ci.ton_kho_hien_tai, 0) / 
+--              (a.thuc_te_ban / 
+--                CASE 
+--                  WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                       AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--                  THEN EXTRACT(DAY FROM CURRENT_DATE())
+--                  ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--                END
+--              )
+--            ) AS INT64) DAY
+--          ) BETWEEN ea.next_arrival_date 
+--                    AND DATE_ADD(ea.next_arrival_date, INTERVAL 3 DAY)
+--     THEN '🟠 SẮP HẾT HÀNG KHI NHẬP VỀ - Cần theo dõi sát'
+    
+--     WHEN DATE_ADD(
+--            ci.current_date, 
+--            INTERVAL CAST(ROUND(
+--              COALESCE(ci.ton_kho_hien_tai, 0) / 
+--              (a.thuc_te_ban / 
+--                CASE 
+--                  WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                       AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--                  THEN EXTRACT(DAY FROM CURRENT_DATE())
+--                  ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--                END
+--              )
+--            ) AS INT64) DAY
+--          ) >= DATE_ADD(ea.next_arrival_date, INTERVAL 3 DAY)
+--     THEN '🟢 ĐỦ HÀNG ĐẾN KHI NHẬP VỀ - An toàn'
+    
+--     ELSE '⚪ KHÔNG XÁC ĐỊNH'
+--   END AS stockout_risk_status,
+
+--   -- 6. Buffer days (CẬP NHẬT)
+--   CASE 
+--     WHEN COALESCE(a.thuc_te_ban, 0) > 0 
+--          AND ea.next_arrival_date IS NOT NULL
+--     THEN DATE_DIFF(
+--       ea.next_arrival_date,
+--       DATE_ADD(
+--         ci.current_date, 
+--         INTERVAL CAST(ROUND(
+--           COALESCE(ci.ton_kho_hien_tai, 0) / 
+--           (a.thuc_te_ban / 
+--             CASE 
+--               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+--                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+--               THEN EXTRACT(DAY FROM CURRENT_DATE())
+--               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+--             END
+--           )
+--         ) AS INT64) DAY
+--       ),
+--       DAY
+--     )
+--     ELSE NULL
+--   END AS buffer_days_before_arrival,
+
+  -- 8. SALES PRIORITY STATUS (Trạng thái ưu tiên bán hàng)
+  CASE
+    -- Không có data bán hoặc hết hàng
+    WHEN COALESCE(a.thuc_te_ban, 0) = 0 
+         OR COALESCE(ci.ton_kho_hien_tai, 0) = 0
+    THEN '🔴 ƯU TIÊN CAO - Tồn kho cao (>60 ngày), cần đẩy mạnh bán'
+    
+    -- Tồn kho cao (>60 ngày) - CẦN ĐẨY MẠNH BÁN
+    WHEN CAST(ROUND(
+      COALESCE(ci.ton_kho_hien_tai, 0) / 
+      (a.thuc_te_ban / 
+        CASE 
+          WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+               AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+          THEN EXTRACT(DAY FROM CURRENT_DATE())
+          ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+        END
+      )
+    ) AS INT64) > 60
+    THEN '🔴 ƯU TIÊN CAO - Tồn kho cao (>60 ngày), cần đẩy mạnh bán'
+    
+    -- Tồn kho vừa (30-60 ngày) - BÁN BÌNH THƯỜNG
+    WHEN CAST(ROUND(
+      COALESCE(ci.ton_kho_hien_tai, 0) / 
+      (a.thuc_te_ban / 
+        CASE 
+          WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+               AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+          THEN EXTRACT(DAY FROM CURRENT_DATE())
+          ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+        END
+      )
+    ) AS INT64) BETWEEN 30 AND 60
+    THEN '🟠 ƯU TIÊN TRUNG BÌNH - Tồn kho vừa (30-60 ngày), bán bình thường'
+    
+    -- Tồn kho thấp (<30 ngày) - KHÔNG NÊN ĐẨY MẠNH
+    WHEN CAST(ROUND(
+      COALESCE(ci.ton_kho_hien_tai, 0) / 
+      (a.thuc_te_ban / 
+        CASE 
+          WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+               AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+          THEN EXTRACT(DAY FROM CURRENT_DATE())
+          ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+        END
+      )
+    ) AS INT64) < 30
+    THEN '🟢 ƯU TIÊN THẤP - Tồn kho thấp (<30 ngày), không nên đẩy mạnh'
+    
+    ELSE '⚪ KHÔNG XÁC ĐỊNH'
+  END AS sales_priority_status,
+
+
+  -- 9. PROCUREMENT PRIORITY STATUS (Trạng thái ưu tiên nhập hàng)
+  CASE
+    -- Không có data bán - không đánh giá được
+    WHEN COALESCE(a.thuc_te_ban, 0) = 0 
+    THEN '⚪ Chưa bán được sản phẩm nào'
+    
+    -- 🔴 CẤP BÁCH - Cần lên đơn GẤP
+    WHEN COALESCE(ci.ton_kho_hien_tai, 0) = 0
+    THEN '🔴 CẤP BÁCH - Sẽ hết hàng trước khi nhập hàng về'
+    
+    WHEN ea.next_arrival_date IS NULL 
+         AND CAST(ROUND(
+           COALESCE(ci.ton_kho_hien_tai, 0) / 
+           (a.thuc_te_ban / 
+             CASE 
+               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+               THEN EXTRACT(DAY FROM CURRENT_DATE())
+               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+             END
+           )
+         ) AS INT64) < COALESCE(plt.lead_time, 30)
+    THEN '🔴 CẤP BÁCH - Sẽ hết hàng trước khi nhập hàng về'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -293,7 +447,23 @@ SELECT
              )
            ) AS INT64) DAY
          ) < ea.next_arrival_date
-    THEN '🔴 SẼ HẾT HÀNG TRƯỚC KHI NHẬP VỀ - Nguy cơ cao'
+    THEN '🔴 CẤP BÁCH - Sẽ hết hàng trước khi nhập hàng về'
+    
+    -- 🟠 ƯU TIÊN CAO - Nên lên đơn trong tuần
+    WHEN ea.next_arrival_date IS NULL 
+         AND CAST(ROUND(
+           COALESCE(ci.ton_kho_hien_tai, 0) / 
+           (a.thuc_te_ban / 
+             CASE 
+               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+               THEN EXTRACT(DAY FROM CURRENT_DATE())
+               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+             END
+           )
+         ) AS INT64) BETWEEN COALESCE(plt.lead_time, 30) 
+                              AND COALESCE(plt.lead_time, 30) * 1.5
+    THEN '🟠 ƯU TIÊN CAO - Tồn kho vừa đủ lead time, nên lên đơn sớm'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -309,8 +479,24 @@ SELECT
              )
            ) AS INT64) DAY
          ) BETWEEN ea.next_arrival_date 
-                   AND DATE_ADD(ea.next_arrival_date, INTERVAL 3 DAY)
-    THEN '🟠 SẮP HẾT HÀNG KHI NHẬP VỀ - Cần theo dõi sát'
+                   AND DATE_ADD(ea.next_arrival_date, INTERVAL 7 DAY)
+    THEN '🟠 ƯU TIÊN CAO - Có đơn nhập nhưng buffer thấp (<7 ngày)'
+    
+    -- 🟢 ƯU TIÊN TRUNG BÌNH - Theo dõi
+    WHEN ea.next_arrival_date IS NULL 
+         AND CAST(ROUND(
+           COALESCE(ci.ton_kho_hien_tai, 0) / 
+           (a.thuc_te_ban / 
+             CASE 
+               WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+                    AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+               THEN EXTRACT(DAY FROM CURRENT_DATE())
+               ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+             END
+           )
+         ) AS INT64) BETWEEN COALESCE(plt.lead_time, 30) * 1.5 
+                              AND COALESCE(plt.lead_time, 30) * 2
+    THEN '🟢 ƯU TIÊN TRUNG BÌNH - Tồn kho ổn định, theo dõi và lên đơn khi cần'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -325,38 +511,45 @@ SELECT
                END
              )
            ) AS INT64) DAY
-         ) >= DATE_ADD(ea.next_arrival_date, INTERVAL 3 DAY)
-    THEN '🟢 ĐỦ HÀNG ĐẾN KHI NHẬP VỀ - An toàn'
+         ) BETWEEN DATE_ADD(ea.next_arrival_date, INTERVAL 7 DAY)
+                   AND DATE_ADD(ea.next_arrival_date, INTERVAL 14 DAY)
+    THEN '🟢 ƯU TIÊN TRUNG BÌNH - Có đơn nhập với buffer đủ (7-14 ngày)'
+    
+    -- ⚪ KHÔNG CẦN NHẬP - Đủ hàng
+    WHEN CAST(ROUND(
+      COALESCE(ci.ton_kho_hien_tai, 0) / 
+      (a.thuc_te_ban / 
+        CASE 
+          WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+               AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+          THEN EXTRACT(DAY FROM CURRENT_DATE())
+          ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+        END
+      )
+    ) AS INT64) >= COALESCE(plt.lead_time, 30) * 2
+    THEN '⚪ KHÔNG CẦN NHẬP - Tồn kho dồi dào (>60 ngày), chưa cần nhập'
+    
+    WHEN DATE_ADD(
+           ci.current_date, 
+           INTERVAL CAST(ROUND(
+             COALESCE(ci.ton_kho_hien_tai, 0) / 
+             (a.thuc_te_ban / 
+               CASE 
+                 WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
+                      AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
+                 THEN EXTRACT(DAY FROM CURRENT_DATE())
+                 ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
+               END
+             )
+           ) AS INT64) DAY
+         ) > DATE_ADD(ea.next_arrival_date, INTERVAL 14 DAY)
+    THEN '⚪ KHÔNG CẦN NHẬP - Có đơn nhập với buffer rất đủ (>14 ngày)'
     
     ELSE '⚪ KHÔNG XÁC ĐỊNH'
-  END AS stockout_risk_status,
+  END AS procurement_priority_status,
 
-  -- 6. Buffer days (CẬP NHẬT)
-  CASE 
-    WHEN COALESCE(a.thuc_te_ban, 0) > 0 
-         AND ea.next_arrival_date IS NOT NULL
-    THEN DATE_DIFF(
-      ea.next_arrival_date,
-      DATE_ADD(
-        ci.current_date, 
-        INTERVAL CAST(ROUND(
-          COALESCE(ci.ton_kho_hien_tai, 0) / 
-          (a.thuc_te_ban / 
-            CASE 
-              WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
-                   AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
-              THEN EXTRACT(DAY FROM CURRENT_DATE())
-              ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
-            END
-          )
-        ) AS INT64) DAY
-      ),
-      DAY
-    )
-    ELSE NULL
-  END AS buffer_days_before_arrival,
 
-  -- 7. Days of Inventory (DOI) - CẬP NHẬT
+  -- 7. Days of Inventory (DOI) - giữ nguyên
   CASE 
     WHEN COALESCE(a.thuc_te_ban, 0) > 0 
     THEN ROUND(

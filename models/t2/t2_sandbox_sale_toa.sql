@@ -16,7 +16,7 @@ WITH a AS (
     COUNT(DISTINCT IF(LOWER(sale_user_name) LIKE '%cskh%', ma_don_so, NULL)) AS so_lead_cskh
 
   FROM `crypto-arcade-453509-i8`.`dtm`.`t2_sandbox_order_lines_toa`
-  WHERE ngay_data_ve IS NOT NULL
+  WHERE ngay_data_ve IS NOT NULL and nguon_doanh_thu != 'Sàn TMDT liên kết'
   GROUP BY DATE(ngay_data_ve), sale_name, sale_user_name,manager, ma_quan_ly
 )
 --  select * from a WHERE sale_user_name = 
@@ -39,7 +39,7 @@ b AS (
     SUM(IFNULL(doanh_so_moi,0)) AS doanh_so_moi,
     SUM(IFNULL(doanh_so,0)) AS doanh_so
   FROM `crypto-arcade-453509-i8`.`dtm`.`t2_sandbox_order_lines_toa`
-  WHERE ngay_chot_don IS NOT NULL and order_confirm_name = 'Chốt đơn'
+  WHERE ngay_chot_don IS NOT NULL and order_confirm_name = 'Chốt đơn' and nguon_doanh_thu != 'Sàn TMDT liên kết'
   GROUP BY DATE(ngay_chot_don), sale_name, sale_user_name,manager, ma_quan_ly
 -- select * from b WHERE sale_user_name = 
 --    'team9me.sale04'

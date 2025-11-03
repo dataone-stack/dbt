@@ -25,7 +25,11 @@ SELECT
     nametkqc, 
     ben_thue, 
     phi_thue, 
-    CAST(dau_the AS INT64) AS dau_the, 
+    case
+    when dau_the is null
+    then 0
+    else CAST(dau_the AS INT64) 
+    end as dau_the,
     ma_nhan_vien, 
     -- chuẩn hóa staff dạng Nguyễn Văn A
     (SELECT STRING_AGG(CONCAT(UPPER(SUBSTR(word, 1, 1)), LOWER(SUBSTR(word, 2))) , ' ') FROM UNNEST(SPLIT(staff, ' ')) AS word) AS staff,
