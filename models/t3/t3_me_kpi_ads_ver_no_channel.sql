@@ -12,7 +12,7 @@ WITH ads_total AS (
     SUM(chiPhiAds) AS chiPhiAds,
     ROUND(SAFE_DIVIDE(SUM(chiPhiAds), SUM(doanhThuads + doanh_so_moi)), 4) AS cir
   FROM {{ref('t3_ads_total_with_tkqc')}}
-  WHERE company = 'Max Eagle' 
+  WHERE company = 'Max Eagle' AND DATE(date_start) >= "2025-10-01"
   GROUP BY 1,2,3,4,5,6,7,8
 ),
 kpi_total AS (
@@ -30,7 +30,7 @@ kpi_total AS (
     spend,
     cir_target
   FROM {{ref('t1_kpi_ads_total')}}
-  WHERE company = 'Max Eagle'
+  WHERE company = 'Max Eagle' AND month >= 10
 ),
 a AS (
   SELECT 
