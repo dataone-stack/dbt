@@ -79,7 +79,7 @@ orderline AS (
         
         CASE 
             WHEN dt.price =0 THEN "Quà tặng"
-            ELSE ""
+            ELSE "Hàng bán"
         END AS promotion_type,
 
         CASE 
