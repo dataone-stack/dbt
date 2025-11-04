@@ -14,6 +14,7 @@ SELECT
     status, 
     start_date, 
     end_date, 
+    '0' as so_tai_khoan,
     'One5' AS company 
 FROM `google_sheet.tkqc` 
 WHERE idtkqc IS NOT NULL
@@ -40,6 +41,13 @@ SELECT
     status, 
     start_date, 
     end_date,
+
+    case
+    when so_tai_khoan is null
+    then '0'
+    else so_tai_khoan
+    end as so_tai_khoan,
+
     'Max Eagle' AS company 
 FROM `google_sheet.tkqc_me` 
 WHERE idtkqc IS NOT NULL and channel not in ('Google Ads','Marketplcae','Tiktok shop')

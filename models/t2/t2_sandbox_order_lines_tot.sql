@@ -76,6 +76,11 @@ orderline AS (
             WHEN ord.customer_type = 0 AND dt.quantity * dt.price < 1000 THEN (dt.price - bangGia.phi_don_us)* dt.quantity *25000             -- TRƯỜNG HỢP 2: KHÁCH HÀNG MỚI
             ELSE dt.price * dt.quantity
         END AS thanh_tien,
+        
+        CASE 
+            WHEN dt.price =0 THEN "Quà tặng"
+            ELSE ""
+        END AS promotion_type,
 
         CASE 
             WHEN discount_type = 0 THEN 0

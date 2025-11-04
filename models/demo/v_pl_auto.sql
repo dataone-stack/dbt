@@ -205,7 +205,7 @@ ty_le_phan_tram AS (
     AND r.month = c.month 
     AND r.brand = c.brand 
     AND r.company = c.company
-    AND r.channel = r.channel
+    AND r.channel = c.channel
 ),
 
 

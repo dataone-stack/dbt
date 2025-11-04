@@ -1,18 +1,18 @@
-select *,'chaching_brand' as idtkqc from `chaching_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_brand`
+select *,'1360134442' as idtkqc from `chaching_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_brand`
 union all
-select *,'lyb_official' as idtkqc from `lyb_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_official`
+select *,'847813660' as idtkqc from `lyb_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_official`
 union all
-select *,'ume_viet_nam' as idtkqc from `ume_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ume_viet_nam`
+select *,'1023530981' as idtkqc from `ume_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ume_viet_nam`
 union all
-select *,'ancung_brand' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
+select *,'1442362266' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
 union all
 select * ,'lyb_cosmetic_sp' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
 union all
-select * ,'chaching_beauty' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
+select * ,'1569014047' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
 union all
-select * ,'chaching_fashion' as idtkqc from `chachingfashion_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chachingfashion`
+select * ,'1640563725' as idtkqc from `chachingfashion_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chachingfashion`
 union all
-select * ,'lyb_fashion' as idtkqc from `lybfashion_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_fashion`
+select * ,'1648366043' as idtkqc from `lybfashion_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_fashion`
 
 
 union all
