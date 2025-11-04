@@ -111,7 +111,8 @@ order_product_summary AS (
     END AS so_tien_hoan_tra,
     CASE
         WHEN ord.promotion_type = 'add_on_free_gift_sub'
-        THEN "Quà Tặng"
+        THEN "Quà tặng"
+        ELSE "Hàng bán"
     END AS promotion_type,
     0 AS nguoi_ban_hoan_xu,
     shopee_discount AS tro_gia_shopee,
