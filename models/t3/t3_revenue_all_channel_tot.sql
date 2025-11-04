@@ -7,7 +7,7 @@ with a as (SELECT
     -- sku_code,
     -- ten_san_pham,
     -- gia_san_pham_goc_total,
-
+    promotion_type,
     CAST(ngay_ship AS date) as ngay_ship,
     CAST(ngay_da_giao AS TIMESTAMP) as date_create, 
     ma_don_hang as order_id, 
@@ -38,6 +38,7 @@ SELECT
     -- sku_code,
     -- ten_san_pham,
 
+    promotion_type,
     cast(ngay_ship as date) as ngay_ship,
 
     ngay_tien_ve_vi as date_create, 
@@ -70,7 +71,7 @@ SELECT
     -- sku_code,
     -- ten_san_pham,
     -- gia_san_pham_goc_total,
-
+    promotion_type,
     CAST(Shipped_Time as date) as ngay_ship,
     CAST(order_statement_time AS TIMESTAMP) as date_create, 
     CAST(adjustment_id AS STRING) as order_id, 
@@ -101,7 +102,7 @@ SELECT
     -- sku as sku_code,
     -- san_pham as ten_san_pham,
     -- thanh_tien as gia_san_pham_goc_total,
-
+    promotion_type,
     cast(null as date) as ngay_ship,
     ngay_tien_ve_vi as date_create, 
     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
