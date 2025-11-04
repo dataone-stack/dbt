@@ -392,6 +392,7 @@ orderLine as(
     CASE
         WHEN line_type = 'return_line' THEN Gia_Ban_Daily * Quantity * -1
         WHEN Order_Status = 'Canceled' THEN 0
+        WHEN is_gift = TRUE THEN 0
         ELSE Gia_Ban_Daily * Quantity
     END AS gia_ban_daily_total,
 
@@ -399,6 +400,7 @@ orderLine as(
     CASE
         WHEN line_type = 'return_line' THEN (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) * -1
         WHEN Order_Status = 'Canceled' THEN 0
+        WHEN is_gift = TRUE THEN 0
         ELSE (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))
     END AS tien_chiet_khau_sp,
 

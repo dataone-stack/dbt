@@ -35,6 +35,7 @@ total_amount AS (
 
 ,shopee_fee_total as (
   select
+    detail.shop_id,
     detail.shop,
     detail.order_id,
     detail.buyer_user_name ,
@@ -111,6 +112,7 @@ total_amount AS (
 
 ,sale_detail AS (
   SELECT
+    detail.shop_id,
     detail.shop,
     detail.order_id,
     detail.buyer_user_name AS ten_nguoi_mua,
@@ -179,6 +181,7 @@ total_amount AS (
 
 SELECT
   --test_doanh_thu,
+  shop_id,
   shop,
   create_time as ngay_tao_don,
   ten_nguoi_mua,
