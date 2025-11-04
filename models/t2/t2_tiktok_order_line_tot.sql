@@ -414,8 +414,8 @@ orderLine as(
     COALESCE(gia_von, 0) as gia_von,
 
     CASE
-      WHEN is_gift = TRUE THEN "Quà Tặng"
-      ELSE NULL
+      WHEN is_gift = TRUE THEN "Quà tặng"
+      ELSE "Hàng bán"
     END as promotion_type,
     
     order_type,
