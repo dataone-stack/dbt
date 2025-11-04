@@ -1,10 +1,10 @@
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,'One5' as company, 'Chaching' AS brand, 'chaching_brand' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,'One5' as company, 'Chaching' AS brand, 'Chaching Brand' AS shop, '1360134442' as shop_id
 FROM `chaching_shopee_shop_dwh.shopee_return_chaching_brand`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'LYB' AS brand, 'lyb_official' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'LYB' AS brand, 'LYB Official' AS shop, '847813660' as shop_id
 FROM `lyb_shopee_shop_dwh.shopee_return_lyb_official`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'An Cung' AS brand, 'ancung_brand' AS shop
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'An Cung' AS brand, 'An Cung Brand' AS shop, '1442362266' as shop_id
 FROM `ancung_shopee_shop_dwh.shopee_return_ancung_brand`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop
