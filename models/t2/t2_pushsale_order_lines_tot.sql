@@ -70,6 +70,10 @@ orderline AS (
             ELSE dt.price * dt.quantity
         END AS thanh_tien,
 
+        CASE 
+            WHEN dt.price =0 THEN "Quà tặng"
+            ELSE ""
+        END AS promotion_type,
         -- Tính chiết khấu & phí vận chuyển, trả trước dựa trên tỷ trọng sản phẩm
         {# ROUND(SAFE_DIVIDE(dt.total_price, NULLIF(ord.total_price, 0)) * ord.total_discount, 0) AS chiet_khau, #}
 
