@@ -14,6 +14,7 @@ select
     tkqc.end_date,
     tkqc.company,
     tkqc.brand,
+    tkqc.so_tai_khoan
     -- one.company_lv1
     -- case
     --     when tkqc.sku != ""
