@@ -18,6 +18,7 @@ WITH ads_total_with_tkqc AS (
         tkqc.ben_thue,
         tkqc.dau_the,
         MAX(tkqc.phi_thue) as phi_thue,
+        tkqc.so_tai_khoan,
         SUM(ads.spend) AS chiPhiAds,
         CASE
             WHEN (DATE(ads.date_start) <= '2025-09-30' AND tkqc.channel = 'Facebook') OR tkqc.channel != 'Facebook'
@@ -66,7 +67,8 @@ WITH ads_total_with_tkqc AS (
         -- tkqc.company_lv1,
         tkqc.dau_the,
         campaign_team.brand,
-        tkqc.brand
+        tkqc.brand,
+        tkqc.so_tai_khoan
 ),
 
 ladipage_total AS (
@@ -112,6 +114,7 @@ ladi_unmatched AS (
         'build' AS ben_thue,
         NULL AS dau_the,
         NULL AS phi_thue,
+        '0' as so_tai_khoan,
         0 AS chiPhiAds,
         0 AS doanhThuAds,
         0 AS chi_phi_agency
@@ -160,6 +163,7 @@ ads_extended AS (
         ads.ben_thue,
         ads.dau_the,
         ads.phi_thue,
+        ads.so_tai_khoan,
         COALESCE(ads.chiPhiAds, 0) as chiPhiAds,
         COALESCE(ads.doanhThuAds, 0) as doanhThuAds,
         COALESCE(ads.chi_phi_agency, 0) as chi_phi_agency,
@@ -246,6 +250,7 @@ SELECT
     ads.brand,
     ads.brand_lv1,
     ads.channel, 
+    ads.so_tai_khoan,
     ads.chiPhiAds,
     ads.doanhThuAds,
     ads.doanhThuLadi,
