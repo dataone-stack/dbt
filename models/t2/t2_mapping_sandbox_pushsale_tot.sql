@@ -8,7 +8,7 @@ SELECT
     channel,
     san_pham,
     thanh_tien,
-
+    promotion_type,
     ngay_tien_ve_vi,
     ma_don_code,
     cast (ma_don_so as string) as ma_don_so,
@@ -40,7 +40,7 @@ SELECT
     s.channel,
     s.san_pham,
     s.thanh_tien,
-
+    s.promotion_type,
     s.ngay_tien_ve_vi,
     s.ma_don_code,
     s.ma_don_so,
