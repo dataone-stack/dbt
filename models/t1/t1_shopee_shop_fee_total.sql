@@ -34,10 +34,10 @@ FROM `lybfashion_shopee_shop_dwh.shopee_payment_escrow_detail_lyb_fashion`
 
 
 UNION ALL
-SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop, 'be20_keo_ngam_trang_da_sp' as shop_id
+SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'BE20' AS brand, 'BE20 kẹo ngậm trắng da' AS shop, '1333711265' as shop_id
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_be20_keo_ngam_trang_da`
 UNION ALL
-SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang_sp' AS shop, 'ca_phe_mam_xoi_chinh_hang_sp' as shop_id
+SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '-' AS tax_code, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi chính hãng' AS shop, '1333711265' as shop_id
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_escrow_detail_ca_phe_mam_xoi_chinh_hang`
 UNION ALL
 SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount, 'Max Eagle' as company, '-' AS tax_code, 'UME' AS brand, 'belle_beauty_vietnam_sp' AS shop,'belle_beauty_vietnam_sp' as shop_id
@@ -149,8 +149,8 @@ SELECT
   shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, 
   seller_voucher_code, seller_shipping_discount,
   'Max Eagle' as company, '-' AS tax_code, 
-  'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop, 
-  'beana_beauty_vietnam_sp' as shop_id
+  'BE20' AS brand, 'Beana beauty VietNam' AS shop, 
+  '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_beana_beauty_vietnam`
 
 UNION ALL
@@ -162,8 +162,8 @@ SELECT
   shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, 
   seller_voucher_code, seller_shipping_discount,
   'Max Eagle' as company, '-' AS tax_code, 
-  'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_store_sp' AS shop, 
-  'ca_phe_mam_xoi_store_sp' as shop_id
+  'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi store' AS shop, 
+  '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_escrow_detail_ca_phe_mam_xoi_store`
 
 UNION ALL

@@ -24,6 +24,16 @@ SELECT order_id, return_seller_due_date, return_id, update_time, status, item, a
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_return_be20_keo_ngam_dau_tam_trang_da`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
+       'Max Eagle' as company, 'BE20' AS brand, 'BE20 kẹo ngậm trắng da' AS shop, '1333711265' as shop_id
+FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_return_be20_keo_ngam_trang_da`
+union all
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
+       'Max Eagle' as company, 'BE20' AS brand, 'Cà phê mâm xôi chính hãng' AS shop, '1333711265' as shop_id
+FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`
+
+
+union all
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
        'Max Eagle' as company, 'Cà phê gừng' AS brand, 'ca_phe_giam_can_store' AS shop, 'ca_phe_giam_can_store' AS shop_id
 FROM `caphegiamcanstore_shopee_shop_dwh.shopee_return_ca_phe_giam_can_store`
 UNION ALL
@@ -52,12 +62,12 @@ SELECT order_id, return_seller_due_date, return_id, update_time, status, item, a
 FROM `be20vietnamstore_shopee_shop_dwh.shopee_return_be20_viet_nam_store`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
-       'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop, 'beana_beauty_vietnam_sp' AS shop_id
+       'Max Eagle' as company, 'BE20' AS brand, 'Beana beauty VietNam' AS shop, '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_beana_beauty_vietnam`
 WHERE DATE(DATETIME_ADD(update_time, INTERVAL 7 HOUR)) <= '2025-10-20'
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
-       'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_store_sp' AS shop, 'ca_phe_mam_xoi_store_sp' AS shop_id
+       'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi store' AS shop, '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_store`
 WHERE DATE(DATETIME_ADD(update_time, INTERVAL 7 HOUR)) >= '2025-10-21'
 UNION ALL

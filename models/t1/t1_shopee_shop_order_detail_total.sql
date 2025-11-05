@@ -31,13 +31,13 @@ FROM `lybfashion_shopee_shop_dwh.shopee_order_detail_lyb_fashion`
 
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 
-'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop, 'be20_keo_ngam_trang_da_sp' as shop_id
+'Max Eagle' as company, 'BE20' AS brand, 'BE20 kẹo ngậm trắng da' AS shop, '1333711265' as shop_id
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_order_detail_be20_keo_ngam_trang_da` 
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) <= '2025-10-20'
 
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 
-'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang_sp' AS shop, 'ca_phe_mam_xoi_chinh_hang_sp' as shop_id
+'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi chính hãng' AS shop, '1333711265' as shop_id
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_order_detail_ca_phe_mam_xoi_chinh_hang`  
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) >= '2025-10-21'
 
@@ -113,13 +113,13 @@ FROM `umebeautyvietnam_shope_shop_dwh.shopee_order_detail_ume_beauty_vietnam`
 
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 
-'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop, 'beana_beauty_vietnam_sp' as shop_id
+'Max Eagle' as company, 'BE20' AS brand, 'Beana beauty VietNam' AS shop, '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_order_detail_beana_beauty_vietnam` 
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) <= '2025-10-20'
 
 UNION ALL
 SELECT item_list, order_id, total_amount, create_time, order_status, payment_method, shipping_carrier, ship_by_date, buyer_cancel_reason, days_to_ship, checkout_shipping_carrier, 
-'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_store_sp' AS shop, 'ca_phe_mam_xoi_store_sp' as shop_id
+'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi store' AS shop, '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_order_detail_ca_phe_mam_xoi_store` 
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) >= '2025-10-21'
 
