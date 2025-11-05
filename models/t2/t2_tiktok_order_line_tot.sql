@@ -570,6 +570,8 @@ final_result as (
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_partner_commission, 0) as affiliate_partner_commission,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vn_fix_infrastructure_fee, 0) as phi_xu_ly_don_hang,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_fee_guarantee_service_fee, 0)  as phi_dich_vu_sfr,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.refund_subtotal_before_discounts, 0)  as tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.refund_of_seller_discounts, 0)  as khoan_hoan_tien_giam_gia_cua_ban,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
     
