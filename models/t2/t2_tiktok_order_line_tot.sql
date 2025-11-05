@@ -392,6 +392,7 @@ orderLine as(
     CASE
         WHEN line_type = 'return_line' THEN Gia_Ban_Daily * Quantity * -1
         WHEN Order_Status = 'Canceled' THEN 0
+        WHEN is_gift = TRUE THEN 0
         ELSE Gia_Ban_Daily * Quantity
     END AS gia_ban_daily_total,
 
@@ -399,6 +400,7 @@ orderLine as(
     CASE
         WHEN line_type = 'return_line' THEN (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0)) * -1
         WHEN Order_Status = 'Canceled' THEN 0
+        WHEN is_gift = TRUE THEN 0
         ELSE (COALESCE(Gia_Ban_Daily, 0) * COALESCE(Quantity, 0)) - ((COALESCE(SKU_Unit_Original_Price, 0) * COALESCE(Quantity, 0)) - COALESCE(SKU_Seller_Discount, 0))
     END AS tien_chiet_khau_sp,
 
@@ -414,8 +416,8 @@ orderLine as(
     COALESCE(gia_von, 0) as gia_von,
 
     CASE
-      WHEN is_gift = TRUE THEN "Quà Tặng"
-      ELSE NULL
+      WHEN is_gift = TRUE THEN "Quà tặng"
+      ELSE "Hàng bán"
     END as promotion_type,
     
     order_type,
@@ -566,7 +568,8 @@ final_result as (
     
     -- Affiliate partner commission (theo tỷ lệ)
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_partner_commission, 0) as affiliate_partner_commission,
-    
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vn_fix_infrastructure_fee, 0) as phi_xu_ly_don_hang,
+    COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_fee_guarantee_service_fee, 0)  as phi_dich_vu_sfr,
     0 as voucher_from_seller,
     0 as phi_co_dinh,
     
@@ -577,7 +580,7 @@ final_result as (
     -- Tổng phí sàn
     CASE
         WHEN ord.order_type = "ZERO_LOTTERY"
-        THEN trans.tiktok_shop_commission_fee + trans.shipping_cost_amount + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.voucher_xtra_service_fee + trans.vat_amount + trans.pit_amount
+        THEN trans.tiktok_shop_commission_fee + trans.shipping_cost_amount + trans.affiliate_commission + trans.affiliate_shop_ads_commission + trans.sfp_service_fee + trans.voucher_xtra_service_fee + trans.vat_amount + trans.pit_amount+trans.vn_fix_infrastructure_fee+trans.customer_shipping_fee
         ELSE COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.tiktok_shop_commission_fee, 0) +
              COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_cost_amount, 0) +
              COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.affiliate_commission, 0) +
@@ -586,7 +589,9 @@ final_result as (
              COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.sfp_service_fee, 0) +
              COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.voucher_xtra_service_fee, 0) +
              COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vat_amount, 0) +
-             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) 
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.pit_amount, 0) +
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.vn_fix_infrastructure_fee, 0)+
+             COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.shipping_fee_guarantee_service_fee, 0)
     END as tong_phi_san,
 
 

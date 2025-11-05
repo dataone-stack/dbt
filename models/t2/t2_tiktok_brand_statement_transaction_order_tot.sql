@@ -55,6 +55,9 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.voucher_xtra_service_fee_amount') AS FLOAT64) AS `voucher_xtra_service_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.flash_sales_service_fee_amount') AS FLOAT64) AS `flash_sale_service_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.bonus_cashback_service_fee_amount') AS FLOAT64) AS `bonus_cashback_service_fee`,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.vn_fix_infrastructure_fee') AS FLOAT64) AS `vn_fix_infrastructure_fee`,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.shipping_fee_guarantee_service_fee') AS FLOAT64) AS `shipping_fee_guarantee_service_fee`,
+    
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.tax.vat_amount') AS FLOAT64) AS `vat_withheld_by_tiktok_shop`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.tax.pit_amount') AS FLOAT64) AS `pit_withheld_by_tiktok_shop`,
     SAFE_CAST(adjustment_amount AS FLOAT64) AS `adjustment_amount`,
@@ -106,7 +109,9 @@ SELECT
     SUM(COALESCE(actual_return_shipping_fee, 0)) AS actual_return_shipping_fee,
     SUM(COALESCE(failed_delivery_subsidy_amount, 0)) AS failed_delivery_subsidy_amount,
     SUM(COALESCE(customer_refund, 0)) AS customer_refund,
-    SUM(COALESCE(refunded_customer_shipping_fee_amount, 0)) AS refunded_customer_shipping_fee_amount
+    SUM(COALESCE(refunded_customer_shipping_fee_amount, 0)) AS refunded_customer_shipping_fee_amount,
+    SUM(COALESCE(vn_fix_infrastructure_fee, 0)) AS vn_fix_infrastructure_fee,
+    SUM(COALESCE(shipping_fee_guarantee_service_fee, 0)) AS shipping_fee_guarantee_service_fee
 
 
 FROM transactions

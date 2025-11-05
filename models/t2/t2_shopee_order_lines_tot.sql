@@ -111,7 +111,8 @@ order_product_summary AS (
     END AS so_tien_hoan_tra,
     CASE
         WHEN ord.promotion_type = 'add_on_free_gift_sub'
-        THEN "Quà Tặng"
+        THEN "Quà tặng"
+        ELSE "Hàng bán"
     END AS promotion_type,
     0 AS nguoi_ban_hoan_xu,
     shopee_discount AS tro_gia_shopee,
@@ -165,6 +166,7 @@ a AS (
 SELECT 
     f.brand,
     ops.brand_lv1,
+    ops.discounted_price,
     -- ops.company_lv1,
     f.company,
     f.shop,
@@ -208,6 +210,17 @@ SELECT
         THEN f.voucher_from_seller * -1
         ELSE 0
     END AS ma_giam_gia,
+
+    
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN 0
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * (f.shopee_shipping_rebate * -1)
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN f.shopee_shipping_rebate * -1
+        ELSE 0
+    END AS phi_van_chuyen_tro_gia_tu_san,
     
     -- Phí cố định (commission_fee)  
     CASE 
@@ -263,6 +276,8 @@ SELECT
         THEN f.credit_card_promotion
         ELSE 0
     END AS ngan_hang_khuyen_mai_the_tin_dung,
+
+    
     
     -- Lấy từ wallet
     vi.amount AS wallet_amount,

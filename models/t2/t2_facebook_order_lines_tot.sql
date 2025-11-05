@@ -1161,6 +1161,7 @@ order_line_returned as (
     case
       when gia_goc_sau_giam_gia_san_pham = 0
       then "Quà tặng"
+      ELSE "Hàng bán"
     end as promotion_type
     from order_line
 )
