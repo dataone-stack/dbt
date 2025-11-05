@@ -111,7 +111,9 @@ SELECT
     SUM(COALESCE(customer_refund, 0)) AS customer_refund,
     SUM(COALESCE(refunded_customer_shipping_fee_amount, 0)) AS refunded_customer_shipping_fee_amount,
     SUM(COALESCE(vn_fix_infrastructure_fee, 0)) AS vn_fix_infrastructure_fee,
-    SUM(COALESCE(shipping_fee_guarantee_service_fee, 0)) AS shipping_fee_guarantee_service_fee
+    SUM(COALESCE(shipping_fee_guarantee_service_fee, 0)) AS shipping_fee_guarantee_service_fee,
+    SUM(COALESCE(refund_subtotal_before_discounts, 0)) AS refund_subtotal_before_discounts,
+    SUM(COALESCE(refund_of_seller_discounts, 0)) AS refund_of_seller_discounts
 
 
 FROM transactions
