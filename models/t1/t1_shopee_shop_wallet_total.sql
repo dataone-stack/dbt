@@ -19,11 +19,11 @@ UNION ALL
 SELECT *, 'One5' as company, 'Chaching Beauty' AS brand, 'chaching_beauty' AS shop, '1569014047' as shop_id
 FROM `chaching_beauty_shopee_shop_dwh.shopee_payment_wallet_transaction_chaching_beauty`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'be20_keo_ngam_trang_da_sp' AS shop, 'be20_keo_ngam_trang_da_sp' AS shop_id
+SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'BE20 kẹo ngậm trắng da' AS shop, '1333711265' as shop_id
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_keo_ngam_trang_da`
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) <= '2025-10-20'
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_chinh_hang_sp' AS shop, 'ca_phe_mam_xoi_chinh_hang_sp' AS shop_id
+SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi chính hãng' AS shop, '1333711265' as shop_id
 FROM `be20keongamdautamtrangda_shopee_shop_dwh.shopee_payment_wallet_transaction_ca_phe_mam_xoi_chinh_hang`
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) >= '2025-10-21'
 UNION ALL
@@ -72,11 +72,11 @@ UNION ALL
 SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop, 'ume_beauty_vietnam_sp' AS shop_id
 FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_wallet_transaction_ume_beauty_vietnam`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'beana_beauty_vietnam_sp' AS shop, 'beana_beauty_vietnam_sp' AS shop_id
+SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'Beana beauty VietNam' AS shop, '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_beana_beauty_vietnam`
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) <= '2025-10-20'
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'ca_phe_mam_xoi_store_sp' AS shop, 'ca_phe_mam_xoi_store_sp' AS shop_id
+SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi store' AS shop, '216095138' as shop_id
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_ca_phe_mam_xoi_store`
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) >= '2025-10-21'
 UNION ALL
