@@ -52,6 +52,8 @@ total_amount AS (
     detail.credit_card_promotion ,
     detail.order_ams_commission_fee ,
     detail.voucher_from_seller ,
+    detail.withholding_vat_tax,
+    detail.withholding_pit_tax,
     mapping.gia_ban_daily,
     i.model_sku,
     i.item_sku,
@@ -148,6 +150,8 @@ total_amount AS (
     safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.credit_card_promotion  AS khuyen_mai_cho_the_tin_dung,
     safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.order_ams_commission_fee  AS phi_hoa_hong_tiep_thi_lien_ket,
     safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.voucher_from_seller  AS voucher_from_seller,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.withholding_vat_tax  AS withholding_vat_tax,
+    safe_divide(detail.discounted_price , ta.total_tong_tien_san_pham) * detail.withholding_pit_tax  AS withholding_pit_tax,
     detail.discount_from_voucher_shopee AS shopee_voucher,
     detail.discount_from_coin,
     detail.discount_from_voucher_seller,
@@ -244,11 +248,13 @@ SELECT
   abs(phi_hoa_hong_tiep_thi_lien_ket)*-1 as phi_hoa_hong_tiep_thi_lien_ket,
   abs(tro_gia_tu_shopee) as san_tro_gia,
   abs(voucher_from_seller) * -1 as voucher_from_seller,
+  withholding_pit_tax as thue_tncn,
+  withholding_vat_tax as thue_gtgt,
   0 as phi_hoa_hong_shop,
   0 as phi_hoa_hong_quang_cao_cua_hang,
   0 as phi_xtra,
 
-COALESCE(tong_tien_san_pham, 0) - COALESCE(so_tien_hoan_tra, 0) - COALESCE(voucher_from_seller, 0) + COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) - COALESCE(phi_van_chuyen_thuc_te, 0) + COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) + COALESCE(tro_gia_tu_shopee, 0) - COALESCE(phi_co_dinh, 0) - COALESCE(phi_dich_vu, 0) - COALESCE(phi_thanh_toan, 0) - COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) AS doanh_thu_don_hang_uoc_tinh,
+COALESCE(tong_tien_san_pham, 0) - COALESCE(so_tien_hoan_tra, 0) - COALESCE(voucher_from_seller, 0) + COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) - COALESCE(phi_van_chuyen_thuc_te, 0) + COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) + COALESCE(tro_gia_tu_shopee, 0) - COALESCE(phi_co_dinh, 0) - COALESCE(phi_dich_vu, 0) - COALESCE(phi_thanh_toan, 0) - COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) - COALESCE(withholding_pit_tax, 0) -COALESCE(withholding_vat_tax, 0)AS doanh_thu_don_hang_uoc_tinh,
 
 COALESCE(shopee_voucher, 0) AS giam_gia_san,
 COALESCE(discount_from_coin, 0) AS discount_from_coin,
@@ -274,6 +280,6 @@ END AS status,
 (COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - ((COALESCE(gia_ban_daily, 0) * COALESCE(quantity_purchased, 0)) - (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0))) AS doanh_thu_ke_toan,
 (COALESCE(gia_san_pham_goc, 0) * COALESCE(quantity_purchased, 0) - COALESCE(nguoi_ban_tro_gia, 0) - COALESCE(discount_from_voucher_seller, 0)) AS doanh_so,
 
-COALESCE(voucher_from_seller, 0)* -1 - COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0)* -1 - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) - COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0)* -1 + COALESCE(phi_dich_vu, 0)* -1 + COALESCE(phi_thanh_toan, 0)* -1 + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as tong_phi_san,
+(COALESCE(voucher_from_seller, 0) +  COALESCE(phi_van_chuyen_nguoi_mua_tra, 0) + COALESCE(phi_van_chuyen_thuc_te, 0) - COALESCE(phi_van_chuyen_tro_gia_tu_shopee, 0) + COALESCE(tro_gia_tu_shopee, 0) + COALESCE(phi_co_dinh, 0) +  COALESCE(phi_dich_vu, 0) +  COALESCE(phi_thanh_toan, 0) + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) + COALESCE(withholding_pit_tax, 0) + COALESCE(withholding_vat_tax, 0)) * -1 as tong_phi_san,
 COALESCE(phi_co_dinh, 0)* -1 + COALESCE(phi_dich_vu, 0)* -1 + COALESCE(phi_thanh_toan, 0)* -1 + COALESCE(phi_hoa_hong_tiep_thi_lien_ket, 0) as phu_phi_shopee
 FROM sale_order_detail 
