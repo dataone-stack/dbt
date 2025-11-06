@@ -869,7 +869,7 @@ order_line as (
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   left join {{ref("t1_ship_fee")}} s on vietful.tracking_code = s.ma_van_don
-  where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed')
+  where ord.order_sources_name not in ('Tiktok', 'Shopee') and ord.status_name not in ('removed')
 
 ),
 
