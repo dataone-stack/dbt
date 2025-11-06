@@ -1,6 +1,3 @@
-
-
-
 --CTE ads_daily tổng hợp dữ liệu quảng cáo
 WITH ads_daily AS (
   SELECT
@@ -9,14 +6,15 @@ WITH ads_daily AS (
     -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
+    manager,
     -- company_lv1,
     SUM(COALESCE(chiPhiAds, 0)) AS chi_phi_ads, -- Tổng chi phí quảng cáo, thay NULL bằng 0
     SUM(COALESCE(doanhThuAds, 0)) + SUM(COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads, -- Tổng doanh thu từ trình quảng cáo: doanh thu Ads + doanh thu từ Ladi
     SUM(COALESCE(doanhThuAds, 0)) AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0)) AS doanhThuLadi,
-  FROM {{ ref("t3_ads_total_with_tkqc") }}
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t3_ads_total_with_tkqc`
   WHERE chiPhiAds IS NOT NULL
-  GROUP BY date_start, brand, channel,company --,company_lv1
+  GROUP BY date_start, brand, channel,company,manager --,company_lv1
 ),
 --CTE cir_max_monthly tính toán trung bình chỉ số cir_max
 cir_max_monthly AS (
@@ -24,21 +22,23 @@ cir_max_monthly AS (
     year,
     month,
     TRIM(brand) as brand,
+    trim(manager) as manager,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max,
     AVG(CAST(cir_max_ads AS FLOAT64)) AS avg_cir_max_ads  -- Lấy trung bình cir_max
-  FROM {{ ref('t1_cir_max') }}
-  GROUP BY year, month, brand, channel
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_cir_max`
+  GROUP BY year, month, brand, channel,manager
 ),
 cir_max_ads_monthly AS (
   SELECT
     year,
     month,
     TRIM(brand) as brand,
+    trim(manager) as manager,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     AVG(CAST(cir_max AS FLOAT64)) AS avg_cir_max  -- Lấy trung bình cir_max
-  FROM {{ ref('t1_cir_max_ads') }}
-  GROUP BY year, month, brand, channel
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_cir_max_ads`
+  GROUP BY year, month, brand, channel,manager
 ),
 
 revenue_toa AS (
@@ -49,20 +49,22 @@ revenue_toa AS (
         company,
         -- company_lv1,
         channel,
+        manager,
         SUM(doanh_thu_ke_toan) AS doanh_thu_ke_toan_toa,
         SUM(tien_chiet_khau_sp ) AS tien_chiet_khau_sp_toa,
         SUM(gia_san_pham_goc_total ) AS gia_san_pham_goc_total_toa,
         SUM(gia_ban_daily_total ) AS gia_ban_daily_total_toa,
         SUM(tien_khach_hang_thanh_toan ) AS tien_khach_hang_thanh_toan_toa,
 
-    FROM {{ ref('t3_revenue_all_channel') }}
+    FROM `crypto-arcade-453509-i8`.`dtm`.`t3_revenue_all_channel`
  --status NOT IN  ('Đã hủy')
-    GROUP BY DATE(ngay_tao_don), brand, channel, company -- ,company_lv1--,ten_san_pham,sku_code
+    GROUP BY DATE(ngay_tao_don), brand, channel, company,manager -- ,company_lv1--,ten_san_pham,sku_code
 ),
 -- CTE revenue_tot tổng hợp doanh thu
 revenue_tot AS (
   SELECT DISTINCT
     TRIM(brand) as brand,
+    trim(manager) as manager,
     -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
@@ -105,9 +107,9 @@ revenue_tot AS (
 
 
     SUM(phu_phi) as phu_phi
-  FROM {{ ref("t3_revenue_all_channel_tot") }}
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t3_revenue_all_channel_tot`
   WHERE date_create IS NOT NULL
-  GROUP BY date_start, brand, channel, company --,company_lv1
+  GROUP BY date_start, brand, channel, company, manager--,company_lv1
 )
 select
     coalesce(a.date_start, cast(r_tot.date_start as date), cast(r_toa.date_start as date)) as date_start,
@@ -142,16 +144,17 @@ full outer join
     and r_tot.brand = r_toa.brand
     and r_tot.channel = r_toa.channel
     and r_tot.company = r_toa.company
+    and r_tot.manager = r_toa.manager 
 FULL OUTER JOIN ads_daily a
   ON Cast(r_tot.date_start as date) = a.date_start
   AND r_tot.brand = a.brand
   AND r_tot.channel = a.channel
   AND r_tot.company = a.company
+  and r_tot.manager = a.manager
 LEFT JOIN cir_max_monthly AS cir_max
   ON EXTRACT(YEAR FROM COALESCE( a.date_start, Cast(r_tot.date_start as date))) = CAST(cir_max.year AS INT64)
   AND EXTRACT(MONTH FROM COALESCE( a.date_start, Cast(r_tot.date_start as date))) = CAST(cir_max.month AS INT64)
   AND COALESCE( a.brand, r_tot.brand) = cir_max.brand
   AND COALESCE( a.channel, r_tot.brand) = cir_max.channel
-
+  and COALESCE( a.manager, r_tot.manager) = cir_max.manager
 ORDER BY date_start DESC, brand, channel
-
