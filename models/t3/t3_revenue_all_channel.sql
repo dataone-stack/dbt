@@ -43,7 +43,12 @@ SELECT
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
     doanh_thu_ke_toan AS doanh_so,
-    'Facebook' AS channel,
+
+    case
+    when order_sources_name = 'Zalo'
+    then 'Zalo'
+    else 'Facebook' 
+    end AS channel,
     
     customer_name AS ten_khach_hang,
 

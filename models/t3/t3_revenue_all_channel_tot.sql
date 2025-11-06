@@ -23,7 +23,11 @@ with a as (SELECT
     0 as doanh_thu_ke_toan_v2,
      0 as doanh_so_cu,
     0 as doanh_so_moi,
-    'Facebook' AS channel,
+    case
+    when order_sources_name  = 'Zalo'
+    then 'Zalo'
+    else 'Facebook' 
+    end AS channel
 FROM {{ ref('t2_facebook_order_lines_tot') }}
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
