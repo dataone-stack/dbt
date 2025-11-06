@@ -98,6 +98,7 @@ orderline AS (
         
         -- Ghi chú & notes
         ord.delivery_note AS ghi_chu_giao_hang,
+        ord.total_shipping_cost,
         --ord.time_take_care AS ngay_cap_nhat_care_don,
         --ord.time_take_care_work AS care_don,
         ord.note_accountant AS ghi_chu_ke_toan,
