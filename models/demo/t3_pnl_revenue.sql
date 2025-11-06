@@ -19,13 +19,17 @@ SELECT
     0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
-    'Facebook' AS channel,
+    case
+        when order_sources_name  = 'Zalo'
+        then 'Zalo'
+        else 'Facebook'
+    end AS channel,
     phi_van_chuyen_thuc_te,
     gia_von_total,
     gia_von,
     so_luong,
     promotion_type
-FROM `crypto-arcade-453509-i8`.`dtm`.`pnl_t2_facebook`
+FROM `crypto-arcade-453509-i8`.`dtm`.`t2_facebook_order_lines_tot`
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
 union all
