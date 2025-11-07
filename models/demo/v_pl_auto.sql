@@ -537,7 +537,7 @@ base_data AS (
     "" as attribute_5,
     "" as attribute_6,
     "" as attribute_7,
-    SUM(gia_von) as amount,
+    SUM(gia_von_total) as amount,
     0  as percent
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   WHERE promotion_type = "Quà Tặng"

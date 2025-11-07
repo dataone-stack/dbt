@@ -6,6 +6,7 @@ WITH LineItems AS (
     o.order_id,
     o.company,
     o.shop,
+    o.shop_id,
     JSON_VALUE(li, '$.sku_id') AS SKU_ID,
     JSON_VALUE(li, '$.seller_sku') AS Seller_SKU,
     JSON_VALUE(li, '$.product_name') AS Product_Name,
@@ -33,6 +34,7 @@ WITH LineItems AS (
   GROUP BY
     o.brand,
     o.shop,
+    o.shop_id,
     o.order_id,
     o.company,
     JSON_VALUE(li, '$.sku_id'),
@@ -79,6 +81,7 @@ OrderData AS (
     li.brand,
     li.brand_lv1,
     li.shop,
+    li.shop_id,
     li.company,
     li.order_id AS Order_ID,
     CASE o.order_status
@@ -195,6 +198,7 @@ ReturnData AS (
     o.brand,
     mapping.brand_lv1,
     o.shop,
+    o.shop_id,
     o.company,
     r.order_id AS Order_ID,
     'RETURNED' AS Order_Status,
@@ -327,6 +331,7 @@ orderLine as(
     brand,
     brand_lv1,
     shop,
+    shop_id,
     company,
     Order_ID as ma_don_hang,
     Order_Status,
@@ -448,6 +453,7 @@ final_result as (
     ord.brand,
     ord.brand_lv1,
     ord.shop,
+    ord.shop_id,
     ord.company,
     ord.ma_don_hang,
     ord.Order_Status,
@@ -512,6 +518,15 @@ final_result as (
     ord.gia_ban_daily_total,
     ord.tien_chiet_khau_sp,
     
+    -- CASE
+    --   WHEN COALESCE(trans.total_revenue, 0) = 0 THEN 0
+    --   ELSE ord.gia_ban_daily_total
+    -- END AS gia_ban_daily_total,
+
+    -- CASE
+    --   WHEN COALESCE(trans.total_revenue, 0) = 0 THEN 0
+    --   ELSE ord.tien_chiet_khau_sp
+    -- END AS tien_chiet_khau_sp,
     -- Thêm logic điều kiện cho doanh_thu_ke_toan
     CASE
       WHEN COALESCE(trans.total_revenue, 0) = 0 THEN 0

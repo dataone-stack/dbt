@@ -170,6 +170,7 @@ SELECT
     -- ops.company_lv1,
     f.company,
     f.shop,
+    f.shop_id,
     DATETIME_ADD(ord.ship_by_date, INTERVAL 7 HOUR) AS ngay_ship,
    
     CASE
