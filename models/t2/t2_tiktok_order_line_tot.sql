@@ -697,7 +697,7 @@ final_result as (
     AND ord.line_type = total.line_type
   
   -- *** THAY ĐỔI QUAN TRỌNG: JOIN DỰA TRÊN total_revenue ***
-  LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans 
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_brand_statement_transaction_order_tot` trans 
     ON ord.brand = trans.brand 
     AND ord.ma_don_hang = trans.order_adjustment_id
     AND (
@@ -711,4 +711,3 @@ final_result as (
 
 
 SELECT * FROM final_result
-
