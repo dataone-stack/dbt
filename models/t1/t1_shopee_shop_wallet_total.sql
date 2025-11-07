@@ -4,7 +4,7 @@ UNION ALL
 SELECT *, 'One5' as company, 'LYB' AS brand, 'LYB Official' AS shop, '847813660' as shop_id
 FROM `lyb_shopee_shop_dwh.shopee_payment_wallet_transaction_lyb_official`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop, 'lyb_cosmetic_sp' as shop_id
+SELECT *, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'LYB Cosmetics' AS shop, '1266788038' as shop_id
 FROM `lybcosmetic_shopee_shop_dwh.shopee_payment_wallet_transaction_lyb_cosmetic`
 UNION ALL
 SELECT *, 'One5' as company, 'UME' AS brand, 'UME Viet Nam' AS shop, '1023530981' as shop_id
@@ -66,10 +66,10 @@ UNION ALL
 SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'the_ume_lab' AS shop, 'the_ume_lab' AS shop_id
 FROM `theumelab_shopee_shop_dwh.shopee_payment_wallet_transaction_the_ume_lab`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop, 'be20_viet_nam_store_sp' AS shop_id
+SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'BE20 Việt Nam Store' AS shop, '1414505993' AS shop_id
 FROM `be20vietnamstore_shopee_shop_dwh.shopee_payment_wallet_transaction_be20_viet_nam_store`
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop, 'ume_beauty_vietnam_sp' AS shop_id
+SELECT *, 'Max Eagle' as company, 'UME' AS brand, 'UME Beauty VN' AS shop, '1601895285' AS shop_id
 FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_wallet_transaction_ume_beauty_vietnam`
 UNION ALL
 SELECT *, 'Max Eagle' as company, 'BE20' AS brand, 'Beana beauty VietNam' AS shop, '216095138' as shop_id
@@ -80,5 +80,5 @@ SELECT *, 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm 
 FROM `beanabeautyvietnam_shopee_shop_dwh.shopee_payment_wallet_transaction_ca_phe_mam_xoi_store`
 WHERE DATE(DATETIME_ADD(create_time, INTERVAL 7 HOUR)) >= '2025-10-21'
 UNION ALL
-SELECT *, 'Max Eagle' as company, 'An Cung' AS brand, 'las_beauty' AS shop, 'las_beauty' AS shop_id
+SELECT *, 'Max Eagle' as company, 'Dr Diva' AS brand, 'Las Beauty' AS shop, '1506821514' AS shop_id
 FROM `ancunghaircare_shopee_shop_dwh.shopee_payment_wallet_transaction_las_beauty`

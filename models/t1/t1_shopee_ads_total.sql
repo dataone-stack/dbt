@@ -6,7 +6,7 @@ select *,'1023530981' as idtkqc from `ume_shopee_ads_dwh.shopee_cpc_ads_daily_pe
 union all
 select *,'1442362266' as idtkqc from `ancung_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ancung_brand`
 union all
-select * ,'lyb_cosmetic_sp' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
+select * ,'1266788038' as idtkqc from `lybcosmetic_shopee_ads_dwh.shopee_cpc_ads_daily_performance_lyb_cosmetic`
 union all
 select * ,'1569014047' as idtkqc from `chaching_beauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_chaching_beauty`
 union all
@@ -24,7 +24,7 @@ select * ,'216095138' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_da
 union all
 select * ,'216095138' as idtkqc from `be20store_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_mam_xoi_store`
 union all
-select * ,'be20_viet_nam_store_sp' as idtkqc from `be20vietnamstore_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_viet_nam_store`
+select * ,'1414505993' as idtkqc from `be20vietnamstore_shopee_ads_dwh.shopee_cpc_ads_daily_performance_be20_viet_nam_store`
 union all
 select * ,'belle_beauty_vietnam_sp' as idtkqc from `bellebeautyvietnam_shopee_ads_dwh.shopee_cpc_ads_daily_performance_belle_beauty_vietnam`
 union all
@@ -38,4 +38,6 @@ select * ,'14' as idtkqc from `keongamtrangdadautambe20_shopee_ads_dwh.shopee_cp
 union all
 select * ,'the_ume_lab' as idtkqc from `theumelab_shopee_ads_dwh.shopee_cpc_ads_daily_performance_the_ume_lab`
 union all
-select * ,'ume_beauty_vietnam_sp' as idtkqc from `umebeautyvietnam_shope_ads_dwh.shopee_cpc_ads_daily_performance_ume_beauty_vietnam`
+select * ,'1601895285' as idtkqc from `umebeautyvietnam_shope_ads_dwh.shopee_cpc_ads_daily_performance_ume_beauty_vietnam`
+union all
+select * ,'1506821514' as idtkqc from `labeauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_las_beauty`

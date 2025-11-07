@@ -7,7 +7,7 @@ UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'An Cung' AS brand, 'An Cung Brand' AS shop, '1442362266' as shop_id
 FROM `ancung_shopee_shop_dwh.shopee_return_ancung_brand`
 UNION ALL
-SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_sp' AS shop, 'lyb_cosmetic_sp' as shop_id
+SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'LYB Cosmetics' AS shop, '1266788038' as shop_id
 FROM `lybcosmetic_shopee_shop_dwh.shopee_return_lyb_cosmetic`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount, 'One5' as company, 'UME' AS brand, 'UME Viet Nam' AS shop,'1023530981' as shop_id
@@ -58,7 +58,7 @@ SELECT order_id, return_seller_due_date, return_id, update_time, status, item, a
 FROM `caphemamxoichinhhang2_shopee_shop_dwh.shopee_return_ca_phe_mam_xoi_chinh_hang`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
-       'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop, 'be20_viet_nam_store_sp' AS shop_id
+       'Max Eagle' as company, 'BE20' AS brand, 'BE20 Việt Nam Store' AS shop, '1414505993' AS shop_id
 FROM `be20vietnamstore_shopee_shop_dwh.shopee_return_be20_viet_nam_store`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
@@ -76,5 +76,5 @@ SELECT order_id, return_seller_due_date, return_id, update_time, status, item, a
 FROM `bellebeautyvietnam_shopee_shop_dwh.shopee_return_belle_beauty_vietnam`
 UNION ALL
 SELECT order_id, return_seller_due_date, return_id, update_time, status, item, amount_before_discount,
-       'Max Eagle' as company, 'An Cung' AS brand, 'las_beauty' AS shop, 'las_beauty' AS shop_id
+       'Max Eagle' as company, 'Dr Diva' AS brand, 'La Beauty' AS shop, '1506821514' AS shop_id
 FROM `ancunghaircare_shopee_shop_dwh.shopee_return_las_beauty`
