@@ -279,6 +279,28 @@ base_data AS (
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
   
   UNION ALL
+
+  SELECT 
+    EXTRACT(YEAR FROM DATE(date_create)) as year,
+    EXTRACT(MONTH FROM DATE(date_create)) as month,
+    brand,
+    company,
+    channel,
+    'Layer 1: Doanh Thu' as layer_name,
+    '2. Chiết khấu' as metric_name,
+    order_id as attribute_1,
+    sku_code as attribute_2,
+    ten_san_pham as attribute_3,
+    promotion_type as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    SUM(tien_chiet_khau_sp_tot) as amount,
+    0  as percent
+  FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
+  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, order_id, sku_code, channel, ten_san_pham, promotion_type
+  
+  UNION ALL
   
   SELECT 
     EXTRACT(YEAR FROM DATE(date_create)),
@@ -287,7 +309,7 @@ base_data AS (
     company,
     channel,
     'Layer 1: Doanh Thu',
-    '2. Doanh thu kế toán',
+    '3. Doanh thu kế toán',
     order_id as attribute_1,
     sku_code as attribute_2,
     ten_san_pham as attribute_3,
@@ -310,7 +332,7 @@ base_data AS (
     company,
     channel,
     'Layer 1: Doanh Thu',
-    '2.1 Hoàn',
+    '3.1 Hoàn',
     order_id as attribute_1,
     sku_code as attribute_2,
     ten_san_pham as attribute_3,

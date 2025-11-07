@@ -54,21 +54,21 @@ shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_nam
 FROM `chamsoclandatrangmin_tiktok_shop_dwh.tiktok_shop_cham_soc_lan_da_trang_min_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_beauty_tt' AS shop, 'lyb_beauty_tt' AS shop_id,
+SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'LYB Beauty' AS shop, 'VNLCUFWEX9' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
 FROM `lybbeauty_tiktok_shop_dwh.tiktok_shop_lyb_beauty_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_tt' AS shop, 'be20_viet_nam_store_tt' AS shop_id,
+SELECT 'Max Eagle' as company, 'BE20' AS brand, 'BE20 Việt Nam Store' AS shop, 'VNLCLEWEQ4' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
 FROM `be20vietnamstore_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_tt' AS shop, 'VNLCRPWAYM' AS shop_id,
+SELECT 'Max Eagle' as company, 'BE20' AS brand, 'BE20 Việt Nam' AS shop, 'VNLCRPWAYM' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
@@ -82,28 +82,28 @@ shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_nam
 FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_the_ume_lab_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_tt' AS shop, 'ume_beauty_vietnam_tt' AS shop_id,
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'UME Beauty VN' AS shop, 'VNLCYYLW99' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
 FROM `umebeautyvietnam_tiktok_shop_dwh.tiktok_shop_ume_beauty_vietnam_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_tt' AS shop, 'lyb_cosmetic_tt' AS shop_id,
+SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'LYB Cosmetics' AS shop, 'VNLCE6WXRX' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
 FROM `lybcosmeticvn_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'UME' AS brand, 'belle_store_vn_tt' AS shop, 'belle_store_vn_tt' AS shop_id,
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'Belle Store VN' AS shop, 'VNLC6ELWDS' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
 FROM `bellestorevn_tiktok_shop_dwh.tiktok_shop_belle_store_vn_order`
 
 UNION ALL
-SELECT 'Max Eagle' as company, 'Dr Diva' AS brand, 'dr_diva_viet_nam_store_tt' AS shop, 'dr_diva_viet_nam_store_tt' AS shop_id,
+SELECT 'Max Eagle' as company, 'Dr Diva' AS brand, 'DR Diva VN Store' AS shop, 'VNLCDSLL3S' AS shop_id,
 order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
@@ -115,3 +115,17 @@ order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collecti
 cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
 shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
 FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_order`
+
+UNION ALL
+SELECT 'Max Eagle' as company, 'Chanh tây' AS brand, 'Lemon Coffee' AS shop, 'VNLCQCW2VD' AS shop_id,
+order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
+cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
+shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
+FROM `lemoncoffee_tiktok_shop_dwh.tiktok_shop_cafe_chanh_tay__lemon_coffee_order`
+
+UNION ALL
+SELECT 'Max Eagle' as company, 'Chanh tây' AS brand, 'Cà phê chanh tây store' AS shop, 'VNLCRYWADW' AS shop_id,
+order_id,line_items,order_status,payment,create_time,paid_time,rts_time,collection_time,delivery_time,
+cancel_time,cancellation_initiator,fulfillment_type,warehouse_id,tracking_number,delivery_option_name,
+shipping_provider,buyer_message,buyer_email,recipient_address,payment_method_name,seller_note,order_type
+FROM `caphechanhtaystore_tiktok_shop_dwh.tiktok_shop_ca_phe_chanh_tay_store_order`

@@ -1,6 +1,7 @@
 WITH LineItems AS (
   SELECT
-  o.shop,
+    o.shop,
+    o.shop_id,
     mapping.brand,
     mapping.brand_lv1,
     -- mapping.company_lv1,
@@ -30,6 +31,7 @@ WITH LineItems AS (
     ON JSON_VALUE(li, '$.seller_sku') = mapping.ma_sku
   GROUP BY
     o.shop,
+    o.shop_id,
     mapping.brand,
     o.company,
     o.order_id,
@@ -70,6 +72,7 @@ ReturnLineItems AS (
 OrderData AS (
   SELECT
     li.shop,
+    li.shop_id,
     mapping.brand,
     mapping.brand_lv1,
     -- mapping.company_lv1,
@@ -204,6 +207,7 @@ GROUP BY
 orderLine as(
 SELECT
   shop,
+  shop_id,
   brand,
   brand_lv1,
 --   company_lv1,

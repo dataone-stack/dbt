@@ -103,7 +103,7 @@ SELECT
     ten_nguoi_mua AS ten_khach_hang
 FROM {{ref("t2_shopee_order_lines_toa")}} shop
 LEFT JOIN `dtm.t2_tkqc_total` AS tkqc
-        ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
+        ON TRIM(CAST(shop.shop_id AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
@@ -158,7 +158,7 @@ SELECT
     Recipient AS ten_khach_hang
 FROM {{ref("t2_tiktok_order_line_toa")}} shop
 LEFT JOIN `dtm.t2_tkqc_total` AS tkqc
-        ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
+        ON TRIM(CAST(shop.shop_id AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))

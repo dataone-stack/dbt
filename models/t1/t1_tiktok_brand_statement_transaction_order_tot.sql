@@ -22,7 +22,7 @@ UNION ALL
 SELECT 'One5' as company, 'UME' AS brand, 'cham_soc_lan_da_trang_min' AS shop, 'cham_soc_lan_da_trang_min' AS shop_id, *
 FROM `chamsoclandatrangmin_tiktok_shop_dwh.tiktok_shop_cham_soc_lan_da_trang_min_statement_transaction_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_beauty_tt' AS shop, 'lyb_beauty_tt' AS shop_id, *
+SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'LYB Beauty' AS shop, 'VNLCUFWEX9' AS shop_id, *
 FROM `lybbeauty_tiktok_shop_dwh.tiktok_shop_lyb_beauty_statement_transaction_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'BE20' AS brand, 'BE20 Việt Nam' AS shop, 'VNLCRPWAYM' AS shop_id, *
@@ -31,20 +31,26 @@ UNION ALL
 SELECT 'Max Eagle' as company, 'UME' AS brand, 'The UME Lab' AS shop, 'VNLCFXWHC8' AS shop_id, *
 FROM `umebeautynaturalvn_tiktok_shop_dwh.tiktok_shop_the_ume_lab_statement_transaction_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'BE20' AS brand, 'be20_viet_nam_store_tt' AS shop, 'be20_viet_nam_store_tt' AS shop_id, *
+SELECT 'Max Eagle' as company, 'BE20' AS brand, 'BE20 Việt Nam Store' AS shop, 'VNLCLEWEQ4' AS shop_id, *
 FROM `be20vietnamstore_tiktok_shop_dwh.tiktok_shop_be20_viet_nam_store_statement_transaction_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'UME' AS brand, 'ume_beauty_vietnam_tt' AS shop, 'ume_beauty_vietnam_tt' AS shop_id, *
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'UME Beauty VN' AS shop, 'VNLCYYLW99' AS shop_id, *
 FROM `umebeautyvietnam_tiktok_shop_dwh.tiktok_shop_ume_beauty_vietnam_statement_transaction_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_tt' AS shop, 'lyb_cosmetic_tt' AS shop_id, *
+SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'LYB Cosmetics' AS shop, 'VNLCE6WXRX' AS shop_id, *
 FROM `lybcosmeticvn_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_statement_transaction_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'UME' AS brand, 'belle_store_vn_tt' AS shop, 'belle_store_vn_tt' AS shop_id, *
+SELECT 'Max Eagle' as company, 'UME' AS brand, 'Belle Store VN' AS shop, 'VNLC6ELWDS' AS shop_id, *
 FROM `bellestorevn_tiktok_shop_dwh.tiktok_shop_belle_store_vn_statement_transaction_order`
 UNION ALL
-SELECT 'Max Eagle' as company, 'Dr Diva' AS brand, 'dr_diva_viet_nam_store_tt' AS shop, 'dr_diva_viet_nam_store_tt' AS shop_id, *
+SELECT 'Max Eagle' as company, 'Dr Diva' AS brand, 'DR Diva VN Store' AS shop, 'VNLCDSLL3S' AS shop_id, *
 FROM `drdivavietnamstore_tiktok_shop_dwh.tiktok_shop_dr_diva_viet_nam_store_statement_transaction_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi shop' AS shop, 'VNLCHNL2QH' AS shop_id, *
 FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_statement_transaction_order`
+UNION ALL
+SELECT 'Max Eagle' as company, 'Chanh tây' AS brand, 'Lemon Coffee' AS shop, 'VNLCQCW2VD' AS shop_id, *
+FROM `lemoncoffee_tiktok_shop_dwh.tiktok_shop_cafe_chanh_tay__lemon_coffee_statement_transaction_order`
+UNION ALL
+SELECT 'Max Eagle' as company, 'Chanh tây' AS brand, 'Cà phê chanh tây store' AS shop, 'VNLCRYWADW' AS shop_id, *
+FROM `caphechanhtaystore_tiktok_shop_dwh.tiktok_shop_ca_phe_chanh_tay_store_statement_transaction_order`

@@ -99,7 +99,6 @@ SELECT
     gia_von_total,
     gia_von,
     so_luong,
-    
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
 -- where status not in ("Đã hủy", "Đang giao")

@@ -7,7 +7,7 @@ UNION ALL
 SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '0317468051' AS tax_code, 'An Cung' AS brand, 'An Cung Brand' AS shop,'1442362266' as shop_id
 FROM `ancung_shopee_shop_dwh.shopee_payment_escrow_detail_ancung_brand`
 UNION ALL
-SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '0317423004' AS tax_code, 'LYB Cosmetics' AS brand, 'LYB Cosmetics' AS shop,'lyb_cosmetic_sp' as shop_id
+SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'Max Eagle' as company,  '0317423004' AS tax_code, 'LYB Cosmetics' AS brand, 'LYB Cosmetics' AS shop,'1266788038' as shop_id
 FROM `lybcosmetic_shopee_shop_dwh.shopee_payment_escrow_detail_lyb_cosmetic`
 UNION ALL
 SELECT withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, seller_voucher_code, seller_shipping_discount,'One5' as company,  '0315027453' AS tax_code, 'UME' AS brand, 'UME Viet Nam' AS shop,'1023530981' as shop_id
@@ -123,8 +123,8 @@ SELECT
   shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, 
   seller_voucher_code, seller_shipping_discount,
   'Max Eagle' as company, '-' AS tax_code, 
-  'BE20' AS brand, 'be20_viet_nam_store_sp' AS shop, 
-  'be20_viet_nam_store_sp' as shop_id
+  'BE20' AS brand, 'BE20 Việt Nam Store' AS shop, 
+  '1414505993' as shop_id
 FROM `be20vietnamstore_shopee_shop_dwh.shopee_payment_escrow_detail_be20_viet_nam_store`
 
 UNION ALL
@@ -136,8 +136,8 @@ SELECT
   shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, 
   seller_voucher_code, seller_shipping_discount,
   'Max Eagle' as company, '-' AS tax_code, 
-  'UME' AS brand, 'ume_beauty_vietnam_sp' AS shop, 
-  'ume_beauty_vietnam_sp' as shop_id
+  'UME' AS brand, 'UME Beauty VN' AS shop, 
+  '1601895285' as shop_id
 FROM `umebeautyvietnam_shope_shop_dwh.shopee_payment_escrow_detail_ume_beauty_vietnam`
 
 UNION ALL
@@ -175,6 +175,19 @@ SELECT
   shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, 
   seller_voucher_code, seller_shipping_discount,
   'Max Eagle' as company, '-' AS tax_code, 
-  'An Cung' AS brand, 'las_beauty' AS shop, 
-  'las_beauty' as shop_id
+  'Dr Diva' AS brand, 'Las Beauty' AS shop, 
+  '1506821514' as shop_id
 FROM `ancunghaircare_shopee_shop_dwh.shopee_payment_escrow_detail_las_beauty`
+
+UNION ALL
+
+SELECT 
+  withholding_pit_tax, withholding_vat_tax, reverse_shipping_fee, final_return_to_seller_shipping_fee, 
+  rsf_seller_protection_fee_claim_amount, order_id, voucher_from_seller, buyer_paid_shipping_fee, 
+  buyer_user_name, items, commission_fee, service_fee, seller_transaction_fee, actual_shipping_fee, 
+  shopee_shipping_rebate, credit_card_promotion, order_ams_commission_fee, instalment_plan, 
+  seller_voucher_code, seller_shipping_discount,
+  'Max Eagle' as company, '-' AS tax_code, 
+  'Chanh tây' AS brand, 'Lemon Coffee' AS shop, 
+  '1662596872' as shop_id
+FROM `lemoncoffee_shopee_shop_dwh.shopee_payment_escrow_detail_ca_phe_chanh_tay_lemon_coffee`
