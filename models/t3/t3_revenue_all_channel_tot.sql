@@ -5,8 +5,8 @@ with a as (SELECT
     -- company_lv1,
     "Shop Facebook" AS shop,
     sku_code AS sku,
-    manager,
-    marketing_name,
+    --manager,
+    --marketing_name,
     ten_san_pham,
     -- gia_san_pham_goc_total,
     promotion_type,
@@ -42,8 +42,8 @@ SELECT
     -- company_lv1,
     shop.shop,
     ma_san_pham AS sku,
-    tkqc.manager,
-    tkqc.staff AS marketing_name,
+    --tkqc.manager,
+    --tkqc.staff AS marketing_name,
     ten_san_pham,
 
     promotion_type,
@@ -66,11 +66,11 @@ SELECT
     0 as doanh_so_moi,
     'Shopee' AS channel
 FROM {{ref("t2_shopee_order_lines_tot")}} as shop
-LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
-        ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
+-- LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
+--         ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
-        AND DATE(shop.ngay_dat_hang) >= DATE(tkqc.start_date)
-        AND (tkqc.end_date IS NULL OR DATE(shop.ngay_dat_hang) <= DATE(tkqc.end_date))
+--         AND DATE(shop.ngay_dat_hang) >= DATE(tkqc.start_date)
+--         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_dat_hang) <= DATE(tkqc.end_date))
 -- where status not in ("Đã hủy", "Đang giao")
 
 UNION ALL
@@ -82,8 +82,8 @@ SELECT
     -- company_lv1,
     shop.shop,
     sku_code AS sku,
-    tkqc.manager,
-    tkqc.staff AS marketing_name,
+    --tkqc.manager,
+    --tkqc.staff AS marketing_name,
     ten_san_pham,
     -- gia_san_pham_goc_total,
     promotion_type,
@@ -104,11 +104,11 @@ SELECT
     0 as doanh_so_moi,
     'Tiktok' AS channel
 FROM {{ref("t2_tiktok_order_line_tot")}} as shop
-LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
-        ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
+-- LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
+--         ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
-        AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
-        AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
+--         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
+--         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
 -- where status not in ("Đã hủy", "Đang giao")
 
 union all
@@ -120,8 +120,8 @@ SELECT
     -- company_lv1,
     "Shop Facebook" AS shop,
     sku,
-    manager,
-    marketing_name,
+    --manager,
+    --marketing_name,
     san_pham as ten_san_pham,
     -- thanh_tien as gia_san_pham_goc_total,
     promotion_type,
