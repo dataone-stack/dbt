@@ -858,7 +858,9 @@ order_line as (
     WHEN ord.status_name = 'delivered' THEN 'Đã giao thành công'
     WHEN ord.status_name in ('new', 'packing', 'submitted','waitting', 'packing','pending') THEN 'Đăng đơn'
     ELSE 'Khác'
-  END AS status_don_hang
+  END AS status_don_hang,
+   mar.manager,
+   mar.marketing_name
       
     
   
@@ -869,6 +871,7 @@ order_line as (
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_delivery_date as vietful on CONCAT(ord.shop_id, '_', ord.id) = vietful.partner_or_code 
   left join {{ref("t1_ship_fee")}} s on vietful.tracking_code = s.ma_van_don
+  left join {{ref("t1_marketer_facebook_total")}} mar on json_value(ord.marketer,'$.name') = mar.marketer_name and ord.brand = mar.brand
   where ord.order_sources_name not in ('Tiktok', 'Shopee') and ord.status_name not in ('removed')
 
 ),
@@ -971,7 +974,9 @@ order_line_returned as (
     WHEN ord.status_name = 'delivered' THEN 'Đã giao thành công'
     WHEN ord.status_name in ('new', 'packing', 'submitted','waitting', 'packing','pending') THEN 'Đăng đơn'
     ELSE 'Khác'
-  END AS status_don_hang
+  END AS status_don_hang,
+  mar.manager,
+   mar.marketing_name
 
   from {{ref("t1_pancake_pos_order_total")}} as ord,
   unnest (items) as item
@@ -980,6 +985,7 @@ order_line_returned as (
   left join `google_sheet.bang_gia_von` as cost_price on json_value(item, '$.variation_info.display_id') = cost_price.product_sku
   left join vietful_return_detail as vietful_return on CONCAT(ord.shop_id, '_', ord.id) = vietful_return.partner_or_code and json_value(item, '$.variation_info.display_id') = vietful_return.partner_sku
   left join {{ref("t1_ship_fee")}} s on vietful_return.tracking_code = s.ma_van_don
+  left join {{ref("t1_marketer_facebook_total")}} mar on json_value(ord.marketer,'$.name') = mar.marketer_name and ord.brand = mar.brand
   where ord.order_sources_name in ('Facebook','Ladipage Facebook','Webcake','Website','') and ord.status_name not in ('removed') and vietful_return.partner_sku is not null
 )
 
@@ -1157,12 +1163,15 @@ order_line_returned as (
     ngay_da_giao,
     tracking_code,
     0 AS phu_phi,
-    gia_von* so_luong as gia_von,
+    gia_von* so_luong as gia_von_total,
+    gia_von,
     case
       when gia_goc_sau_giam_gia_san_pham = 0
       then "Quà tặng"
       ELSE "Hàng bán"
-    end as promotion_type
+    end as promotion_type,
+    manager,
+   marketing_name
     from order_line
 )
 
@@ -1338,11 +1347,14 @@ order_line_returned as (
     ngay_da_giao,
     tracking_code,
     0 AS phu_phi,
-    gia_von* so_luong as gia_von,
+    gia_von * so_luong as gia_von_total,
+    gia_von,
     case
       when gia_goc_sau_giam_gia_san_pham = 0
       then "Quà tặng"
-    end as promotion_type
+    end as promotion_type,
+    manager,
+   marketing_name
 
     from order_line_returned
 ),

@@ -5,6 +5,8 @@ with a as (SELECT
     -- company_lv1,
     "Shop Facebook" AS shop,
     sku_code AS sku,
+    manager,
+    marketing_name,
     ten_san_pham,
     -- gia_san_pham_goc_total,
     promotion_type,
@@ -28,18 +30,20 @@ with a as (SELECT
     then 'Zalo'
     else 'Facebook' 
     end AS channel
-FROM {{ ref('t2_facebook_order_lines_tot') }}
+FROM {{ref("t2_facebook_order_lines_tot")}}
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
 union all
 
 SELECT 
-    brand, 
-    brand_lv1,
-    company,
+    shop.brand, 
+    shop.brand_lv1,
+    shop.company,
     -- company_lv1,
-    shop,
+    shop.shop,
     ma_san_pham AS sku,
+    tkqc.manager,
+    tkqc.staff AS marketing_name,
     ten_san_pham,
 
     promotion_type,
@@ -48,7 +52,7 @@ SELECT
     ngay_tien_ve_vi as date_create, 
     order_id,
     '' as tracking_code,
-    status, 
+    shop.status, 
     tong_tien_da_thanh_toan as total_amount, 
     ngay_dat_hang as date_create_order, 
     gia_ban_daily_total,
@@ -61,18 +65,25 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Shopee' AS channel
-FROM {{ ref('t2_shopee_order_lines_tot') }}
+FROM {{ref("t2_shopee_order_lines_tot")}} as shop
+LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
+        ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
+     
+        AND DATE(shop.ngay_dat_hang) >= DATE(tkqc.start_date)
+        AND (tkqc.end_date IS NULL OR DATE(shop.ngay_dat_hang) <= DATE(tkqc.end_date))
 -- where status not in ("Đã hủy", "Đang giao")
 
 UNION ALL
 
 SELECT 
-    brand, 
-    brand_lv1,
-    company,
+    shop.brand, 
+    shop.brand_lv1,
+    shop.company,
     -- company_lv1,
-    shop,
+    shop.shop,
     sku_code AS sku,
+    tkqc.manager,
+    tkqc.staff AS marketing_name,
     ten_san_pham,
     -- gia_san_pham_goc_total,
     promotion_type,
@@ -92,7 +103,12 @@ SELECT
     0 as doanh_so_cu,
     0 as doanh_so_moi,
     'Tiktok' AS channel
-FROM {{ ref('t2_tiktok_order_line_tot') }}
+FROM {{ref("t2_tiktok_order_line_tot")}} as shop
+LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
+        ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
+     
+        AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
+        AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
 -- where status not in ("Đã hủy", "Đang giao")
 
 union all
@@ -104,6 +120,8 @@ SELECT
     -- company_lv1,
     "Shop Facebook" AS shop,
     sku,
+    manager,
+    marketing_name,
     san_pham as ten_san_pham,
     -- thanh_tien as gia_san_pham_goc_total,
     promotion_type,
@@ -124,7 +142,7 @@ SELECT
     doanh_so_cu as doanh_so_cu,
     doanh_so_moi as doanh_so_moi,
     'Facebook' AS channel
-FROM {{ ref('t2_mapping_sandbox_pushsale_tot') }}
+FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 )
 
 

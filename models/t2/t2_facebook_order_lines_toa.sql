@@ -24,7 +24,7 @@ with total_price as (
 order_line as (
   select
     ord.id,
-    ord.brand,
+    ord.brand,  
     ord.company,
     ord.inserted_at,
     ord.status_name,
