@@ -41,3 +41,5 @@ union all
 select * ,'1601895285' as idtkqc from `umebeautyvietnam_shope_ads_dwh.shopee_cpc_ads_daily_performance_ume_beauty_vietnam`
 union all
 select * ,'1506821514' as idtkqc from `labeauty_shopee_ads_dwh.shopee_cpc_ads_daily_performance_las_beauty`
+union all
+select * ,'1662596872' as idtkqc from `lemoncoffee_shopee_ads_dwh.shopee_cpc_ads_daily_performance_ca_phe_chanh_tay_lemon_coffee`
