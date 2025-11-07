@@ -38,4 +38,4 @@ SELECT 'Max Eagle' as company, 'LYB Cosmetics' AS brand, 'lyb_cosmetic_tt' AS sh
 FROM `lybcosmeticvn_tiktok_shop_dwh.tiktok_shop_lyb_cosmetic_return_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi shop' AS shop, 'VNLCHNL2QH' AS shop_id, *
-FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_return_order`;
+FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_return_order`

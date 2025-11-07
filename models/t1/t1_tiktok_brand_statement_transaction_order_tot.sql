@@ -47,4 +47,4 @@ SELECT 'Max Eagle' as company, 'Dr Diva' AS brand, 'dr_diva_viet_nam_store_tt' A
 FROM `drdivavietnamstore_tiktok_shop_dwh.tiktok_shop_dr_diva_viet_nam_store_statement_transaction_order`
 UNION ALL
 SELECT 'Max Eagle' as company, 'Cà Phê Mâm Xôi' AS brand, 'Cà phê mâm xôi shop' AS shop, 'VNLCHNL2QH' AS shop_id, *
-FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_statement_transaction_order`;
+FROM `caphemamxoishop_tiktok_shop_dwh.tiktok_shop_ca_phe_mam_xoi_shop_statement_transaction_order`
