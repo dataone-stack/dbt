@@ -36,6 +36,7 @@ with a as (SELECT
 
     0 as khoan_hoan_tien_giam_gia_cua_ban,
     0 as tong_doanh_thu,
+    0 as tro_gia,
     0 as phi_giao_dich,
     0 as phi_dich_vu,
     0 as phi_co_dinh,
@@ -91,6 +92,7 @@ SELECT
 
     khoan_hoan_tien_giam_gia_cua_ban,
     gia_san_pham_goc_total + seller_tro_gia + tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban + khoan_hoan_tien_giam_gia_cua_ban as tong_doanh_thu,
+    ma_giam_gia as tro_gia,
     phi_thanh_toan as phi_giao_dich,
     phi_dich_vu,
     phi_co_dinh,
@@ -147,6 +149,7 @@ SELECT
     tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
     khoan_hoan_tien_giam_gia_cua_ban,
     gia_san_pham_goc_total + (seller_tro_gia * -1) + tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban + khoan_hoan_tien_giam_gia_cua_ban as  tong_doanh_thu,
+    0 as tro_gia,
     phi_thanh_toan as phi_giao_dich,
     phi_dich_vu,
     0 as phi_co_dinh,
@@ -207,6 +210,7 @@ SELECT
 
     0 as khoan_hoan_tien_giam_gia_cua_ban,
     0 as tong_doanh_thu,
+    0 as tro_gia,
     0 as phi_giao_dich,
     0 as phi_dich_vu,
     0 as phi_co_dinh,

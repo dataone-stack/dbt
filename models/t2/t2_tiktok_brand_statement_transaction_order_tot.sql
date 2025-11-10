@@ -35,6 +35,8 @@ SELECT
     SAFE_CAST(JSON_EXTRACT_SCALAR(fee_tax_breakdown, '$.fee.transaction_fee_amount') AS FLOAT64) AS `transaction_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(supplementary_component, '$.fbm_shipping_cost_amount') AS FLOAT64) AS `seller_shipping_fee`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.actual_shipping_fee_amount') AS FLOAT64) AS `actual_shipping_fee`,
+    SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.shipping_fee_guarantee_reimbursement') AS FLOAT64) AS `shipping_fee_guarantee_reimbursement`,
+    
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.refunded_customer_shipping_fee_amount') AS FLOAT64) AS `refunded_customer_shipping_fee_amount`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.supplementary_component.platform_shipping_fee_discount_amount') AS FLOAT64) AS `platform_shipping_fee_discount`,
     SAFE_CAST(JSON_EXTRACT_SCALAR(shipping_cost_breakdown, '$.customer_paid_shipping_fee_amount') AS FLOAT64) AS `customer_shipping_fee`,
@@ -96,6 +98,8 @@ SELECT
     SUM(COALESCE(platform_shipping_fee_discount, 0)) AS platform_shipping_fee_discount,
     SUM(COALESCE(transaction_fee, 0)) AS transaction_fee,
     SUM(COALESCE(customer_shipping_fee, 0)) AS customer_shipping_fee,
+    SUM(COALESCE(shipping_fee_guarantee_reimbursement, 0)) AS shipping_fee_guarantee_reimbursement,
+    
     
     SUM(COALESCE(tiktok_shop_commission_fee, 0)) AS tiktok_shop_commission_fee,
     SUM(COALESCE(shipping_cost_amount, 0)) AS shipping_cost_amount,
