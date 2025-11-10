@@ -348,6 +348,8 @@ SELECT
         THEN 
             (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
     END AS tax,
+    f.withholding_vat_tax * -1  as  thue_gtgt,
+    f.withholding_pit_tax * -1 as thue_tncn,
     
     -- CASE 
     --     WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
