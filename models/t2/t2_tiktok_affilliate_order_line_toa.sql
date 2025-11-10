@@ -1,6 +1,7 @@
 with aff_info as (
     select
         order_id,
+        shop_id,
         json_value(skus[OFFSET(0)], '$.content_id') as content_id,
         json_value(skus[OFFSET(0)], '$.content_type') as content_type,
         json_value(skus[OFFSET(0)], '$.creator_username') as creator_username,
@@ -89,11 +90,11 @@ FROM `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_affiliate_order_total` AS aff
 
 LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_order_tot` AS ord ON aff.order_id = ord.order_id 
   AND aff.brand = ord.brand 
-  AND aff.shop = ord.shop 
+  AND aff.shop_id = ord.shop_id 
   AND aff.company = ord.company
 LEFT JOIN aff_info as info ON aff.order_id = info.order_id 
   AND aff.brand = info.brand 
-  AND aff.shop = info.shop 
+  AND aff.shop_id = info.shop_id 
   AND aff.company = info.company
 LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_tiktok_shop_video_info` vid on info.content_id = cast(vid.video_id as string)
 CROSS JOIN UNNEST(COALESCE(ord.line_items, [])) AS item 

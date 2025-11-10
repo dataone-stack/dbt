@@ -14,7 +14,7 @@ WITH date_spine AS (
 warehouse_dim AS (
   SELECT DISTINCT
     warehouse_code,
-    warehouse_code as warehouse_name
+    brand as warehouse_name
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_product_inventory`
   WHERE condition_type_code = 'NEW'
 ),
@@ -361,7 +361,7 @@ SELECT
     -- Không có data bán hoặc hết hàng
     WHEN COALESCE(a.thuc_te_ban, 0) = 0 
          OR COALESCE(ci.ton_kho_hien_tai, 0) = 0
-    THEN '🔴 ƯU TIÊN CAO - Tồn kho cao (>60 ngày), cần đẩy mạnh bán'
+    THEN '🔴 ƯU TIÊN CAO'
     
     -- Tồn kho cao (>60 ngày) - CẦN ĐẨY MẠNH BÁN
     WHEN CAST(ROUND(
@@ -375,7 +375,7 @@ SELECT
         END
       )
     ) AS INT64) > 60
-    THEN '🔴 ƯU TIÊN CAO - Tồn kho cao (>60 ngày), cần đẩy mạnh bán'
+    THEN '🔴 ƯU TIÊN CAO'
     
     -- Tồn kho vừa (30-60 ngày) - BÁN BÌNH THƯỜNG
     WHEN CAST(ROUND(
@@ -389,7 +389,7 @@ SELECT
         END
       )
     ) AS INT64) BETWEEN 30 AND 60
-    THEN '🟠 ƯU TIÊN TRUNG BÌNH - Tồn kho vừa (30-60 ngày), bán bình thường'
+    THEN '🟠 ƯU TIÊN TRUNG BÌNH'
     
     -- Tồn kho thấp (<30 ngày) - KHÔNG NÊN ĐẨY MẠNH
     WHEN CAST(ROUND(
@@ -403,7 +403,7 @@ SELECT
         END
       )
     ) AS INT64) < 30
-    THEN '🟢 ƯU TIÊN THẤP - Tồn kho thấp (<30 ngày), không nên đẩy mạnh'
+    THEN '🟢 ƯU TIÊN THẤP'
     
     ELSE '⚪ KHÔNG XÁC ĐỊNH'
   END AS sales_priority_status,
@@ -417,7 +417,7 @@ SELECT
     
     -- 🔴 CẤP BÁCH - Cần lên đơn GẤP
     WHEN COALESCE(ci.ton_kho_hien_tai, 0) = 0
-    THEN '🔴 CẤP BÁCH - Sẽ hết hàng trước khi nhập hàng về'
+    THEN '🔴 CẤP BÁCH'
     
     WHEN ea.next_arrival_date IS NULL 
          AND CAST(ROUND(
@@ -431,7 +431,7 @@ SELECT
              END
            )
          ) AS INT64) < COALESCE(plt.lead_time, 30)
-    THEN '🔴 CẤP BÁCH - Sẽ hết hàng trước khi nhập hàng về'
+    THEN '🔴 CẤP BÁCH'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -447,7 +447,7 @@ SELECT
              )
            ) AS INT64) DAY
          ) < ea.next_arrival_date
-    THEN '🔴 CẤP BÁCH - Sẽ hết hàng trước khi nhập hàng về'
+    THEN '🔴 CẤP BÁCH'
     
     -- 🟠 ƯU TIÊN CAO - Nên lên đơn trong tuần
     WHEN ea.next_arrival_date IS NULL 
@@ -463,7 +463,7 @@ SELECT
            )
          ) AS INT64) BETWEEN COALESCE(plt.lead_time, 30) 
                               AND COALESCE(plt.lead_time, 30) * 1.5
-    THEN '🟠 ƯU TIÊN CAO - Tồn kho vừa đủ lead time, nên nhập hàng sớm'
+    THEN '🟠 ƯU TIÊN CAO'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -480,7 +480,7 @@ SELECT
            ) AS INT64) DAY
          ) BETWEEN ea.next_arrival_date 
                    AND DATE_ADD(ea.next_arrival_date, INTERVAL 7 DAY)
-    THEN '🟠 ƯU TIÊN CAO - Có đơn nhập nhưng buffer thấp (<7 ngày)'
+    THEN '🟠 ƯU TIÊN CAO'
     
     -- 🟢 ƯU TIÊN TRUNG BÌNH - Theo dõi
     WHEN ea.next_arrival_date IS NULL 
@@ -496,7 +496,7 @@ SELECT
            )
          ) AS INT64) BETWEEN COALESCE(plt.lead_time, 30) * 1.5 
                               AND COALESCE(plt.lead_time, 30) * 2
-    THEN '🟢 ƯU TIÊN TRUNG BÌNH - Tồn kho ổn định, theo dõi và lên đơn khi cần'
+    THEN '🟢 ƯU TIÊN TRUNG BÌNH'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -513,7 +513,7 @@ SELECT
            ) AS INT64) DAY
          ) BETWEEN DATE_ADD(ea.next_arrival_date, INTERVAL 7 DAY)
                    AND DATE_ADD(ea.next_arrival_date, INTERVAL 14 DAY)
-    THEN '🟢 ƯU TIÊN TRUNG BÌNH - Có đơn nhập với buffer đủ (7-14 ngày)'
+    THEN '🟢 ƯU TIÊN TRUNG BÌNH'
     
     -- ⚪ KHÔNG CẦN NHẬP - Đủ hàng
     WHEN CAST(ROUND(
@@ -527,7 +527,7 @@ SELECT
         END
       )
     ) AS INT64) >= COALESCE(plt.lead_time, 30) * 2
-    THEN '⚪ KHÔNG CẦN NHẬP - Tồn kho dồi dào (>60 ngày), chưa cần nhập'
+    THEN '⚪ KHÔNG CẦN NHẬP'
     
     WHEN DATE_ADD(
            ci.current_date, 
@@ -543,7 +543,7 @@ SELECT
              )
            ) AS INT64) DAY
          ) > DATE_ADD(ea.next_arrival_date, INTERVAL 14 DAY)
-    THEN '⚪ KHÔNG CẦN NHẬP - Có đơn nhập với buffer rất đủ (>14 ngày)'
+    THEN '⚪ KHÔNG CẦN NHẬP'
     
     ELSE '⚪ KHÔNG XÁC ĐỊNH'
   END AS procurement_priority_status,

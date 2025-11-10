@@ -29,7 +29,26 @@ with a as (SELECT
     when order_sources_name  = 'Zalo'
     then 'Zalo'
     else 'Facebook' 
-    end AS channel
+    end AS channel,
+    0 as tong_phu_truoc_giam_gia,
+    0 as giam_gia_cua_nguoi_ban,
+    0 as tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
+
+    0 as khoan_hoan_tien_giam_gia_cua_ban,
+    0 as tong_doanh_thu,
+    0 as phi_giao_dich,
+    0 as phi_dich_vu,
+    0 as phi_co_dinh,
+    0 as phi_hoa_hong_cua_tiktok_shop,
+    0 as phi_van_chuyen_cua_nguoi_ban,
+    0 as hoa_hong_lien_ket,
+    0 as phi_dich_vu_voucher_xtra,
+    0 as phi_xu_ly_don_hang,
+    0 as thue_gtgt,
+    0 as thue_tncn,
+    0 as phi_dich_vu_sfr,
+    tong_phi_san
+
 FROM {{ref("t2_facebook_order_lines_tot")}}
 where CAST(ngay_da_giao AS TIMESTAMP) is not null
 
@@ -64,9 +83,28 @@ SELECT
     0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
-    'Shopee' AS channel
+    'Shopee' AS channel,
+
+    gia_san_pham_goc_total as tong_phu_truoc_giam_gia,
+    seller_tro_gia as giam_gia_cua_nguoi_ban,
+    tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
+
+    khoan_hoan_tien_giam_gia_cua_ban,
+    gia_san_pham_goc_total + seller_tro_gia + tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban + khoan_hoan_tien_giam_gia_cua_ban as tong_doanh_thu,
+    phi_thanh_toan as phi_giao_dich,
+    phi_dich_vu,
+    phi_co_dinh,
+    0 as phi_hoa_hong_cua_tiktok_shop,
+    phi_van_chuyen_thuc_te + phi_van_chuyen_tro_gia_tu_san as phi_van_chuyen_cua_nguoi_ban,
+    phi_hoa_hong_tiep_thi_lien_ket as hoa_hong_lien_ket,
+    0 as phi_dich_vu_voucher_xtra,
+    0 as phi_xu_ly_don_hang,
+    thue_gtgt,
+    thue_tncn,
+    0 as phi_dich_vu_sfr,
+    tong_chi_phi as tong_phi_san
 FROM {{ref("t2_shopee_order_lines_tot")}} as shop
--- LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
+-- LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tkqc_total` AS tkqc
 --         ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
 --         AND DATE(shop.ngay_dat_hang) >= DATE(tkqc.start_date)
@@ -102,9 +140,29 @@ SELECT
     0 as doanh_thu_ke_toan_v2,
     0 as doanh_so_cu,
     0 as doanh_so_moi,
-    'Tiktok' AS channel
+    'Tiktok' AS channel,
+
+    gia_san_pham_goc_total as tong_phu_truoc_giam_gia,
+    seller_tro_gia * 1 as giam_gia_cua_nguoi_ban,
+    tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
+    khoan_hoan_tien_giam_gia_cua_ban,
+    gia_san_pham_goc_total + (seller_tro_gia * -1) + tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban + khoan_hoan_tien_giam_gia_cua_ban as  tong_doanh_thu,
+    phi_thanh_toan as phi_giao_dich,
+    phi_dich_vu,
+    0 as phi_co_dinh,
+
+    phi_hoa_hong_shop as phi_hoa_hong_cua_tiktok_shop,
+    seller_shipping_fee as phi_van_chuyen_cua_nguoi_ban,
+    phi_hoa_hong_tiep_thi_lien_ket as hoa_hong_lien_ket,
+    phi_xtra as phi_dich_vu_voucher_xtra,
+    phi_xu_ly_don_hang,
+    thue_gtgt,
+    thue_tncn,
+    phi_dich_vu_sfr,
+    tong_phi_san
+
 FROM {{ref("t2_tiktok_order_line_tot")}} as shop
--- LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
+-- LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tkqc_total` AS tkqc
 --         ON TRIM(CAST(shop.shop AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
 --         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
@@ -141,7 +199,26 @@ SELECT
     0 as doanh_thu_ke_toan_v2,
     doanh_so_cu as doanh_so_cu,
     doanh_so_moi as doanh_so_moi,
-    'Facebook' AS channel
+    'Facebook' AS channel,
+
+    0 as tong_phu_truoc_giam_gia,
+    0 as giam_gia_cua_nguoi_ban,
+    0 as tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
+
+    0 as khoan_hoan_tien_giam_gia_cua_ban,
+    0 as tong_doanh_thu,
+    0 as phi_giao_dich,
+    0 as phi_dich_vu,
+    0 as phi_co_dinh,
+    0 as phi_hoa_hong_cua_tiktok_shop,
+    0 as phi_van_chuyen_cua_nguoi_ban,
+    0 as hoa_hong_lien_ket,
+    0 as phi_dich_vu_voucher_xtra,
+    0 as phi_xu_ly_don_hang,
+    0 as thue_gtgt,
+    0 as thue_tncn,
+    0 as phi_dich_vu_sfr,
+    0 as tong_phi_san
 FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 )
 

@@ -9,7 +9,7 @@ WITH return_detail AS (
     status,
     refund_amount,
     return_seller_due_date
-  FROM {{ref("t1_shopee_shop_order_retrurn_total")}},
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_retrurn_total`,
   UNNEST(item) AS i
 ),
 
@@ -19,9 +19,9 @@ total_amount AS (
     b.brand,
     b.brand_lv1,
     SUM(i.discounted_price) AS total_tong_tien_san_pham
-  FROM {{ref("t1_shopee_shop_fee_total")}} a,   
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` a,   
   UNNEST(items) AS i
-  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS b ON 
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS b ON 
     TRIM(CASE 
       WHEN i.model_sku = ""
       THEN i.item_sku
@@ -40,7 +40,7 @@ total_amount_exclude_return AS (
       THEN i.discounted_price 
       ELSE 0 
     END) AS total_tong_tien_san_pham_excluding_return
-  FROM {{ref("t1_shopee_shop_fee_total")}} a,   
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` a,   
   UNNEST(items) AS i
   LEFT JOIN return_detail rd ON a.order_id = rd.order_id 
     AND i.model_sku = rd.variation_sku 
@@ -73,7 +73,7 @@ order_detail AS (
             brand,
             shop,
             company
-        FROM {{ref("t1_shopee_shop_order_detail_total")}}
+        FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total`
         CROSS JOIN UNNEST (item_list) AS i
     )
 ),
@@ -141,9 +141,9 @@ order_product_summary AS (
         CASE WHEN i.model_sku = "" THEN i.item_sku ELSE i.model_sku END DESC
     ) AS item_rank_for_all_returned
 
-  FROM {{ref("t1_shopee_shop_fee_total")}} f,
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f,
   UNNEST(items) AS i
-  LEFT JOIN {{ref("t1_bang_gia_san_pham")}} AS mapping ON 
+  LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham` AS mapping ON 
     CASE 
       WHEN i.model_sku = "" THEN i.item_sku
       ELSE i.model_sku  
@@ -323,19 +323,21 @@ SELECT
             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.seller_transaction_fee * -1) +
             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.order_ams_commission_fee * -1) + 
 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.buyer_paid_shipping_fee) + 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.shopee_shipping_rebate) + 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.actual_shipping_fee * -1) + 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.reverse_shipping_fee * -1) + 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.final_return_to_seller_shipping_fee * -1) + 
+              (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.buyer_paid_shipping_fee  ) + 
+              (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.shopee_shipping_rebate ) +
+             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.actual_shipping_fee * -1) + 
+             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.reverse_shipping_fee  ) + 
+             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.final_return_to_seller_shipping_fee * -1 ) +
+
+             SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * (f.voucher_from_seller * -1) + 
             
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_vat_tax * -1) + 
-            (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_pit_tax * -1) 
+             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_vat_tax * -1) + 
+             (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * f.withholding_pit_tax * -1) 
         
         WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
         THEN 
             (f.commission_fee * -1) + (f.service_fee * -1) + (f.seller_transaction_fee * -1) + (f.order_ams_commission_fee * -1) + COALESCE(f.rsf_seller_protection_fee_claim_amount)* -1 + 
-            (f.buyer_paid_shipping_fee)  + (f.shopee_shipping_rebate)  + (f.actual_shipping_fee * -1)  + (f.reverse_shipping_fee * -1) + (f.final_return_to_seller_shipping_fee * -1) + (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
+            (f.buyer_paid_shipping_fee)  + (f.shopee_shipping_rebate) + (f.actual_shipping_fee * -1) + (f.reverse_shipping_fee ) + (f.final_return_to_seller_shipping_fee ) + (f.voucher_from_seller * -1) + (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
         ELSE (SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return)* f.rsf_seller_protection_fee_claim_amount) * -1
     END AS tong_chi_phi,
 
@@ -348,8 +350,26 @@ SELECT
         THEN 
             (f.withholding_vat_tax * -1) + (f.withholding_pit_tax * -1)
     END AS tax,
-    f.withholding_vat_tax * -1  as  thue_gtgt,
-    f.withholding_pit_tax * -1 as thue_tncn,
+
+     CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN 0
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * (f.withholding_vat_tax * -1)
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN f.withholding_vat_tax * -1
+        ELSE 0
+    END AS thue_gtgt,
+
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN 0
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * (f.withholding_pit_tax * -1)
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN f.withholding_pit_tax * -1
+        ELSE 0
+    END AS thue_tncn,
     
     -- CASE 
     --     WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
@@ -401,12 +421,12 @@ SELECT
         ELSE COALESCE(f.rsf_seller_protection_fee_claim_amount,0) * -1
     END AS tong_tien_da_thanh_toan
 
-FROM {{ref("t1_shopee_shop_fee_total")}} f
-LEFT JOIN {{ref("t1_shopee_shop_wallet_total")}} vi 
+FROM `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_fee_total` f
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_wallet_total` vi 
     ON f.order_id = vi.order_id 
     AND f.brand = vi.brand
     AND vi.transaction_tab_type = 'wallet_order_income'
-LEFT JOIN {{ref("t1_shopee_shop_order_detail_total")}} ord 
+LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_shopee_shop_order_detail_total` ord 
     ON f.order_id = ord.order_id 
     AND f.brand = ord.brand
 LEFT JOIN order_product_summary ops 
@@ -417,4 +437,14 @@ LEFT JOIN total_amount_exclude_return tae ON tae.order_id = f.order_id AND tae.b
 -- BỎ JOIN với order_with_all_returned CTE để tránh duplicate
 )
 
-select * from a -- where order_id ="250803T3CP2AY2"
+select *,
+case 
+    when so_tien_hoan_tra > 0 then  gia_san_pham_goc_total * -1
+    else 0
+    end as tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
+
+    case 
+    when so_tien_hoan_tra > 0 then  seller_tro_gia * -1
+    else 0
+    end as khoan_hoan_tien_giam_gia_cua_ban
+ from a where ngay_tien_ve_vi is not null-- where order_id ="250803T3CP2AY2"
