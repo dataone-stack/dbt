@@ -14,7 +14,7 @@ WITH date_spine AS (
 warehouse_dim AS (
   SELECT DISTINCT
     warehouse_code,
-    warehouse_code as warehouse_name
+    brand as warehouse_name
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_product_inventory`
   WHERE condition_type_code = 'NEW'
 ),

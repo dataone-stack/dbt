@@ -722,4 +722,4 @@ final_result as (
 )
 
 
-SELECT * FROM final_result
+SELECT * FROM final_result where order_statement_time is not null

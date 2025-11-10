@@ -27,7 +27,7 @@ SELECT
     marketing_name,
     'Pushsale' as source
 FROM {{ref("t2_pushsale_order_lines_tot")}}
-WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết' and channel NOT IN ('Shopee', 'Tiktok')
+WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết' and channel NOT IN ('Shopee', 'Tiktok') and ngay_tien_ve_vi is not null
 
 UNION ALL
 
@@ -62,4 +62,5 @@ SELECT
 FROM {{ref("t2_sandbox_order_lines_tot")}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_tot")}} p
     ON s.ma_don_code = p.ma_don_code
-WHERE p.ma_don_code IS NULL and s.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and s.nguon_doanh_thu <> 'Sàn TMDT liên kết' and s.channel NOT IN ('Shopee', 'Tiktok')
+WHERE p.ma_don_code IS NULL and s.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') 
+and s.nguon_doanh_thu <> 'Sàn TMDT liên kết' and s.channel NOT IN ('Shopee', 'Tiktok') and s.ngay_tien_ve_vi is not null

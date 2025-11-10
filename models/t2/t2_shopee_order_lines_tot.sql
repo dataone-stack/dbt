@@ -447,4 +447,4 @@ case
     when so_tien_hoan_tra > 0 then  seller_tro_gia * -1
     else 0
     end as khoan_hoan_tien_giam_gia_cua_ban
- from a -- where order_id ="250803T3CP2AY2"
+ from a where ngay_tien_ve_vi is not null-- where order_id ="250803T3CP2AY2"
