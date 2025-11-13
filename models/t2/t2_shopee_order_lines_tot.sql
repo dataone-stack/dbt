@@ -439,12 +439,12 @@ LEFT JOIN total_amount_exclude_return tae ON tae.order_id = f.order_id AND tae.b
 
 select *,
 case 
-    when so_tien_hoan_tra > 0 then  gia_san_pham_goc_total * -1
+    when so_tien_hoan_tra != 0 then  gia_san_pham_goc_total * -1
     else 0
     end as tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
 
     case 
-    when so_tien_hoan_tra > 0 then  seller_tro_gia * -1
+    when so_tien_hoan_tra != 0 then  seller_tro_gia * -1
     else 0
     end as khoan_hoan_tien_giam_gia_cua_ban
  from a where ngay_tien_ve_vi is not null-- where order_id ="250803T3CP2AY2"
