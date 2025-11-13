@@ -6,7 +6,7 @@ shop as (
   group by date(ngay_tao_don),shop_id
 )
 
-select a.*, c.doanh_thu_san from tkqc a 
+select a.*, c.doanh_thu_san_test from tkqc a 
 left join `google_sheet.one_shop_id` b on a.idtkqc = cast(b.idtkqc as string)
 left join shop c on b.shopid = c.shop_id and date(a.date_start) = date(c.ngay_tao_don) and a.loaiDoanhThu in ('TikTok GMVmax', 'Shopee Ads')
 
