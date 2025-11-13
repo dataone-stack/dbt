@@ -27,6 +27,25 @@ brand_warehouse_mapping AS (
   SELECT 'One5', 'UME', 'UME'
 ),
 
+-- ✅ SỬA LẠI INCOMING_RECEIPTS
+incoming_receipts AS (
+  SELECT
+    EXTRACT(YEAR FROM DATE(ir.finished_date)) AS year,
+    EXTRACT(MONTH FROM DATE(ir.finished_date)) AS month,
+    ir.partnerSKU,
+    COALESCE( ir.brand,"") AS warehouse_code,
+    SUM(ir.qty) AS so_luong_nhap_kho
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_nhapkho_detail_total` ir
+
+  WHERE ir.finished_date IS NOT NULL
+    AND ir.condition_type_code = 'NEW'
+    AND ir.ir_status_name != 'Đã hủy'
+  GROUP BY year, month, ir.brand, ir.partnerSKU
+)
+-- select * from incoming_receipts where  partnerSKU ="CHA-153"
+
+,
+
 inventory_snapshot AS (
   SELECT
     inv.partner_sku as sku,
@@ -194,7 +213,6 @@ warehouse_doi_comparison AS (
     ON ci.sku = plt.sku
 ),
 
--- ✅ FIX: Chỉ lấy 1 kho nguồn tốt nhất cho mỗi kho thiếu
 warehouse_transfer_alert AS (
   SELECT
     sku,
@@ -205,7 +223,22 @@ warehouse_transfer_alert AS (
     ton_kho_thieu,
     ton_kho_du,
     lead_time,
-    so_luong_nen_chuyen
+    -- Giới hạn số lượng chuyển không vượt quá tồn kho của kho nguồn
+    LEAST(so_luong_nen_chuyen_tinh_toan, ton_kho_du) AS so_luong_nen_chuyen,
+    -- Tính số lượng còn thiếu sau khi chuyển
+    GREATEST(0, so_luong_nen_chuyen_tinh_toan - ton_kho_du) AS so_luong_con_thieu,
+    -- Thêm cảnh báo nếu cần nhập thêm
+    CASE 
+      WHEN so_luong_nen_chuyen_tinh_toan > ton_kho_du 
+      THEN CONCAT(
+        '⚠️ Kho nguồn chỉ đủ chuyển ', 
+        ton_kho_du, 
+        ' sản phẩm. Cần nhập thêm ', 
+        (so_luong_nen_chuyen_tinh_toan - ton_kho_du), 
+        ' sản phẩm vào kho đích để đáp ứng đủ nhu cầu'
+      )
+      ELSE NULL
+    END AS canh_bao_can_nhap_them
   FROM (
     SELECT
       w1.sku,
@@ -216,11 +249,11 @@ warehouse_transfer_alert AS (
       w1.ton_kho_hien_tai AS ton_kho_thieu,
       w2.ton_kho_hien_tai AS ton_kho_du,
       w1.lead_time,
+      -- Tính số lượng nên chuyển (trước khi giới hạn)
       GREATEST(0, CAST(
         ((w1.lead_time * 1.5) - w1.doi) * 
         (w1.thuc_te_ban / w1.actual_days_in_period)
-      AS INT64)) AS so_luong_nen_chuyen,
-      -- ✅ Ưu tiên kho có DOI cao nhất và tồn kho nhiều nhất
+      AS INT64)) AS so_luong_nen_chuyen_tinh_toan,
       ROW_NUMBER() OVER (
         PARTITION BY w1.sku, w1.warehouse_code 
         ORDER BY w2.doi DESC, w2.ton_kho_hien_tai DESC
@@ -233,7 +266,7 @@ warehouse_transfer_alert AS (
       AND w2.doi > w2.lead_time * 1.5
       AND w1.thuc_te_ban > 0
   )
-  WHERE rank_priority = 1  -- ✅ CHỈ LẤY KHO NGUỒN TỐT NHẤT
+  WHERE rank_priority = 1
 )
 
 -- Final datamart
@@ -259,9 +292,10 @@ SELECT
   END AS actual_days_in_period,
   
   COALESCE(ib.ton_kho_dau_ky, 0) AS ton_kho,
+  COALESCE(ir.so_luong_nhap_kho, 0) AS so_luong_nhap_kho,
   COALESCE(p.ke_hoach_ban, 0) AS ke_hoach,
   COALESCE(a.thuc_te_ban, 0) AS thuc_te,
-  COALESCE(ib.ton_kho_dau_ky, 0) - COALESCE(a.thuc_te_ban, 0) AS con_lai,
+  COALESCE(ib.ton_kho_dau_ky, 0) + COALESCE(ir.so_luong_nhap_kho, 0) - COALESCE(a.thuc_te_ban, 0) AS con_lai,
   
   CASE 
     WHEN COALESCE(p.ke_hoach_ban, 0) > 0 
@@ -657,9 +691,11 @@ SELECT
   -- Cảnh báo chuyển hàng
   wta.kho_du AS chuyen_hang_tu_kho,
   wta.ton_kho_du AS ton_kho_kho_nguon,
-  wta.doi_kho_du AS doi_kho_nguon,
+  wta.doi_kho_du  AS doi_kho_nguon,
   wta.so_luong_nen_chuyen,
-  
+  wta.so_luong_con_thieu,
+  wta.canh_bao_can_nhap_them,
+
   CASE 
     WHEN wta.kho_du IS NOT NULL 
     THEN CONCAT(
@@ -670,7 +706,12 @@ SELECT
       ' (DOI: ', wta.doi_kho_du, ' ngày) ',
       'sang kho ', 
       wta.kho_thieu,
-      ' (DOI: ', wta.doi_kho_thieu, ' ngày)'
+      ' (DOI: ', wta.doi_kho_thieu, ' ngày)',
+      CASE 
+        WHEN wta.so_luong_con_thieu > 0 
+        THEN CONCAT('. ', wta.canh_bao_can_nhap_them)
+        ELSE ''
+      END
     )
     ELSE NULL
   END AS canh_bao_chuyen_hang
@@ -688,6 +729,15 @@ LEFT JOIN actual_sales a
   AND p.brand = a.brand
   AND p.warehouse_code = a.warehouse_code
   AND COALESCE(p.company, '') = COALESCE(a.company, '')
+
+-- ✅ JOIN ĐÃ SỬA ĐẦY ĐỦ
+LEFT JOIN incoming_receipts ir
+  ON ds.year = ir.year
+  AND ds.month = ir.month
+  AND COALESCE(p.sku, a.sku) = ir.partnerSKU
+  -- AND COALESCE(p.brand, a.brand) = ir.brand
+  AND COALESCE(p.warehouse_code, a.warehouse_code) = ir.warehouse_code
+  -- AND COALESCE(p.company, a.company, '') = COALESCE(ir.company, '')
 
 LEFT JOIN inventory_beginning ib
   ON ds.year = ib.year
@@ -721,5 +771,4 @@ LEFT JOIN warehouse_transfer_alert wta
   AND COALESCE(p.warehouse_code, a.warehouse_code, ib.warehouse_code, ie.warehouse_code, ci.warehouse_code) = wta.kho_thieu
 
 WHERE COALESCE(p.sku, a.sku, ib.sku, ie.sku) IS NOT NULL
- --and ib.sku = "CHA-153"
- 
+  --AND ib.sku = "CHA-153"

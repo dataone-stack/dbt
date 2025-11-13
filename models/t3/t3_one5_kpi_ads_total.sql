@@ -26,9 +26,9 @@ kpi_normalized AS (
     UPPER(TRIM(staff)) AS staff,                  -- Chuẩn hóa
     UPPER(TRIM(manager_code)) AS manager_code,    -- Chuẩn hóa
     UPPER(TRIM(manager)) AS manager,              -- Chuẩn hóa
-    revenue_target,
-    spend,
-    cir_target
+    kpi_ds_tong,
+    kpi_chi_tieu,
+    kpi_cir_tong
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_kpi_ads_total`
   WHERE company = 'One5'
 ),
@@ -53,9 +53,9 @@ a AS (
     -- Data từ KPI
     b.month AS kpi_month,
     b.year AS kpi_year,
-    COALESCE(b.revenue_target, 0) AS revenue_target,
-    COALESCE(b.spend, 0) AS spend,
-    COALESCE(b.cir_target, 0) AS cir_target
+    COALESCE(b.kpi_ds_tong, 0) AS kpi_ds_tong,
+    COALESCE(b.kpi_chi_tieu, 0) AS kpi_chi_tieu,
+    COALESCE(b.kpi_cir_tong, 0) AS kpi_cir_tong
     
   FROM kpi_normalized b
   FULL OUTER JOIN ads_total a

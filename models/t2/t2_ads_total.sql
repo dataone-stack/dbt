@@ -74,6 +74,7 @@ SELECT
     a.ad_id,
     cast(b.campaign_id as string) as campaign_id,
     b.campaign_name as campaign_name,
+    
     cast(a.spend as float64) as spend,
     CAST(a.total_onsite_shopping_value AS FLOAT64) AS doanhThuAds,
     'TikTok Ads' AS revenue_type,
