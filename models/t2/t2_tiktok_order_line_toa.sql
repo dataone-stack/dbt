@@ -292,7 +292,28 @@ END AS status,
 FROM OrderData
 ORDER BY Order_ID, SKU_ID
 ),
-a as (
+
+trans as (
+  select 
+    brand,
+    order_adjustment_id,
+    sum(actual_shipping_fee) as actual_shipping_fee,
+    sum(platform_shipping_fee_discount) as platform_shipping_fee_discount,
+    sum(transaction_fee) as transaction_fee,
+    sum(tiktok_shop_commission_fee) as tiktok_shop_commission_fee,
+    sum(affiliate_commission) as affiliate_commission,
+    sum(affiliate_shop_ads_commission) as affiliate_shop_ads_commission,
+    sum(sfp_service_fee) as sfp_service_fee,
+    sum(customer_shipping_fee) as customer_shipping_fee,
+    sum(voucher_xtra_service_fee) as voucher_xtra_service_fee,
+    sum(vat_amount) as vat_amount,
+    sum(pit_amount) as pit_amount
+
+  from {{ref("t2_tiktok_brand_statement_transaction_order_tot")}}
+  group by brand,order_adjustment_id
+)
+
+, a as (
 SELECT
     ord.*,
     COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.actual_shipping_fee, 0) AS phi_van_chuyen_thuc_te,
@@ -353,7 +374,7 @@ SELECT
 
 FROM orderLine ord
 LEFT JOIN OrderTotal total ON ord.brand = total.brand AND ord.ma_don_hang = total.Order_ID
-LEFT JOIN {{ref("t2_tiktok_brand_statement_transaction_order_tot")}} trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
+LEFT JOIN trans ON ord.brand = trans.brand AND ord.ma_don_hang = trans.order_adjustment_id
 
 )
 
