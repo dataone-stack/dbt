@@ -26,9 +26,9 @@ kpi_total AS (
     TRIM(company) AS company,
     month,
     year,
-    revenue_target,
-    spend,
-    cir_target
+    kpi_ds_tong,
+    kpi_chi_tieu,
+    kpi_cir_tong
   FROM {{ref('t1_kpi_ads_total')}}
   WHERE company = 'Max Eagle' AND month >= 10
 ),
@@ -56,9 +56,9 @@ a AS (
     -- KPI targets
     COALESCE(b.month, EXTRACT(MONTH FROM a.date_start)) AS kpi_month,
     COALESCE(b.year, EXTRACT(YEAR FROM a.date_start)) AS kpi_year,
-    COALESCE(b.revenue_target, 0) AS revenue_target,
-    COALESCE(b.spend, 0) AS spend,
-    COALESCE(b.cir_target, 0) AS cir_target
+    COALESCE(b.kpi_ds_tong, 0) AS kpi_ds_tong,
+    COALESCE(b.kpi_chi_tieu, 0) AS kpi_chi_tieu,
+    COALESCE(b.kpi_cir_tong, 0) AS kpi_cir_tong
     
   FROM kpi_total b
   FULL OUTER JOIN ads_total a
