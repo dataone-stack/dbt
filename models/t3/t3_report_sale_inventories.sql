@@ -27,6 +27,23 @@ brand_warehouse_mapping AS (
   SELECT 'One5', 'UME', 'UME'
 ),
 
+product_info AS (
+  SELECT 
+    ma_sku,
+    san_pham,
+    brand,
+    category,
+    size,
+    gia_ban_daily
+  FROM `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham`
+  -- WHERE end_date IS NULL  -- Chỉ lấy giá hiện tại đang active
+  --   OR SAFE.PARSE_DATE('%Y-%m-%d', end_date) >= CURRENT_DATE()
+  -- QUALIFY ROW_NUMBER() OVER (
+  --   PARTITION BY ma_sku 
+  --   ORDER BY SAFE.PARSE_DATE('%Y-%m-%d', start_date) DESC
+  -- ) = 1
+),
+
 -- ✅ SỬA LẠI INCOMING_RECEIPTS
 incoming_receipts AS (
   SELECT
@@ -283,7 +300,11 @@ SELECT
   p.product_name,
   
   COALESCE(p.warehouse_code, a.warehouse_code, ib.warehouse_code, ie.warehouse_code, ci.warehouse_code) AS ten_kho,
-  
+
+  pi.category AS category,
+  pi.size AS size,
+  pi.gia_ban_daily AS gia_ban,
+
   CASE 
     WHEN ds.year = EXTRACT(YEAR FROM CURRENT_DATE())
          AND ds.month = EXTRACT(MONTH FROM CURRENT_DATE())
@@ -769,6 +790,9 @@ LEFT JOIN expected_arrivals ea
 LEFT JOIN warehouse_transfer_alert wta
   ON COALESCE(p.sku, a.sku, ib.sku, ie.sku) = wta.sku
   AND COALESCE(p.warehouse_code, a.warehouse_code, ib.warehouse_code, ie.warehouse_code, ci.warehouse_code) = wta.kho_thieu
+
+LEFT JOIN product_info pi
+  ON COALESCE(p.sku, a.sku, ib.sku, ie.sku) = trim(pi.ma_sku)
 
 WHERE COALESCE(p.sku, a.sku, ib.sku, ie.sku) IS NOT NULL
   --AND ib.sku = "CHA-153"
