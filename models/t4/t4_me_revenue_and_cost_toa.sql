@@ -8,6 +8,7 @@ WITH ads_daily AS (
     TRIM(manager)                               AS manager,
     
     SUM(COALESCE(chiPhiAds, 0))                 AS chi_phi_ads,
+    SUM(COALESCE(chi_phi_agency, 0))            AS chi_phi_agency,
     SUM(COALESCE(doanhThuAds, 0))               AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0))              AS doanhThuLadi,
     SUM(COALESCE(doanh_so_moi, 0))              AS doanh_so_moi,
@@ -49,6 +50,7 @@ SELECT
 
 -- Ads
   COALESCE(a.chi_phi_ads, 0)                    AS chi_phi_ads,
+  COALESCE(a.chi_phi_agency, 0)            AS chi_phi_agency,
   COALESCE(a.doanh_thu_trinh_ads, 0)            AS doanh_thu_trinh_ads,
   COALESCE(a.doanhThuAds, 0)                    AS doanhThuAds,
   COALESCE(a.doanhThuLadi, 0)                   AS doanhThuLadi,
