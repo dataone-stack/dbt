@@ -167,7 +167,7 @@ select
   '-' as campaign_id,
   "" as campaign_name,
   case
-  when cast(idtkqc as string) in ('1271178195','4142173605','9451868664')
+  when cast(idtkqc as string) in ('-')--'1271178195','4142173605','9451868664')
   then cast(chiPhi as float64)
   else cast(chiPhi * 26700 as float64)
   end as spend,
