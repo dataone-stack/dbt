@@ -740,11 +740,11 @@ final_result as (
 , a as (
 SELECT *,
 case
-  when hoan_phi_sfr > 0 and status = 'Đã hoàn'
-  then 'Đơn hoàn đã hoàn phí vận chuyển'
-  when hoan_phi_sfr = 0 and status = 'Đã hoàn'
-  then 'Đơn hoàn chưa hoàn phí vận chuyển'
-  else '-'
+  when hoan_phi_sfr > 0 and status = 'Đã hoàn' and phi_dich_vu_sfr = 1640
+  then 'Chưa hoàn phí vận chuyển'
+  when hoan_phi_sfr = 0 and status = 'Đã hoàn' and phi_dich_vu_sfr = 1640
+  then 'Đã hoàn phí vận chuyển'
+  else 'Đơn bình thường'
 end as check_hoan_phi_sfr
 FROM final_result where order_statement_time is not null)
 
