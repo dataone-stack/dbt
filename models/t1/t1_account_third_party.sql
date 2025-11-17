@@ -1,0 +1,1 @@
+select * from `inodi_balance_dwh.account_third_party`
