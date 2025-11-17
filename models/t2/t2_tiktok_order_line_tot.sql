@@ -604,7 +604,8 @@ final_result as (
     0 as phi_co_dinh,
     
     -- Tiền khách hàng thanh toán
-    ord.gia_san_pham_goc_total - ord.seller_tro_gia - ord.san_tro_gia - COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
+    --ord.gia_san_pham_goc_total - ord.seller_tro_gia - ord.san_tro_gia - COALESCE((ord.SKU_Subtotal_After_Discount / NULLIF(total.tong_tien_sau_giam_gia, 0)) * trans.customer_shipping_fee, 0) AS tien_khach_hang_thanh_toan,
+    ord.gia_san_pham_goc_total - ord.seller_tro_gia - ord.san_tro_gia  AS tien_khach_hang_thanh_toan,
 
 
     -- Tổng phí sàn
