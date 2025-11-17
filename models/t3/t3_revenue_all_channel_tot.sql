@@ -48,6 +48,8 @@ with a as (SELECT
     0 as thue_gtgt,
     0 as thue_tncn,
     0 as phi_dich_vu_sfr,
+    0 as hoan_phi_sfr,
+    '-' as check_hoan_phi_sfr,
     tong_phi_san
 
 FROM {{ref("t2_facebook_order_lines_tot")}}
@@ -104,6 +106,8 @@ SELECT
     thue_gtgt,
     thue_tncn,
     0 as phi_dich_vu_sfr,
+    0 as hoan_phi_sfr,
+    '-' as check_hoan_phi_sfr,
     tong_chi_phi as tong_phi_san
 FROM {{ref("t2_shopee_order_lines_tot")}} as shop
 -- LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tkqc_total` AS tkqc
@@ -162,6 +166,8 @@ SELECT
     thue_gtgt,
     thue_tncn,
     phi_dich_vu_sfr,
+    hoan_phi_sfr,
+    check_hoan_phi_sfr,
     tong_phi_san
 
 FROM {{ref("t2_tiktok_order_line_tot")}} as shop
@@ -222,6 +228,8 @@ SELECT
     0 as thue_gtgt,
     0 as thue_tncn,
     0 as phi_dich_vu_sfr,
+    0 as hoan_phi_sfr,
+    '-' as check_hoan_phi_sfr,
     0 as tong_phi_san
 FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 )
