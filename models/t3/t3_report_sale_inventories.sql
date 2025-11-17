@@ -38,6 +38,12 @@ product_info AS (
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_bang_gia_san_pham`
 ),
 
+product_name as (
+select  	
+partner_sku, product_name,sku
+FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_product_total`
+),
+
 -- ✅ CTE QUAN TRỌNG: Tạo danh sách TẤT CẢ các SKU có hoạt động
 all_active_skus AS (
   -- SKU từ sales
@@ -344,7 +350,7 @@ SELECT
   base.company,
   base.brand,
   base.sku,
-  p.product_name,
+  pn.product_name,
   base.warehouse_code AS ten_kho,
 
   pi.category AS category,
@@ -846,10 +852,13 @@ LEFT JOIN warehouse_transfer_alert wta
 LEFT JOIN product_info pi
   ON base.sku = TRIM(pi.ma_sku)
 
+LEFT JOIN product_name pn
+  ON base.sku = TRIM(pn.partner_sku)
+
 WHERE base.sku IS NOT NULL
 )
 
-select * from a where year >=2025 and month >= 10 --company = "Max Eagle"
+select * from a where year >=2025 and month >= 10 -- and sku = "LHV-001" --company = "Max Eagle"
 
 
 
