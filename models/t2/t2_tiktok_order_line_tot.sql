@@ -740,9 +740,9 @@ final_result as (
 , a as (
 SELECT *,
 case
-  when hoan_phi_sfr > 0 and status = 'Đã hoàn' and phi_dich_vu_sfr = 1640
+  when hoan_phi_sfr != 0 and status = 'Đã hoàn' and phi_dich_vu_sfr = -1620
   then 'Chưa hoàn phí vận chuyển'
-  when hoan_phi_sfr = 0 and status = 'Đã hoàn' and phi_dich_vu_sfr = 1640
+  when hoan_phi_sfr = 0 and status = 'Đã hoàn' and phi_dich_vu_sfr = -1620
   then 'Đã hoàn phí vận chuyển'
   else 'Đơn bình thường'
 end as check_hoan_phi_sfr
