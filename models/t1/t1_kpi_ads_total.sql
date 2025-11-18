@@ -19,5 +19,5 @@ SELECT
 UNION ALL
 SELECT * ,
     'Max Eagle' AS company
-    FROM `google_sheet.me_kpi_ad`
-    WHERE year IS NOT NULL and month >8
+    FROM `google_sheet.me_kpi` 
+    WHERE year IS NOT NULL and month >8 AND role = 'Marketing' 
