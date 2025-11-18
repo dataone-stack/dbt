@@ -21,6 +21,7 @@ SELECT
     voucher_from_seller,
     phi_co_dinh,
     tien_khach_hang_thanh_toan,
+    0 as doanh_so_san,
     tien_sp_sau_tro_gia,
     phi_ship,
     giam_gia_seller,
@@ -79,6 +80,7 @@ SELECT
     voucher_from_seller,
     phi_co_dinh,
     tien_khach_hang_thanh_toan,
+    discounted_price as doanh_so_san,
     tien_sp_sau_tro_gia,
     phi_ship,
     giam_gia_seller,
@@ -104,7 +106,7 @@ SELECT
     'Shopee' AS channel,
     ten_nguoi_mua AS ten_khach_hang
 FROM {{ref("t2_shopee_order_lines_toa")}} shop
-LEFT JOIN `dtm.t2_tkqc_total` AS tkqc
+LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
         ON TRIM(CAST(shop.shop_id AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
@@ -135,6 +137,7 @@ SELECT
     voucher_from_seller,
     phi_co_dinh * -1,
     tien_khach_hang_thanh_toan,
+    SKU_Subtotal_After_Discount as doanh_so_san,
     tien_sp_sau_tro_gia,
     phi_ship,
     giam_gia_seller,
@@ -160,7 +163,7 @@ SELECT
     'Tiktok' AS channel,
     Recipient AS ten_khach_hang
 FROM {{ref("t2_tiktok_order_line_toa")}} shop
-LEFT JOIN `dtm.t2_tkqc_total` AS tkqc
+LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
         ON TRIM(CAST(shop.shop_id AS STRING)) = TRIM(CAST(tkqc.idtkqc AS STRING))
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
@@ -192,6 +195,7 @@ SELECT
     phi_co_dinh,
 
     tien_khach_hang_thanh_toan,
+    0 as doanh_so_san,
     tien_sp_sau_tro_gia,
     gia_dich_vu_vc as phi_ship,
     giam_gia_san_pham + chiet_khau as giam_gia_seller,

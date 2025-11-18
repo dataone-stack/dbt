@@ -20,7 +20,7 @@ brand_warehouse_mapping AS (
   SELECT 'Max Eagle', 'Dr Diva', 'UME' UNION ALL
   SELECT 'Max Eagle', 'LYB Cosmetics', 'UME' UNION ALL
   SELECT 'Max Eagle', 'UME', 'UME' UNION ALL
-  SELECT 'One5', 'An Cung', 'UME' UNION ALL
+  SELECT 'One5', 'An Cung', 'UME' UNION ALL 
   SELECT 'One5', 'Chaching', 'Chaching' UNION ALL
   SELECT 'One5', 'Chaching Beauty', 'Chaching' UNION ALL
   SELECT 'One5', 'LYB', 'LYB' UNION ALL
@@ -131,7 +131,7 @@ inventory_snapshot AS (
     bwm.company,
     COALESCE(bwm.warehouse_code, inv.warehouse_code) AS warehouse_code,
     inv.date_record,
-    EXTRACT(YEAR FROM inv.date_record) AS year,6
+    EXTRACT(YEAR FROM inv.date_record) AS year,
     EXTRACT(MONTH FROM inv.date_record) AS month,
     inv.available_qty
   FROM `crypto-arcade-453509-i8`.`dtm`.`t1_vietful_product_inventory` inv
