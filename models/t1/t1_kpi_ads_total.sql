@@ -17,7 +17,21 @@ SELECT
     FROM `google_sheet.one5_kpi_ads`
     WHERE year IS NOT NULL 
 UNION ALL
-SELECT * ,
+SELECT 
+    year,
+    month,
+    brand,
+    channel,
+    manager_code,
+    manager,
+    ma_nhan_vien,
+    staff,
+    kpi_ds_tong,
+    kpi_cir_tong,
+    kpi_chi_tieu,
+    kpi_ds_moi,
+    kpi_cir_moi,
+    kpi_ds_cu,
     'Max Eagle' AS company
     FROM `google_sheet.me_kpi` 
     WHERE year IS NOT NULL and month >8 AND role = 'Marketing' 
