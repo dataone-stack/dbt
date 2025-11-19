@@ -566,9 +566,9 @@ SELECT
 
   CASE
     WHEN COALESCE(a.thuc_te_ban, 0) = 0 
-         OR COALESCE(ci.ton_kho_hien_tai, 0) = 0
+         and COALESCE(ci.ton_kho_hien_tai, 0)/1 >= 60
     THEN '🔴 ƯU TIÊN CAO'
-    
+
     WHEN CAST(ROUND(
       COALESCE(ci.ton_kho_hien_tai, 0) / 
       (a.thuc_te_ban / 
@@ -579,7 +579,7 @@ SELECT
           ELSE EXTRACT(DAY FROM LAST_DAY(ds.period_start_date))
         END
       )
-    ) AS INT64) > 60
+    ) AS INT64) > 60 
     THEN '🔴 ƯU TIÊN CAO'
     
     WHEN CAST(ROUND(
@@ -607,8 +607,12 @@ SELECT
       )
     ) AS INT64) < 30
     THEN '🟢 ƯU TIÊN THẤP'
-    
-    ELSE '⚪ KHÔNG XÁC ĐỊNH'
+
+    WHEN COALESCE(a.thuc_te_ban, 0) = 0 
+         OR COALESCE(ci.ton_kho_hien_tai, 0) = 0
+    THEN '🔴 SẢN PHẨM TỒN KHO = 0, BÁN = 0'
+
+    ELSE '⚪ Sản phẩm'
   END AS sales_priority_status,
 
   CASE
