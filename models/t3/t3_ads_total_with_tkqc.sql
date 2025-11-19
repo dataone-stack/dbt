@@ -34,10 +34,17 @@ WITH ads_total_with_tkqc AS (
             account_name,
             ad_id,
             campaign_id,
+            campaign_name,
             currency,
             spend,
             doanhThuAds
-        FROM {{ref("t2_ads_total")}}
+        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total`
+        WHERE 
+            (
+                account_id = '2157355114664606'
+                AND date(date_start) <= '2025-10-31'
+            )
+            OR account_id <> '2157355114664606'
     ) AS ads
     RIGHT JOIN {{ref("t2_tkqc_total")}} AS tkqc
         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
@@ -69,8 +76,66 @@ WITH ads_total_with_tkqc AS (
         campaign_team.brand,
         tkqc.brand,
         tkqc.so_tai_khoan
-),
+)
 
+,case_tkqc_chay_nhieu_nguoi as (
+select 
+  a.date as date_start,
+  'Facebook Ads' as revenue_type,
+  b.ma_nhan_vien,
+  b.staff,
+  b.ma_quan_ly,
+  b.manager,
+  cast(a.idtkqc as string) as idtkqc,
+  b.nametkqc,
+  b.nametkqc as nametkqc_trinh,
+ 
+  b.brand,
+  b.brand as brand_lv1,
+  b.channel,
+
+  'VND' as currency,
+  b.company,
+    
+  b.ben_thue,
+  b.dau_the,
+
+  MAX(b.phi_thue) as phi_thue,
+  b.so_tai_khoan,
+  SUM(a.chi_phi) AS chiPhiAds,
+  0 AS doanhThuAds,
+  SUM(a.chi_phi) * (1 + COALESCE(MAX(b.phi_thue), 0)) as chi_phi_agency
+
+from `dtm.t1_case_tkqc_nhieu_nguoi_chay` a
+left join `dtm.t2_tkqc_total` b on cast(a.idtkqc as string) = b.idtkqc and a.ma_nv = b.ma_nhan_vien and a.date between b.start_date and b.end_date
+
+GROUP BY
+  a.date,
+  b.ma_nhan_vien,
+  b.staff,
+  b.ma_quan_ly,
+  b.manager,
+  a.idtkqc,
+  b.nametkqc,
+  b.brand,
+  b.channel,
+  b.company,
+  b.ben_thue,
+  b.dau_the,
+  b.so_tai_khoan
+)
+
+--select sum(chiPhiAds) from case_tkqc_chay_nhieu_nguoi where ma_nhan_vien = 'MEG1150'
+
+, 
+
+ads_total_with_tkqc_total as (
+  select * from ads_total_with_tkqc
+  union all
+  select * from case_tkqc_chay_nhieu_nguoi
+)
+
+,
 ladipage_total AS (
     SELECT 
         company,
@@ -122,7 +187,7 @@ ladi_unmatched AS (
     
     WHERE NOT EXISTS (
         SELECT 1
-        FROM ads_total_with_tkqc AS ads
+        FROM ads_total_with_tkqc_total AS ads
         WHERE ladi.date_insert = ads.date_start
           AND ads.ma_nhan_vien = ladi.id_staff
           AND ads.ma_quan_ly = ladi.ma_quan_ly
@@ -135,7 +200,7 @@ ladi_unmatched AS (
 
 ads_extended AS (
     SELECT *
-    FROM ads_total_with_tkqc
+    FROM ads_total_with_tkqc_total
     UNION ALL
     SELECT *
     FROM ladi_unmatched
