@@ -114,7 +114,7 @@ GROUP BY
   b.ma_nhan_vien,
   b.staff,
   b.ma_quan_ly,
-  b.manager,
+  b.manager,    
   a.idtkqc,
   b.nametkqc,
   b.brand,

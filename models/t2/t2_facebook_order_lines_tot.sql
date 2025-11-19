@@ -1361,4 +1361,7 @@ a as (
   select * from order_returned where ngay_da_giao is not null
 )
 
-select * from a
+select a.* ,mar.manager, mar.marketing_name
+from a 
+left join {{ref("t1_marketer_facebook_total")}} mar on json_value(a.marketer,'$.name') = mar.marketer_name and a.brand = mar.brand and date(a.ngay_tao_don) between mar.start_date and mar.end_date
+where a.brand = 'Chaching' and date(ngay_da_giao) = '2025-11-03' 
