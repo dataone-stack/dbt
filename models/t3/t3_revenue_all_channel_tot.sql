@@ -75,7 +75,7 @@ SELECT
     order_id,
     '' as tracking_code,
     shop.status, 
-    tong_tien_da_thanh_toan as total_amount, 
+    wallet_amount as total_amount, 
     ngay_dat_hang as date_create_order, 
     gia_ban_daily_total,
     tien_chiet_khau_sp_shopee as tien_chiet_khau_sp_tot,
