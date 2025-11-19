@@ -288,10 +288,16 @@ SELECT
         ELSE 0
     END AS ngan_hang_khuyen_mai_the_tin_dung,
 
-    
-    
-    -- Lấy từ wallet
-    vi.amount AS wallet_amount,
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN 0
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN SAFE_DIVIDE(ops.discounted_price, tae.total_tong_tien_san_pham_excluding_return) * vi.amount
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN vi.amount
+        ELSE 0
+    END AS wallet_amount,
+
     
     -- Lấy từ order summary
     ops.gia_ban_daily_total,
