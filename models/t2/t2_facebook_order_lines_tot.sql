@@ -1361,6 +1361,6 @@ a as (
   select * from order_returned where ngay_da_giao is not null
 )
 
-select a.* ,mar.manager, mar.marketing_name
+select a.* ,mar.manager, COALESCE(mar.marketing_name, json_value(a.marketer,'$.name')) AS marketing_name
 from a 
 left join {{ref("t1_marketer_facebook_total")}} mar on json_value(a.marketer,'$.name') = mar.marketer_name and a.brand = mar.brand and date(a.ngay_tao_don) between mar.start_date and mar.end_date
