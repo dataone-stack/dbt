@@ -95,7 +95,7 @@ order_line as (
     mapBangGia.brand_lv1,
     -- mapBangGia.company_lv1,
     mar.manager,
-    mar.marketing_name
+    COALESCE(mar.marketing_name,json_value(ord.marketer,'$.name')) AS marketing_name
   from order_marketer_fix as ord,
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
