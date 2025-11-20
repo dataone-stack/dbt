@@ -53,15 +53,18 @@ order_detail AS (
     SELECT DISTINCT
         order_id,
         model_sku,
-        FIRST_VALUE(promotion_type) OVER (
-            PARTITION BY order_id, brand, model_sku 
-            ORDER BY 
-                CASE WHEN promotion_type IS NULL OR promotion_type = '' THEN 1 ELSE 2 END,
-                promotion_type
-        ) AS promotion_type,
+        -- FIRST_VALUE(promotion_type) OVER (
+        --     PARTITION BY order_id, brand, model_sku 
+        --     ORDER BY 
+        --         CASE WHEN promotion_type IS NULL OR promotion_type = '' THEN 1 ELSE 2 END,
+        --         promotion_type
+        -- ) 
+        
+        promotion_type AS promotion_type,
         brand,
         shop,
-        company
+        company,
+        model_discounted_price as discounted_price
     FROM (
         SELECT 
             order_id,
@@ -72,7 +75,8 @@ order_detail AS (
             i.promotion_type,
             brand,
             shop,
-            company
+            company,
+            model_discounted_price
         FROM {{ref("t1_shopee_shop_order_detail_total")}}
         CROSS JOIN UNNEST (item_list) AS i
     )
@@ -155,6 +159,7 @@ order_product_summary AS (
         ELSE i.model_sku  
     END = ord.model_sku
     AND f.brand = ord.brand
+    AND i.discounted_price = ord.discounted_price
   LEFT JOIN `google_sheet.bang_gia_von` AS cost_price ON 
     CASE 
         WHEN i.model_sku = "" THEN i.item_sku
