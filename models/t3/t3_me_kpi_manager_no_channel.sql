@@ -32,11 +32,24 @@ kpi_total AS (
   WHERE year IS NOT NULL
   GROUP BY month, year, brand, manager, ma_quan_ly
 ),
-a AS (
+
+-- BƯỚC QUAN TRỌNG: Tạo bộ khung Ngày cho từng Brand/Manager dựa trên KPI tháng
+kpi_daily_expanded AS (
+  SELECT
+    k.*,
+    day_date AS date_start_spine
+  FROM kpi_total k,
+  -- Tạo mảng ngày từ ngày đầu tháng đến ngày cuối tháng (hoặc ngày hiện tại)
+  UNNEST(GENERATE_DATE_ARRAY(DATE(k.year, k.month, 1), LAST_DAY(DATE(k.year, k.month, 1)))) AS day_date
+  -- Lọc để chỉ lấy các ngày nằm trong khoảng thời gian báo cáo (nếu cần)
+  -- WHERE day_date >= '2025-11-01'
+),
+
+final_table AS (
   SELECT 
     -- Merge columns từ cả 2 bảng
     COALESCE(b.brand, a.brand) AS brand,
-    COALESCE(a.date_start, DATE(b.year, b.month, 1)) AS date_start,
+    COALESCE(a.date_start, b.date_start_spine) AS date_start,
     COALESCE(b.manager, a.manager) AS manager,
     
     -- Metrics từ ads_total (không dùng SUM vì đã SUM trong CTE)
@@ -57,30 +70,11 @@ a AS (
     COALESCE(b.kpi_cir_moi, 0) AS kpi_cir_moi,
     COALESCE(b.kpi_cir, 0) AS kpi_cir
     
-  FROM kpi_total b
+  FROM kpi_daily_expanded b
   FULL OUTER JOIN ads_total a
     ON a.brand = b.brand
     AND a.manager = b.manager
-    AND EXTRACT(MONTH FROM a.date_start) = b.month
-    AND EXTRACT(YEAR FROM a.date_start) = b.year
+    AND b.date_start_spine = a.date_start
 )
-SELECT * FROM a
+SELECT * FROM final_table
 ORDER BY brand, date_start
-
-
-
--- ads_total AS (
---   SELECT 
---     TRIM(brand) AS brand,
---     date_start,
---     TRIM(ma_quan_ly) AS ma_quan_ly,
---     TRIM(manager) AS manager,
---     SUM(doanhThuads + doanh_so_moi + doanh_so_cu) AS doanh_so_tong,
---     SUM(doanhThuads + doanh_so_moi) AS doanh_so_moi,
---     SUM(doanh_so_cu) AS doanh_so_cu,
---     SUM(chiPhiAds) AS chi_phi_ads,
---     ROUND(SAFE_DIVIDE(SUM(chiPhiAds), SUM(doanhThuads + doanh_so_moi)), 4) AS cir
---   FROM `crypto-arcade-453509-i8`.`dtm`.`t3_ads_total_with_tkqc`
---   WHERE company = 'Max Eagle' and DATE(date_start) >= '2025-11-01'
---   GROUP BY date_start, brand, manager, ma_quan_ly
--- ),
