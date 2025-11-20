@@ -93,24 +93,24 @@ total_amount AS (
     ord.payment_method ,
     ord.shipping_carrier ,
     ord.ship_by_date ,
-    CASE 
-        WHEN i.model_sku = ""
-        THEN i.item_sku
-    ELSE i.model_sku
-  END as sku,
+--     CASE 
+--         WHEN i.model_sku = ""
+--         THEN i.item_sku
+--     ELSE i.model_sku
+--   END as sku,
     ord.buyer_cancel_reason,
-    mapping.brand,
-    mapping.brand_lv1,
+    -- mapping.brand,
+    -- mapping.brand_lv1,
     -- mapping.company_lv1,
     ord.days_to_ship
-  from {{ ref('t1_shopee_shop_order_detail_total') }} as ord, 
-  unnest (item_list) as i
-  LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
-  trim(CASE 
-        WHEN i.model_sku = ""
-        THEN i.item_sku
-    ELSE i.model_sku
-  END) = trim(mapping.ma_sku)
+  from {{ ref('t1_shopee_shop_order_detail_total') }} as ord
+--   ,unnest (item_list) as i
+--   LEFT JOIN {{ ref('t1_bang_gia_san_pham') }} AS mapping ON 
+--   trim(CASE 
+--         WHEN i.model_sku = ""
+--         THEN i.item_sku
+--     ELSE i.model_sku
+--   END) = trim(mapping.ma_sku)
 )
 
 ,sale_detail AS (
@@ -182,7 +182,7 @@ total_amount AS (
     safe_divide ( sd.discounted_price , ta.total_tong_tien_san_pham) * ord.days_to_ship  AS day_to_ship
   FROM sale_detail AS sd
   LEFT JOIN shopee_order_detail AS ord
-    ON sd.order_id = ord.order_id and sd.brand = ord.brand and trim(sd.sku) = trim(ord.sku)
+    ON sd.order_id = ord.order_id --and sd.brand = ord.brand and trim(sd.sku) = trim(ord.sku)
   LEFT JOIN total_amount ta ON ta.order_id = sd.order_id and ta.brand = sd.brand
 )
 

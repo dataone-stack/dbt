@@ -100,7 +100,7 @@ order_line as (
   unnest (items) as item
   left join total_price as tt on tt.id = ord.id and tt.brand = ord.brand
   left join {{ref("t1_bang_gia_san_pham")}} as mapBangGia on json_value(item, '$.variation_info.display_id') = mapBangGia.ma_sku
-  left join {{ref("t1_marketer_facebook_total")}} mar on json_value(ord.marketer,'$.name') = mar.marketer_name and ord.brand = mar.brand
+  left join {{ref("t1_marketer_facebook_total")}} mar on json_value(ord.marketer,'$.name') = mar.marketer_name and ord.brand = mar.brand and date(DATETIME_ADD(ord.inserted_at, INTERVAL 7 HOUR)) between mar.start_date and mar.end_date
   where ord.order_sources_name not in ('Tiktok', 'Shopee') and ord.status_name not in ('removed')
 )
 
