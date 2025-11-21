@@ -64,7 +64,7 @@ total_amount AS (
     ELSE i.model_sku
   END as sku,
     i.item_name as ten_sp_nguon,
-    mapping.san_pham as item_name,
+    coalesce (mapping.san_pham, i.item_name) as item_name,
     i.model_name,
     i.quantity_purchased,
     i.original_price,

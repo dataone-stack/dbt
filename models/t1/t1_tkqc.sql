@@ -8,7 +8,7 @@ SELECT
     -- chuẩn hóa staff dạng Nguyễn Văn A
     (SELECT STRING_AGG(CONCAT(UPPER(SUBSTR(word, 1, 1)), LOWER(SUBSTR(word, 2))) , ' ') FROM UNNEST(SPLIT(staff, ' ')) AS word) AS staff,
     ma_quan_ly, 
-    manager, 
+    upper(manager) as manager, 
     brand, 
     channel, 
     status, 
