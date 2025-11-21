@@ -1,5 +1,5 @@
 SELECT 
-    manager, 
+    upper(manager) as manager, 
     staff AS marketing_name,
     marketer_name, 
     ma_nhan_vien, 

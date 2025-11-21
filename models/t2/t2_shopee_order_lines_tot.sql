@@ -93,7 +93,7 @@ order_product_summary AS (
       ELSE i.model_sku  
     END AS sku_code,
     i.item_id AS item_id,
-    i.item_name,
+    coalesce ( mapping.san_pham, i.item_name) as item_name,
     i.quantity_purchased,
     CASE
         WHEN ord.promotion_type = 'add_on_free_gift_sub' OR (rd.return_id IS NOT NULL AND rd.return_id != "")
