@@ -34,7 +34,7 @@ order_line as (
     json_value(ord.assigning_seller,'$.name') as seller_name,
     json_value(item, '$.variation_info.display_id')  as sku,
     json_value(item, '$.variation_info.name')  as ten_sp_nguon,
-    mapBangGia.san_pham as ten_sp,
+    coalesce (mapBangGia.san_pham, json_value(item, '$.variation_info.name')) as ten_sp,
     json_value(item, '$.variation_info.fields[0].value') as color,
     json_value(item, '$.variation_info.fields[1].value') as size,
     safe_cast(json_value(item, '$.quantity') as int64) as so_luong,
