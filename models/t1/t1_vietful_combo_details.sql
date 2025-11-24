@@ -25,6 +25,8 @@ parsed_bundles AS (
 )
 SELECT 
   pb.product_id,
+  pb.main_sku,
+  pb.main_partner_sku,
   pb.product_name,
   pb.bundle_sku AS sku,
   p2.partner_sku,

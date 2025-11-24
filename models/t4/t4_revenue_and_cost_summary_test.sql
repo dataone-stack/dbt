@@ -60,43 +60,55 @@ revenue_toa AS (
     FROM {{ref("t3_revenue_all_channel")}}
  --status NOT IN  ('Đã hủy')
     GROUP BY DATE(ngay_tao_don), brand, channel, company,manager -- ,company_lv1--,ten_san_pham,sku_code
-),
--- CTE revenue_tot tổng hợp doanh thu
-revenue_tot AS (
-  SELECT DISTINCT
+)
+, revenue_tot_total as (
+  select  
     TRIM(brand) as brand,
     -- brand_lv1,
     TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
     company,
-    manager,
+    date(FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create))) as date_start, 
+    sum(total_amount) as total_amount
+   FROM {{ref("t3_revenue_all_channel_tot")}}
+  WHERE date_create IS NOT NULL
+ GROUP BY date_start, brand, channel, company
+)
+
+, revenue_tot AS (
+  SELECT DISTINCT
+    TRIM(tot.brand) as brand,
+    -- brand_lv1,
+    TRIM(CONCAT(UPPER(SUBSTR(tot.channel, 1, 1)), LOWER(SUBSTR(tot.channel, 2)))) AS channel,
+    tot.company,
+    tot.manager,
     -- company_lv1,
-    FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(date_create)) as date_start, 
+    FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(tot.date_create)) as date_start, 
     
 -- Loại bỏ các đơn hàng có tổng_amount nhỏ hơn 60,000
     case
-        when SUM(total_amount) < 60000
+        when SUM(revenue_tot_total.total_amount) < 60000
         then 0
-        else SUM(total_amount)
+        else SUM(tot.total_amount)
     end as total_amount,
     case
-        when SUM(total_amount) < 60000
+        when SUM(revenue_tot_total.total_amount) < 60000
         then 0
-        else  SUM(gia_ban_daily_total)
+        else  SUM(tot.gia_ban_daily_total)
     end as gia_ban_daily_total,
     case
-        when SUM(total_amount) < 60000
+        when SUM(revenue_tot_total.total_amount) < 60000
         then 0
-        else  SUM(doanh_thu_ke_toan)
+        else  SUM(tot.doanh_thu_ke_toan)
     end as doanh_thu_ke_toan,
     case
-        when SUM(total_amount) < 60000
+        when SUM(revenue_tot_total.total_amount) < 60000
         then 0
-        else  SUM(doanh_thu_ke_toan_v2)
+        else  SUM(tot.doanh_thu_ke_toan_v2)
     end as doanh_thu_ke_toan_v2,
     case
-        when SUM(total_amount) < 60000
+        when SUM(revenue_tot_total.total_amount) < 60000
         then 0
-        else SUM(tien_chiet_khau_sp_tot) 
+        else SUM(tot.tien_chiet_khau_sp_tot) 
     end as tien_chiet_khau_sp_tot,
 
 
@@ -108,7 +120,8 @@ revenue_tot AS (
 
 
     SUM(phu_phi) as phu_phi
-  FROM {{ref("t3_revenue_all_channel_tot")}}
+  FROM {{ref("t3_revenue_all_channel_tot")}} tot
+  left join revenue_tot_total on  date(FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(tot.date_create))) =  revenue_tot_total.date_start and tot.brand = revenue_tot_total.brand and tot.channel = revenue_tot_total.channel and tot.company = revenue_tot_total.company
   WHERE date_create IS NOT NULL
   GROUP BY date_start, brand, channel, company,manager --,company_lv1
 )

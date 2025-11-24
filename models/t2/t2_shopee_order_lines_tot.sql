@@ -100,6 +100,7 @@ order_product_summary AS (
         THEN 0
         ELSE COALESCE(mapping.gia_ban_daily, 0) * COALESCE(i.quantity_purchased, 0)
     END AS gia_ban_daily_total,
+    mapping.gia_ban_daily,
     CASE
         WHEN ord.promotion_type = 'add_on_free_gift_sub' OR (rd.return_id IS NOT NULL AND rd.return_id != "")
         THEN 0
@@ -170,6 +171,7 @@ order_product_summary AS (
 a AS (
 SELECT 
     f.brand,
+    ops.gia_ban_daily,
     ops.brand_lv1,
     ops.discounted_price,
     -- ops.company_lv1,
