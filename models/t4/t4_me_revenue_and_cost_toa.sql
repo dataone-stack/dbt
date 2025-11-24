@@ -9,11 +9,11 @@ WITH ads_daily AS (
     
     SUM(COALESCE(chiPhiAds, 0))                 AS chi_phi_ads,
     SUM(COALESCE(chi_phi_agency, 0))            AS chi_phi_agency,
-    SUM(COALESCE(doanhThuAds, 0))               AS doanhThuAds,
+    SUM(COALESCE(doanh_so_san, 0))               AS doanhThuAds,
     SUM(COALESCE(doanhThuLadi, 0))              AS doanhThuLadi,
     SUM(COALESCE(doanh_so_moi, 0))              AS doanh_so_moi,
     SUM(COALESCE(doanh_so_cu, 0))              AS doanh_so_cu,
-    SUM(COALESCE(doanhThuAds, 0) + COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads
+    SUM(COALESCE(doanh_so_san, 0) + COALESCE(doanhThuLadi, 0)) AS doanh_thu_trinh_ads
   FROM {{ref("t3_me_ads_total_with_tkqc")}}
   WHERE company = 'Max Eagle' AND date_start IS NOT NULL
   GROUP BY date_start, brand, brand_lv1, channel,company, manager
