@@ -219,7 +219,7 @@ SELECT
     tien_chiet_khau_sp,
     doanh_thu_ke_toan,
     doanh_so,
-    'Facebook' AS channel,
+    channel,
     ho_ten AS ten_khach_hang,
 FROM {{ref("t2_mapping_sandbox_pushsale_toa")}}
 --WHERE trang_thai_don_hang NOT IN ("Hủy đăng đơn")
