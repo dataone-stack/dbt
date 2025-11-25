@@ -1,1 +1,1 @@
-select * From {{ref("t3_revenue_all_channel")}} where company = 'One5' and status not in 'Đã hủy'
+select * From {{ref("t3_revenue_all_channel")}} where company = 'One5' and status not in ('Đã hủy')
