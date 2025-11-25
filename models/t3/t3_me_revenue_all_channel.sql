@@ -1,1 +1,1 @@
-select * From {{ref("t3_revenue_all_channel")}} where company = 'Max Eagle' and status NOT IN ("Đã hủy", "Đã hoàn", "Hủy đăng đơn")
+select * From {{ref("t3_revenue_all_channel")}} where company = 'Max Eagle' and status NOT IN ("Đã hủy")
