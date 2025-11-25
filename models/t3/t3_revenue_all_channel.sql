@@ -17,7 +17,7 @@ SELECT
     phi_hoa_hong_tiep_thi_lien_ket,
     phi_hoa_hong_quang_cao_cua_hang,
     phi_dich_vu,
-    phi_xtra,
+    phi_xtra,   
     voucher_from_seller,
     phi_co_dinh,
     tien_khach_hang_thanh_toan,
