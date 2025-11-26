@@ -137,7 +137,7 @@ SELECT
     voucher_from_seller,
     phi_co_dinh * -1,
     tien_khach_hang_thanh_toan,
-    SKU_Subtotal_After_Discount as doanh_so_san,
+    tien_sp_sau_tro_gia as doanh_so_san,
     tien_sp_sau_tro_gia,
     phi_ship,
     giam_gia_seller,
