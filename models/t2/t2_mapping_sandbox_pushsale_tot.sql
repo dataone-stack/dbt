@@ -1,5 +1,5 @@
 SELECT 
-    brand, 
+    ord.brand, 
     brand_lv1,
     company,
     -- company_lv1,
@@ -26,8 +26,11 @@ SELECT
     tracking_no,
     marketing_name,
     so_luong,
-    'Pushsale' as source
-FROM {{ref("t2_pushsale_order_lines_tot")}}
+    'Pushsale' as source,
+    cost_price.cost_price as gia_von,
+    (cost_price.cost_price * so_luong) as gia_von_total
+FROM {{ref("t2_pushsale_order_lines_tot")}} ord
+LEFT JOIN `google_sheet.bang_gia_von` AS cost_price ON cost_price.product_sku = ord.sku
 WHERE trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') and nguon_doanh_thu <> 'Sàn TMDT liên kết' and channel NOT IN ('Shopee', 'Tiktok') and ngay_tien_ve_vi is not null
 
 UNION ALL
@@ -60,9 +63,12 @@ SELECT
     s.tracking_no,
     s.marketing_name,
     s.so_luong,
-    'Sandbox' as source
+    'Sandbox' as source,
+    cost_price.cost_price as gia_von,
+    (cost_price.cost_price * s.so_luong) as gia_von_total
 FROM {{ref("t2_sandbox_order_lines_tot")}} s
 LEFT JOIN {{ref("t2_pushsale_order_lines_tot")}} p
     ON s.ma_don_code = p.ma_don_code
+LEFT JOIN `google_sheet.bang_gia_von` AS cost_price ON cost_price.product_sku = s.sku   
 WHERE p.ma_don_code IS NULL and s.trang_thai_don_hang NOT IN ('Chờ chốt đơn','Hệ thống CRM đã xóa','Đã xóa') 
 and s.nguon_doanh_thu <> 'Sàn TMDT liên kết' and s.channel NOT IN ('Shopee', 'Tiktok') and s.ngay_tien_ve_vi is not null
