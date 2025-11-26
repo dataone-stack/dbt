@@ -279,7 +279,13 @@ select a.*,
         AS tien_khach_hang_thanh_toan,
     thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)
         AS tien_sp_sau_tro_gia,
-    COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) AS gia_ban_daily_total,
+    
+    case
+    when promotion_type = 'Quà tặng'
+    then 0
+    else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) 
+    end AS gia_ban_daily_total,
+    
     (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
         AS tien_chiet_khau_sp,
  
