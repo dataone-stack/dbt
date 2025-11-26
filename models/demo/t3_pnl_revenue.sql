@@ -106,7 +106,14 @@ FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
 union all
 
 SELECT 
-    brand, 
+-- Case brand
+--     when 'Chanh tây' then "Cà Phê Mâm Xôi"
+--     when 'Cà phê gừng' then "Cà Phê Mâm Xôi"
+--     when 'AMS SLIM' then "Cà Phê Mâm Xôi"
+--     when 'An Cung' then "LYB Cosmetics"
+--     when 'Chaching Beauty' then "LYB Cosmetics"
+-- else brand as brand, 
+    brand,
     -- brand_lv1,
     company,
     sku as sku_code,
@@ -134,5 +141,40 @@ SELECT
     so_luong,
     promotion_type
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_mapping_sandbox_pushsale_tot`
+),
+b as (
+  select 
+    order_id,
+    TRIM(brand) as brand,
+    TRIM(CONCAT(UPPER(SUBSTR(channel, 1, 1)), LOWER(SUBSTR(channel, 2)))) AS channel,
+    company,
+    sum(total_amount) as total_amount_sum,
+    sum(gia_ban_daily_total) as gia_ban_daily_total_sum,
+    sum(doanh_thu_ke_toan) as doanh_thu_ke_toan_sum,
+    sum(tien_chiet_khau_sp_tot) as tien_chiet_khau_sp_tot_sum
+  from a
+  where EXTRACT(MONTH FROM date_create) >= 6 and EXTRACT(YEAR FROM date_create) >= 2025
+  group by order_id, brand, channel, company
 )
-select * from a where EXTRACT(MONTH FROM date_create) >= 6 and EXTRACT(YEAR FROM date_create) >= 2025
+
+select
+  a.*,
+  case 
+    when b.total_amount_sum < 60000 then 0
+    else a.gia_ban_daily_total
+  end as gia_ban_daily_total_final,
+  case 
+    when b.total_amount_sum < 60000 then 0
+    else a.doanh_thu_ke_toan
+  end as doanh_thu_ke_toan_final,
+  case 
+    when b.total_amount_sum < 60000 then 0
+    else a.tien_chiet_khau_sp_tot
+  end as tien_chiet_khau_sp_tot_final
+from a
+left join b
+  on a.order_id = b.order_id
+  and TRIM(a.brand) = b.brand
+  and TRIM(CONCAT(UPPER(SUBSTR(a.channel, 1, 1)), LOWER(SUBSTR(a.channel, 2)))) = b.channel
+  and a.company = b.company
+where EXTRACT(MONTH FROM a.date_create) >= 6 and EXTRACT(YEAR FROM a.date_create) >= 2025

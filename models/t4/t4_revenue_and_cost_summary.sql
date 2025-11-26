@@ -268,11 +268,11 @@ revenue_toa AS (
     end as tien_chiet_khau_sp_tot,
 
 
-    -- SUM(total_amount) as total_amount,
-    -- SUM(gia_ban_daily_total) as gia_ban_daily_total,
-    -- SUM(doanh_thu_ke_toan) as doanh_thu_ke_toan,
-    -- SUM(doanh_thu_ke_toan_v2) as doanh_thu_ke_toan_v2,
-    -- SUM(tien_chiet_khau_sp_tot) as tien_chiet_khau_sp_tot,
+    -- SUM(tot.total_amount) as total_amount,
+    -- SUM(tot.gia_ban_daily_total) as gia_ban_daily_total,
+    -- SUM(tot.doanh_thu_ke_toan) as doanh_thu_ke_toan,
+    -- SUM(tot.doanh_thu_ke_toan_v2) as doanh_thu_ke_toan_v2,
+    -- SUM(tot.tien_chiet_khau_sp_tot) as tien_chiet_khau_sp_tot,
 
 
     SUM(phu_phi) as phu_phi
