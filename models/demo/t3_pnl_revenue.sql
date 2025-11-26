@@ -1,4 +1,4 @@
-SELECT 
+with a as (SELECT 
     brand, 
     -- brand_lv1,
     company,
@@ -103,51 +103,36 @@ SELECT
 FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
 -- where status not in ("Đã hủy", "Đang giao")
 
+union all
 
+SELECT 
+    brand, 
+    -- brand_lv1,
+    company,
+    sku as sku_code,
+    san_pham as ten_san_pham,
+    thanh_tien as gia_san_pham_goc_total,
 
--- union all
+    cast(null as date) as ngay_ship,
+    ngay_tien_ve_vi as date_create, 
+    COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
+    trang_thai_don_hang as status, 
+    tien_khach_hang_thanh_toan as total_amount, 
+    ngay_chot_don as date_create_order, 
+    gia_ban_daily_total,
+    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
 
--- SELECT 
---     brand, 
---     brand_lv1,
---     company,
---     -- sku as sku_code,
---     -- san_pham as ten_san_pham,
---     -- thanh_tien as gia_san_pham_goc_total,
-
---     cast(null as date) as ngay_ship,
---     ngay_tien_ve_vi as date_create, 
---     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
---     trang_thai_don_hang as status, 
---     tien_khach_hang_thanh_toan as total_amount, 
---     ngay_chot_don as date_create_order, 
---     gia_ban_daily_total,
---     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
-
---     phu_phi,
---     doanh_thu_ke_toan,
---     doanh_thu_ke_toan_v2,
---     doanh_so_cu as doanh_so_cu,
---     doanh_so_moi as doanh_so_moi,
---     'Facebook' AS channel,
---     0 as phi_van_chuyen_thuc_te,
---     0 as gia_von
--- FROM `crypto-arcade-453509-i8`.`dtm`.`t2_mapping_sandbox_pushsale_tot`
-
--- union all
-
--- SELECT 
---     brand, 
---     company,
---     cast(null as date) as ngay_ship,
---     ngay_tien_ve_vi as date_create, 
---     COALESCE(ma_don_code,CAST(ma_don_so AS STRING))  as order_id, 
---     trang_thai_don_hang as status, 
---     tien_khach_hang_thanh_toan as total_amount, 
---     ngay_data_ve as date_create_order, 
---     gia_ban_daily_total,
---     tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
---     phu_phi,
---     doanh_thu_ke_toan,
---     'Facebook' AS channel
--- FROM `crypto-arcade-453509-i8`.`dtm`.`t2_sandbox_order_lines_tot`
+    phu_phi,
+    doanh_thu_ke_toan,
+    0 as doanh_thu_ke_toan_v2,
+    doanh_so_cu as doanh_so_cu,
+    doanh_so_moi as doanh_so_moi,
+    'Facebook' AS channel,
+    0 as phi_van_chuyen_thuc_te,
+    gia_von_total,
+    gia_von,
+    so_luong,
+    promotion_type
+FROM `crypto-arcade-453509-i8`.`dtm`.`t2_mapping_sandbox_pushsale_tot`
+)
+select * from a where EXTRACT(MONTH FROM date_create) >= 6 and EXTRACT(YEAR FROM date_create) >= 2025
