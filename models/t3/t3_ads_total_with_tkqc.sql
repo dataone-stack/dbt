@@ -38,7 +38,7 @@ WITH ads_total_with_tkqc AS (
             currency,
             spend,
             doanhThuAds
-        FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ads_total`
+        FROM {{ref("t2_ads_total")}}
         WHERE 
             (
                 account_id = '2157355114664606'
@@ -46,11 +46,11 @@ WITH ads_total_with_tkqc AS (
             )
             OR account_id <> '2157355114664606'
     ) AS ads
-    RIGHT JOIN `crypto-arcade-453509-i8`.`dtm`.`t2_tkqc_total` AS tkqc
+    RIGHT JOIN {{ref("t2_tkqc_total")}} AS tkqc
         ON CAST(ads.account_id AS STRING) = CAST(tkqc.idtkqc AS STRING)
         AND DATE(ads.date_start) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(ads.date_start) <= DATE(tkqc.end_date))
-    LEFT JOIN `crypto-arcade-453509-i8`.`dtm`.`t1_ads_campaign_by_team` AS campaign_team
+    LEFT JOIN {{ref("t1_ads_campaign_by_team")}} AS campaign_team
         ON CAST(ads.campaign_id AS STRING) = CAST(campaign_team.campaign_id AS STRING)
         AND ads.account_id = campaign_team.account_id
         AND tkqc.end_date <= DATE('2025-08-31')
@@ -106,8 +106,8 @@ select
   0 AS doanhThuAds,
   SUM(a.chi_phi) * (1 + COALESCE(MAX(b.phi_thue), 0)) as chi_phi_agency
 
-from `dtm.t1_case_tkqc_nhieu_nguoi_chay` a
-left join `dtm.t2_tkqc_total` b on cast(a.idtkqc as string) = b.idtkqc and a.ma_nv = b.ma_nhan_vien and a.date between b.start_date and b.end_date
+from {{ref("t1_case_tkqc_nhieu_nguoi_chay")}} a
+left join {{ref("t2_tkqc_total")}} b on cast(a.idtkqc as string) = b.idtkqc and a.ma_nv = b.ma_nhan_vien and a.date between b.start_date and b.end_date
 
 GROUP BY
   a.date,
@@ -155,7 +155,7 @@ ladipage_total AS (
         SUM(doanhThuLadi) AS doanhThuLadi,
         SUM(doanh_so_moi) AS doanh_so_moi,
         SUM(doanh_so_cu) AS doanh_so_cu
-    FROM `crypto-arcade-453509-i8`.`dtm`.`t2_ladipage_facebook_total`
+    FROM {{ref("t2_ladipage_facebook_total")}}
     GROUP BY date_insert, brand, brand_lv1, channel, id_staff, ma_quan_ly, company, staff_name, manager_name
 ),
 
@@ -343,12 +343,12 @@ FROM ads_ladipageFacebook_total_with_tkqc AS ads
 )
 ,
 shop as (
-  select date(ngay_tao_don) as ngay_tao_don,shop_id,shop, brand,brand_lv1,channel, sum(doanh_so_san) as doanh_so_san, sum(tong_phi_san) as tong_phi_san from `crypto-arcade-453509-i8`.`dtm`.`t3_revenue_all_channel`  where channel in ('Tiktok','Shopee')
+  select date(ngay_tao_don) as ngay_tao_don,shop_id,shop, brand,brand_lv1,channel, sum(doanh_so_san) as doanh_so_san, sum(tong_phi_san) as tong_phi_san from {{ref("t3_revenue_all_channel")}}  where channel in ('Tiktok','Shopee')
   group by date(ngay_tao_don),shop_id,brand,shop,channel,brand_lv1
 )
 
 , b as (select shop.ngay_tao_don as date_start, '-' as curency,shop.shop_id as idtkqc,shop.shop as nametkqc,shop.shop as nametkqc_trinh,tkqc.ma_nhan_vien,tkqc.staff,tkqc.ma_quan_ly,tkqc.manager,shop.brand,shop.brand_lv1,shop.channel,'0' as so_tai_khoan, 0 as chiPhiAds,0 as doanhThuAds, 0 as doanhThuLadi, 0 as doanh_so_moi, 0 as doanh_so_cu,'Shop seller' as loaiDoanhThu,tkqc.company, tkqc.ben_thue,tkqc.phi_thue,tkqc.dau_the,0 as chi_phi_agency,0 as ca_nhan, shop.doanh_so_san,shop.tong_phi_san from shop
-left join `dtm.t2_tkqc_total` tkqc on shop.shop_id = tkqc.idtkqc and shop.ngay_tao_don between tkqc.start_date and tkqc.end_date )
+left join {{ref("t2_tkqc_total")}} tkqc on shop.shop_id = tkqc.idtkqc and shop.ngay_tao_don between tkqc.start_date and tkqc.end_date )
 
 select * from a 
 union all
