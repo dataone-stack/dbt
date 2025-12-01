@@ -240,7 +240,7 @@ orderline AS (
         AND DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) >= DATE(mar2.start_date)
         AND (mar2.end_date IS NULL OR DATE(DATETIME_ADD(ord.order_confirm_date, INTERVAL 7 HOUR)) <= DATE(mar2.end_date))
 
-    LEFT JOIN {{ ref('t1_sales_facebook_total') }} sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_user_name) 
+    LEFT JOIN {{ref("t1_sales_facebook_total")}} sales ON TRIM(ord.sale_user_name) = TRIM(sales.sale_user_name) 
         AND DATE(DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR)) >= DATE(sales.start_date)
         AND (sales.end_date IS NULL OR DATE(DATETIME_ADD(ord.create_time, INTERVAL 7 HOUR)) <= DATE(sales.end_date))
 
@@ -272,7 +272,8 @@ SELECT
         END AS chiet_khau
 FROM orderline )
 
-select a.* ,
+, b as (
+  select a.* ,
     thanh_tien - COALESCE(chiet_khau, 0)  + (COALESCE(gia_dich_vu_vc, 0) - COALESCE(phi_vc_ho_tro_khach, 0)) - COALESCE(giam_gia_san_pham, 0)
         AS tien_khach_hang_thanh_toan,
     thanh_tien  - COALESCE(chiet_khau, 0)  - COALESCE(giam_gia_san_pham, 0)
@@ -295,4 +296,32 @@ select a.* ,
         THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0))
         ELSE 0
     END AS doanh_so_cu
-from a  where is_delete is not true
+from a  where is_delete is not true)
+
+, total as (
+  select b.*,
+  case
+    WHEN ROW_NUMBER() OVER (PARTITION BY ma_don_so ORDER BY ma_don_so) = 1 
+        -- AND LOWER(sale_user_name) LIKE '%sale%'
+         AND NOT (
+              (ma_don_code = '' AND ket_qua_tac_nghiep_telesale = 'Chốt đơn')
+              OR ket_qua_tac_nghiep_telesale = 'Trùng số'
+         )
+    THEN 1 ELSE 0
+  END AS so_lead,
+
+  case
+  when reason_to_create = 'SALE'
+  then 'Khách mới'
+  else 'Khách cũ'
+  end as type_lead,
+
+  case
+    WHEN ROW_NUMBER() OVER (PARTITION BY ma_don_so ORDER BY ma_don_so) = 1
+    then 1 else 0
+  end as so_sale,
+
+  from b
+)
+
+select * from total 
