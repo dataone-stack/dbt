@@ -111,7 +111,7 @@ LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
-WHERE shop.status NOT IN ("Đã hủy")
+--WHERE shop.status NOT IN ("Đã hủy")
 
 UNION ALL
 
@@ -168,7 +168,7 @@ LEFT JOIN {{ref("t2_tkqc_total")}} AS tkqc
      
         AND DATE(shop.ngay_tao_don) >= DATE(tkqc.start_date)
         AND (tkqc.end_date IS NULL OR DATE(shop.ngay_tao_don) <= DATE(tkqc.end_date))
-WHERE shop.status NOT IN ("Đã hủy")
+--WHERE shop.status NOT IN ("Đã hủy")
 
 UNION ALL   
 
