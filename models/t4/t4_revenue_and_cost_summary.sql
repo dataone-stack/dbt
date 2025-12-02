@@ -214,7 +214,7 @@ revenue_toa AS (
         SUM(tien_khach_hang_thanh_toan ) AS tien_khach_hang_thanh_toan_toa,
 
     FROM {{ref("t3_revenue_all_channel")}}
- --status NOT IN  ('Đã hủy')
+    where status NOT IN  ('Đã hủy')
     GROUP BY DATE(ngay_tao_don), brand, channel, company,manager -- ,company_lv1--,ten_san_pham,sku_code
 )
 , revenue_tot_total as (
