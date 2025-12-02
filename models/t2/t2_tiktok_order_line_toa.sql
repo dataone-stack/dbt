@@ -219,7 +219,7 @@ SELECT
   Normal_or_Preorder,
   SKU_ID ,
   Seller_SKU as sku_code,
-  Product_Name as ten_san_pham,
+  COALESCE(Product_Name,ten_sp_nguon) as ten_san_pham,
   ten_sp_nguon,
   Variation,
   Quantity as so_luong,
