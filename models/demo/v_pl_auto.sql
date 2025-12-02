@@ -87,6 +87,7 @@ sku_count_per_order AS (
   FROM sku_revenue_for_allocation
   GROUP BY year, month, brand, company, channel, order_id
 ),
+
 chi_phi_ads_allocated AS (
   SELECT 
     s.year,
@@ -155,6 +156,41 @@ chi_phi_revenue AS (
   GROUP BY year, month, brand, company, channel
 ),
 
+--tính chi phi co dinh (%)
+pl_agg AS (
+  SELECT
+    EXTRACT(YEAR  FROM DATE(date_create)) AS year,
+    EXTRACT(MONTH FROM DATE(date_create)) AS month,
+    brand,
+    company,
+    SUM(gia_ban_daily_total_final) AS gia_ban_final_sum,
+    SUM(gia_ban_daily_total)       AS gia_ban_sum
+  FROM `dtm.t3_pnl_revenue`
+  GROUP BY year, month, brand, company
+),
+
+phi_co_dinh_percent AS (
+  SELECT
+    pcd.year,
+    pcd.month,
+    pcd.brand,
+    pcd.company,
+    pcd.layer1,
+    pcd.layer2,
+
+    CASE 
+      WHEN pcd.type_of_calculation = 'percent' 
+      THEN pl_agg.gia_ban_final_sum * pcd.total
+      ELSE pcd.total 
+    END as total
+  FROM `dtm.t1_phi_co_dinh` pcd
+  LEFT JOIN pl_agg
+    ON pcd.year    = pl_agg.year
+    AND pcd.month   = pl_agg.month
+    AND pcd.brand   = pl_agg.brand
+    AND pcd.company = pl_agg.company
+  -- WHERE pcd.type_of_calculation = 'percent'
+),
 
 -- Tính tổng chi phí biến đổi
 tong_chi_phi_bien_doi AS (
@@ -175,6 +211,17 @@ tong_chi_phi_bien_doi AS (
   GROUP BY year, month, brand, company, channel, r.san_cost, r.van_chuyen_cost, r.gia_von
 ),
 
+phi_co_dinh_sum AS (
+  SELECT
+    year,
+    month,
+    brand,
+    company,
+    -- Nếu có channel thì thêm channel
+    SUM(total) AS total_phi_co_dinh
+  FROM phi_co_dinh_percent
+  GROUP BY year, month, brand, company --, channel nếu có
+),
 
 -- CTE tính tỷ lệ phần trăm
 ty_le_phan_tram AS (
@@ -207,7 +254,42 @@ ty_le_phan_tram AS (
     AND r.company = c.company
     AND r.channel = c.channel
 ),
-
+ty_le_phan_tram_co_dinh AS (
+  SELECT 
+    r.year,
+    r.month,
+    r.brand,
+    r.company,
+    r.channel,
+    r.total_group_revenue,
+    c.total_chi_phi_bien_doi,
+    COALESCE(p.total_phi_co_dinh, 0) AS total_phi_co_dinh,
+    r.total_group_revenue - c.total_chi_phi_bien_doi - COALESCE(p.total_phi_co_dinh, 0) AS net_income,
+    CASE 
+      WHEN r.total_group_revenue > 0 
+      THEN ROUND(((r.total_group_revenue - c.total_chi_phi_bien_doi - COALESCE(p.total_phi_co_dinh, 0)) / r.total_group_revenue) * 100, 2)
+      ELSE 0
+    END AS net_profit_margin_pct,
+    CASE
+      WHEN r.total_group_revenue > 0
+      THEN ROUND(((c.total_chi_phi_bien_doi + COALESCE(p.total_phi_co_dinh, 0)) / r.total_group_revenue) * 100, 2)
+      ELSE 0
+    END AS cost_ratio_pct
+  FROM total_revenue_by_group r
+  LEFT JOIN tong_chi_phi_bien_doi c
+    ON r.year = c.year 
+    AND r.month = c.month 
+    AND r.brand = c.brand 
+    AND r.company = c.company
+    AND r.channel = c.channel
+  LEFT JOIN phi_co_dinh_sum p
+    ON r.year = p.year
+    AND r.month = p.month
+    AND r.brand = p.brand
+    AND r.company = p.company
+    -- Nếu có channel thì thêm điều kiện channel
+    -- AND r.channel = p.channel
+),
 
 base_data AS (
   -- Layer 0: Doanh Thu bán hàng
@@ -635,14 +717,14 @@ base_data AS (
 
     UNION ALL
   
-  -- Thu nhập thuần
+  -- Layer 3: Chi Phí Biến Đổi
   SELECT 
     year,
     month,
     brand,
     company,
     "" as channel,
-    'Layer 3: Chi Phí Biến Đổi',
+    'Layer 3: Chuyển Đổi Gián Tiếp',
     'Lương NV BHTT (ONE7- ONE5)',
     "" as attribute_1,
     "" as attribute_2,
@@ -653,11 +735,453 @@ base_data AS (
     "" as attribute_7,
     total as amount,
     0 as percent
-  FROM dtm.t1_phi_co_dinh
+  FROM phi_co_dinh_percent
   where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Lương NV BHTT (ONE7- ONE5)"
 
   UNION ALL
+
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Lương QL BHTT (ONE5-ONE3)',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Lương QL BHTT (ONE5-ONE3)"
+
+  UNION ALL
+
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Lương NV MKT (ONE7-ONE3)',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Lương NV MKT (ONE7-ONE3)"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Lương NV CTV live',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Lương NV CTV live"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Chi phí MKT cố định',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Chi phí MKT cố định"
+
+  UNION ALL
   
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Tài Nguyên',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Tài Nguyên"
+
+  UNION ALL 
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Phát triễn sản phẩm',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Phát triễn sản phẩm"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 3: Chuyển Đổi Gián Tiếp',
+    'Tổng chi phí chuyển đổi gián tiếp',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Lương văn Phòng',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Lương văn Phòng"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Lương quản lý',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Lương quản lý"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Tuyển Dụng',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Tuyển Dụng"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Mặt bằng VP',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Mặt bằng VP"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Vận hành hành chính',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Vận hành hành chính"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Mặt bằng, vận hành kho',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Mặt bằng, vận hành kho"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Phí ngoại giao',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Phí ngoại giao"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Thuế ',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Thuế "
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Chi phí BOD',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Chi phí BOD"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Sửa chữa mặt bằng',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Sửa chữa mặt bằng"
+
+  UNION ALL
+
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    "" as channel,
+    'Layer 4: Chi Phí Quản Lý',
+    'Khấu hao',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    total as amount,
+    0 as percent
+  FROM phi_co_dinh_percent
+  where layer1 = "Chi phí quản lý" and layer2 ="Khấu hao"
+
+  UNION ALL
+
+  SELECT 
+      year,
+      month,
+      brand,
+      company,
+      "" as channel,
+      'Layer 4: Chi Phí Quản Lý',
+      'Khấu hao cũ',
+      "" as attribute_1,
+      "" as attribute_2,
+      "" as attribute_3,
+      "" as attribute_4,
+      "" as attribute_5,
+      "" as attribute_6,
+      "" as attribute_7,
+      total as amount,
+      0 as percent
+    FROM phi_co_dinh_percent
+    where layer1 = "Chi phí quản lý" and layer2 ="Khấu hao cũ"
+
+  UNION ALL
+  
+  SELECT 
+      year,
+      month,
+      brand,
+      company,
+      "" as channel,
+      'Layer 4: Chi Phí Quản Lý',
+      'Tổng chi phí quản lý',
+      "" as attribute_1,
+      "" as attribute_2,
+      "" as attribute_3,
+      "" as attribute_4,
+      "" as attribute_5,
+      "" as attribute_6,
+      "" as attribute_7,
+      total as amount,
+      0 as percent
+    FROM phi_co_dinh_percent
+    where layer1 = "Chi phí quản lý"
+
+  UNION ALL
+
   -- Thu nhập thuần
   SELECT 
     year,
@@ -677,6 +1201,29 @@ base_data AS (
     net_income as amount,
     net_profit_margin_pct as percent
   FROM ty_le_phan_tram
+  WHERE net_income IS NOT NULL
+
+  UNION ALL
+
+  -- Thu nhập thuần
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    channel,
+    'Thu nhập thuần',
+    'Thu nhập thuần2',
+    "" as attribute_1,
+    "" as attribute_2,
+    "" as attribute_3,
+    "" as attribute_4,
+    "" as attribute_5,
+    "" as attribute_6,
+    "" as attribute_7,
+    net_income as amount,
+    net_profit_margin_pct as percent
+  FROM ty_le_phan_tram_co_dinh
   WHERE net_income IS NOT NULL
 )
 
@@ -709,7 +1256,6 @@ WHERE amount IS NOT NULL
   AND month >= 6 
   AND year >= 2025
 GROUP BY year, month, brand, company, channel, layer_name, metric_name, attribute_1, attribute_2, attribute_3, attribute_4, attribute_5, attribute_6, attribute_7
-
 
 
 
