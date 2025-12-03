@@ -35,7 +35,18 @@ where CAST(ngay_da_giao AS TIMESTAMP) is not null
 union all
 
 SELECT 
-    brand, 
+    CASE 
+      WHEN company = 'Max Eagle' THEN
+        CASE brand
+          WHEN 'Chanh tây' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'Cà phê gừng' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'AMS SLIM' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'An Cung' THEN 'LYB Cosmetics'
+          WHEN 'Chaching Beauty' THEN 'LYB Cosmetics'
+          ELSE brand
+        END
+      ELSE brand
+    END as brand, 
     -- brand_lv1,
     company,
     ma_san_pham as sku_code,
@@ -69,7 +80,18 @@ FROM `crypto-arcade-453509-i8`.`dtm`.`t2_shopee_order_lines_tot`
 UNION ALL
 
 SELECT 
-    brand, 
+    CASE 
+      WHEN company = 'Max Eagle' THEN
+        CASE brand
+          WHEN 'Chanh tây' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'Cà phê gừng' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'AMS SLIM' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'An Cung' THEN 'LYB Cosmetics'
+          WHEN 'Chaching Beauty' THEN 'LYB Cosmetics'
+          ELSE brand
+        END
+      ELSE brand
+    END as brand, 
     -- brand_lv1,
     company,
     sku_code,
