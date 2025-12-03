@@ -3,6 +3,7 @@ with a as (SELECT
     brand_lv1,
     company,
     -- company_lv1,
+    'Shop Facebook' as shop_id,
     "Shop Facebook" AS shop,
     sku_code AS sku,
     manager,
@@ -30,7 +31,7 @@ with a as (SELECT
     then 'Zalo'
     else 'Facebook' 
     end AS channel,
-    0 as tong_phu_truoc_giam_gia,
+    0 as tong_phu_truoc_giam_gia,   
     0 as giam_gia_cua_nguoi_ban,
     0 as tong_phu_hoan_tien_truoc_giam_gia_cua_nguoi_ban,
 
@@ -62,6 +63,7 @@ SELECT
     shop.brand_lv1,
     shop.company,
     -- company_lv1,
+    shop.shop_id,
     shop.shop,
     ma_san_pham AS sku,
     tkqc.manager,
@@ -124,6 +126,7 @@ SELECT
     shop.brand_lv1,
     shop.company,
     -- company_lv1,
+    shop.shop_id,
     shop.shop,
     sku_code AS sku,
     tkqc.manager,
@@ -186,6 +189,7 @@ SELECT
     brand_lv1,
     company,
     -- company_lv1,
+    'Shop Facebook' as shop_id,
     "Shop Facebook" AS shop,
     sku,
     manager,
