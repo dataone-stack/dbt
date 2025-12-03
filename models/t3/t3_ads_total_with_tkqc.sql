@@ -343,7 +343,7 @@ FROM ads_ladipageFacebook_total_with_tkqc AS ads
 )
 ,
 shop as (
-  select date(ngay_tao_don) as ngay_tao_don,shop_id,shop, brand,brand_lv1,channel, sum(doanh_so_san) as doanh_so_san, sum(tong_phi_san) as tong_phi_san from {{ref("t3_revenue_all_channel")}}  where channel in ('Tiktok','Shopee')
+  select date(ngay_tao_don) as ngay_tao_don,shop_id,shop, brand,brand_lv1,channel, sum(doanh_so_san) as doanh_so_san, sum(tong_phi_san) as tong_phi_san from {{ref("t3_revenue_all_channel")}}  where channel in ('Tiktok','Shopee') and status != 'Đã hủy'
   group by date(ngay_tao_don),shop_id,brand,shop,channel,brand_lv1
 )
 
