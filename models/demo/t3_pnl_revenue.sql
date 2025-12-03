@@ -106,14 +106,15 @@ FROM `crypto-arcade-453509-i8`.`dtm`.`t2_tiktok_order_line_tot`
 union all
 
 SELECT 
--- Case brand
---     when 'Chanh tây' then "Cà Phê Mâm Xôi"
---     when 'Cà phê gừng' then "Cà Phê Mâm Xôi"
---     when 'AMS SLIM' then "Cà Phê Mâm Xôi"
---     when 'An Cung' then "LYB Cosmetics"
---     when 'Chaching Beauty' then "LYB Cosmetics"
--- else brand as brand, 
-    brand,
+Case brand
+    when 'Chanh tây' then "Cà Phê Mâm Xôi"
+    when 'Cà phê gừng' then "Cà Phê Mâm Xôi"
+    when 'AMS SLIM' then "Cà Phê Mâm Xôi"
+    when 'An Cung' then "LYB Cosmetics"
+    when 'Chaching Beauty' then "LYB Cosmetics"
+else brand
+END as brand, 
+    -- brand,
     -- brand_lv1,
     company,
     sku as sku_code,
