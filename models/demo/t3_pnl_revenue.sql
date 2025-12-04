@@ -61,7 +61,7 @@ SELECT
     tong_tien_da_thanh_toan as total_amount, 
     ngay_dat_hang as date_create_order, 
     gia_ban_daily_total,
-    tien_chiet_khau_sp_shopee as tien_chiet_khau_sp_tot,
+    tien_chiet_khau_sp as tien_chiet_khau_sp_tot,
     -- gia_san_pham_goc_total,
     tong_chi_phi *-1 as phu_phi,
     doanh_thu_ke_toan as doanh_thu_ke_toan,
