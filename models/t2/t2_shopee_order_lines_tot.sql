@@ -307,12 +307,43 @@ SELECT
 
     
     -- Lấy từ order summary
-    ops.gia_ban_daily_total,
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN ops.gia_ban_daily_total * -1
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN ops.gia_ban_daily_total
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN ops.gia_ban_daily_total * -1
+        ELSE 0
+    END AS gia_ban_daily_total,
+
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN  ops.doanh_thu_ke_toan * -1
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN  ops.doanh_thu_ke_toan
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN  ops.doanh_thu_ke_toan * -1
+        ELSE 0
+    END AS doanh_thu_ke_toan,
+
+    CASE 
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') != ''
+        THEN  (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) * -1
+        WHEN tae.total_tong_tien_san_pham_excluding_return > 0 AND COALESCE(ops.return_id, '') = ''
+        THEN (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan)
+        WHEN tae.total_tong_tien_san_pham_excluding_return = 0 AND ops.item_rank_for_all_returned = 1
+        THEN  (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) * -1
+        ELSE 0
+    END AS tien_chiet_khau_sp,
+
+
+    -- ops.gia_ban_daily_total,
     ops.gia_san_pham_goc,
     ops.gia_san_pham_goc_total,
-    ops.doanh_thu_ke_toan,
+    -- ops.doanh_thu_ke_toan,
     ops.doanh_thu_ke_toan AS doanh_thu_ke_toan_v2,
-    (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) AS tien_chiet_khau_sp,
+    -- (ops.gia_ban_daily_total - ops.doanh_thu_ke_toan) AS tien_chiet_khau_sp,
     (ops.gia_ban_daily_total -(ops.gia_goc + (ops.seller_tro_gia + ops.so_tien_hoan_tra - ops.tro_gia_shopee) + (ops.tro_gia_shopee + ((f.voucher_from_seller)*-1) + nguoi_ban_hoan_xu))) AS tien_chiet_khau_sp_shopee,
     ops.gia_goc,
     ops.seller_tro_gia,

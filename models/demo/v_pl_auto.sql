@@ -281,6 +281,89 @@ ty_le_phan_tram AS (
     AND r.company = c.company
     AND r.channel = c.channel
 ),
+total_revenue_by_group_co_dinh AS (
+  SELECT 
+    year,
+    month,
+    brand,
+    company,
+    -- channel,
+    SUM(sku_revenue) as total_group_revenue,
+    COUNT(DISTINCT order_id) AS total_order_count
+  FROM sku_revenue_for_allocation
+  GROUP BY year, month, brand, company
+),
+
+chi_phi_ads_total_co_dinh AS (
+  SELECT 
+    EXTRACT(YEAR FROM DATE(date_start)) as year,
+    EXTRACT(MONTH FROM DATE(date_start)) as month,
+    CASE 
+      WHEN company = 'Max Eagle' THEN
+        CASE brand
+          WHEN 'Chanh tây' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'Cà phê gừng' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'AMS SLIM' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'An Cung' THEN 'LYB Cosmetics'
+          WHEN 'Chaching Beauty' THEN 'LYB Cosmetics'
+          ELSE brand
+        END
+      ELSE brand
+    END as brand,
+    company,
+    channel,
+    SUM(chiPhiAds) as total_ads_cost
+  FROM `crypto-arcade-453509-i8.dtm.t3_ads_total_with_tkqc`
+  GROUP BY 
+    year, 
+    month, 
+    CASE 
+      WHEN company = 'Max Eagle' THEN
+        CASE brand
+          WHEN 'Chanh tây' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'Cà phê gừng' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'AMS SLIM' THEN 'Cà Phê Mâm Xôi'
+          WHEN 'An Cung' THEN 'LYB Cosmetics'
+          WHEN 'Chaching Beauty' THEN 'LYB Cosmetics'
+          ELSE brand
+        END
+      ELSE brand
+    END,
+    company,
+    channel
+),
+chi_phi_revenue_co_dinh AS (
+  SELECT 
+    EXTRACT(YEAR FROM DATE(date_create)) as year,
+    EXTRACT(MONTH FROM DATE(date_create)) as month,
+    brand,
+    company,
+    SUM(phu_phi) as san_cost,
+    ABS(SUM(phi_van_chuyen_thuc_te)) as van_chuyen_cost,
+    SUM(gia_von_total) as gia_von
+  FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
+  GROUP BY year, month, brand, company
+),
+
+tong_chi_phi_bien_doi_co_dinh AS (
+  SELECT 
+    COALESCE(a.year, r.year) as year,
+    COALESCE(a.month, r.month) as month,
+    COALESCE(a.brand, r.brand) as brand,
+    COALESCE(a.company, r.company) as company,
+    -- COALESCE(a.channel, r.channel) as channel,
+    COALESCE(SUM(a.total_ads_cost), 0) + COALESCE(r.san_cost, 0) + COALESCE(r.van_chuyen_cost, 0) + COALESCE(r.gia_von, 0) as total_chi_phi_bien_doi
+  FROM chi_phi_ads_total_co_dinh a
+  FULL OUTER JOIN chi_phi_revenue_co_dinh r
+    ON a.year = r.year 
+    AND a.month = r.month 
+    AND a.brand = r.brand 
+    AND a.company = r.company
+    -- AND a.channel = r.channel
+  GROUP BY year, month, brand, company, r.san_cost, r.van_chuyen_cost, r.gia_von
+)
+-- select *from total_revenue_by_group_co_dinh where month = 11 and brand ="Cà Phê Mâm Xôi"
+,
 
 
 ty_le_phan_tram_co_dinh AS (
@@ -289,7 +372,6 @@ ty_le_phan_tram_co_dinh AS (
     r.month,
     r.brand,
     r.company,
-    r.channel,
     r.total_group_revenue,
     c.total_chi_phi_bien_doi,
     COALESCE(p.total_phi_co_dinh, 0) AS total_phi_co_dinh,
@@ -304,20 +386,18 @@ ty_le_phan_tram_co_dinh AS (
       THEN ROUND(((c.total_chi_phi_bien_doi + COALESCE(p.total_phi_co_dinh, 0)) / r.total_group_revenue) * 100, 2)
       ELSE 0
     END AS cost_ratio_pct
-  FROM total_revenue_by_group r
-  LEFT JOIN tong_chi_phi_bien_doi c
+  FROM total_revenue_by_group_co_dinh r
+  LEFT JOIN tong_chi_phi_bien_doi_co_dinh c
     ON r.year = c.year 
     AND r.month = c.month 
     AND r.brand = c.brand 
     AND r.company = c.company
-    AND r.channel = c.channel
   LEFT JOIN phi_co_dinh_sum p
     ON r.year = p.year
     AND r.month = p.month
     AND r.brand = p.brand
     AND r.company = p.company
-    -- Nếu có channel thì thêm điều kiện channel
-    -- AND r.channel = p.channel
+    -- Bỏ channel vì phi_co_dinh_sum không có cột này
 ),
 
 base_data AS (
@@ -754,7 +834,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Lương NV BHTT (ONE7- ONE5)',
+    '1. Lương NV BHTT (ONE7- ONE5)',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -777,7 +857,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Lương QL BHTT (ONE5-ONE3)',
+    '2. Lương QL BHTT (ONE5-ONE3)',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -800,7 +880,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Lương NV MKT (ONE7-ONE3)',
+    '3. Lương NV MKT (ONE7-ONE3)',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -822,7 +902,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Lương NV CTV live',
+    '4. Lương NV CTV live',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -844,7 +924,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Chi phí MKT cố định',
+    '5. Chi phí MKT cố định',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -866,7 +946,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Tài Nguyên',
+    '6. Tài Nguyên',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -888,7 +968,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Phát triễn sản phẩm',
+    '7. Phát triễn sản phẩm',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -910,7 +990,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 3: Chuyển Đổi Gián Tiếp',
-    'Tổng chi phí chuyển đổi gián tiếp',
+    '8. Tổng chi phí chuyển đổi gián tiếp',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -932,7 +1012,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Lương văn Phòng',
+    '1. Lương văn Phòng',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -954,7 +1034,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Lương quản lý',
+    '2. Lương quản lý',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -976,7 +1056,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Tuyển Dụng',
+    '3. Tuyển Dụng',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -998,7 +1078,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Mặt bằng VP',
+    '4. Mặt bằng VP',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1020,7 +1100,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Vận hành hành chính',
+    '5. Vận hành hành chính',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1042,7 +1122,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Mặt bằng, vận hành kho',
+    '6. Mặt bằng, vận hành kho',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1064,7 +1144,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Phí ngoại giao',
+    '7. Phí ngoại giao',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1086,7 +1166,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Thuế ',
+    '8. Thuế ',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1108,7 +1188,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Chi phí BOD',
+    '9. Chi phí BOD',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1130,7 +1210,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Sửa chữa mặt bằng',
+    '10. Sửa chữa mặt bằng',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1152,7 +1232,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    'Khấu hao',
+    '11. Khấu hao',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1174,7 +1254,7 @@ base_data AS (
       company,
       "" as channel,
       'Layer 4: Chi Phí Quản Lý',
-      'Khấu hao cũ',
+      '12. Khấu hao cũ',
       "" as attribute_1,
       "" as attribute_2,
       "" as attribute_3,
@@ -1196,7 +1276,7 @@ base_data AS (
       company,
       "" as channel,
       'Layer 4: Chi Phí Quản Lý',
-      'Tổng chi phí quản lý',
+      '13. Tổng chi phí quản lý',
       "" as attribute_1,
       "" as attribute_2,
       "" as attribute_3,
@@ -1212,27 +1292,27 @@ base_data AS (
   UNION ALL
 
   -- Thu nhập thuần
-  SELECT 
-    year,
-    month,
-    brand,
-    company,
-    channel,
-    'Thu nhập thuần',
-    'Thu nhập thuần',
-    "" as attribute_1,
-    "" as attribute_2,
-    "" as attribute_3,
-    "" as attribute_4,
-    "" as attribute_5,
-    "" as attribute_6,
-    "" as attribute_7,
-    net_income as amount,
-    net_profit_margin_pct as percent
-  FROM ty_le_phan_tram
-  WHERE net_income IS NOT NULL
+--   SELECT 
+--     year,
+--     month,
+--     brand,
+--     company,
+--     channel,
+--     'Thu nhập thuần',
+--     'Thu nhập thuần',
+--     "" as attribute_1,
+--     "" as attribute_2,
+--     "" as attribute_3,
+--     "" as attribute_4,
+--     "" as attribute_5,
+--     "" as attribute_6,
+--     "" as attribute_7,
+--     net_income as amount,
+--     net_profit_margin_pct as percent
+--   FROM ty_le_phan_tram
+--   WHERE net_income IS NOT NULL
 
-  UNION ALL
+--   UNION ALL
 
   -- Thu nhập thuần
   SELECT 
@@ -1240,9 +1320,9 @@ base_data AS (
     month,
     brand,
     company,
-    channel,
+    "" as channel,
     'Thu nhập thuần',
-    'Thu nhập thuần2',
+    'Thu nhập thuần',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,

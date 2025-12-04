@@ -281,15 +281,24 @@ select a.*,
         AS tien_sp_sau_tro_gia,
     
     case
-    when promotion_type = 'Quà tặng'
-    then 0
-    else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) 
+        when promotion_type = 'Quà tặng'
+        then 0
+        else COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0) 
     end AS gia_ban_daily_total,
     
-    (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) - (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0)) 
-        AS tien_chiet_khau_sp,
- 
-    (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0)) AS doanh_thu_ke_toan, 
+    case
+        when promotion_type = 'Quà tặng'
+        then 0
+        else (COALESCE(gia_ban_daily, 0) * COALESCE(so_luong, 0)) -  (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))  
+    end AS tien_chiet_khau_sp,
+    
+    case
+        when promotion_type = 'Quà tặng'
+        then 0
+        else (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))
+    end AS doanh_thu_ke_toan,
+    
+
     CASE 
         WHEN loai_khach_hang = 'Khách mới' 
         THEN (thanh_tien - COALESCE(chiet_khau, 0) - COALESCE(giam_gia_san_pham, 0) + COALESCE(gia_dich_vu_vc, 0)- COALESCE(phi_vc_ho_tro_khach, 0))
