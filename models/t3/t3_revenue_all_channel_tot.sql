@@ -241,3 +241,4 @@ FROM {{ref("t2_mapping_sandbox_pushsale_tot")}}
 
 
 select * from a
+--123
