@@ -778,27 +778,27 @@ base_data AS (
   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel
   
-  UNION ALL
+--   UNION ALL
   
-  SELECT 
-    EXTRACT(YEAR FROM DATE(date_create)),
-    EXTRACT(MONTH FROM DATE(date_create)),
-    brand,
-    company,
-    channel,
-    'Layer 2: Chi Phí Biến Đổi',
-    '7. Tài nguyên',
-    "" as attribute_1,
-    "" as attribute_2,
-    "" as attribute_3,
-    "" as attribute_4,
-    "" as attribute_5,
-    "" as attribute_6,
-    "" as attribute_7,
-    0 as amount,
-    0  as percent
-  FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
-  GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel
+--   SELECT 
+--     EXTRACT(YEAR FROM DATE(date_create)),
+--     EXTRACT(MONTH FROM DATE(date_create)),
+--     brand,
+--     company,
+--     channel,
+--     'Layer 2: Chi Phí Biến Đổi',
+--     '7. Tài nguyên',
+--     "" as attribute_1,
+--     "" as attribute_2,
+--     "" as attribute_3,
+--     "" as attribute_4,
+--     "" as attribute_5,
+--     "" as attribute_6,
+--     "" as attribute_7,
+--     0 as amount,
+--     0  as percent
+--   FROM `crypto-arcade-453509-i8.dtm.t3_pnl_revenue`
+--   GROUP BY EXTRACT(YEAR FROM DATE(date_create)), EXTRACT(MONTH FROM DATE(date_create)), brand, company, channel
 
 
   UNION ALL
@@ -1176,7 +1176,7 @@ base_data AS (
     total as amount,
     0 as percent
   FROM phi_co_dinh_percent
-  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Thuế "
+  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Thuế"
 
   UNION ALL
 
