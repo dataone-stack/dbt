@@ -244,7 +244,6 @@ phi_co_dinh_sum AS (
     month,
     brand,
     company,
-    -- Nếu có channel thì thêm channel
     SUM(total) AS total_phi_co_dinh
   FROM phi_co_dinh_percent
   GROUP BY year, month, brand, company --, channel nếu có
@@ -1291,6 +1290,97 @@ base_data AS (
 
   UNION ALL
 
+  SELECT 
+      year,
+      month,
+      brand,
+      company,
+      "" as channel,
+      'Layer 5: Chi Phí/ Doanh Thu Khác',
+      '1. Chi phí khác',
+      "" as attribute_1,
+      "" as attribute_2,
+      "" as attribute_3,
+      "" as attribute_4,
+      "" as attribute_5,
+      "" as attribute_6,
+      "" as attribute_7,
+      total as amount,
+      0 as percent
+    FROM phi_co_dinh_percent
+    where layer1 = "Chi phí khác"
+
+  UNION ALL
+  
+  SELECT 
+      year,
+      month,
+      brand,
+      company,
+      "" as channel,
+      'Layer 5: Chi Phí/ Doanh Thu Khác',
+      '2. Thu nhập khác (Mặt bằng công ty con, cho thuê, )',
+      "" as attribute_1,
+      "" as attribute_2,
+      "" as attribute_3,
+      "" as attribute_4,
+      "" as attribute_5,
+      "" as attribute_6,
+      "" as attribute_7,
+      total as amount,
+      0 as percent
+    FROM phi_co_dinh_percent
+    where layer1 = "Thu nhập khác (Mặt bằng công ty con, cho thuê, )"
+
+  UNION ALL
+  
+  SELECT 
+      year,
+      month,
+      brand,
+      company,
+      "" as channel,
+      'Layer 5: Chi Phí/ Doanh Thu Khác',
+      '3. Chi phí lãi vay',
+      "" as attribute_1,
+      "" as attribute_2,
+      "" as attribute_3,
+      "" as attribute_4,
+      "" as attribute_5,
+      "" as attribute_6,
+      "" as attribute_7,
+      total as amount,
+      0 as percent
+    FROM phi_co_dinh_percent
+    where layer1 = "Chi phí lãi vay"
+
+--   UNION ALL
+  
+--   SELECT 
+--       year,
+--       month,
+--       brand,
+--       company,
+--       "" as channel,
+--       'Layer 5: Chi Phí/ Doanh Thu Khác',
+--       '4. Thuế',
+--       "" as attribute_1,
+--       "" as attribute_2,
+--       "" as attribute_3,
+--       "" as attribute_4,
+--       "" as attribute_5,
+--       "" as attribute_6,
+--       "" as attribute_7,
+--       total as amount,
+--       0 as percent
+--     FROM phi_co_dinh_percent
+--     where layer1 = "Thuế"
+
+  UNION ALL
+
+
+
+
   -- Thu nhập thuần
 --   SELECT 
 --     year,
@@ -1322,7 +1412,7 @@ base_data AS (
     company,
     "" as channel,
     'Thu nhập thuần',
-    'Thu nhập thuần',
+    '1. Thu nhập thuần',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
