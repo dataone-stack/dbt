@@ -1011,7 +1011,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '1. Lương văn Phòng',
+    '1.1 Lương văn Phòng',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1033,7 +1033,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '2. Lương quản lý',
+    '1.2. Lương quản lý',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1055,7 +1055,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '3. Tuyển Dụng',
+    '1.3. Tuyển Dụng',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1077,7 +1077,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '4. Mặt bằng VP',
+    '2.1. Mặt bằng VP',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1099,7 +1099,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '5. Vận hành hành chính',
+    '3.1. Vận hành hành chính',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1114,6 +1114,28 @@ base_data AS (
 
   UNION ALL
 
+    SELECT 
+        year,
+        month,
+        brand,
+        company,
+        "" as channel,
+        'Layer 4: Chi Phí Quản Lý',
+        '3.2. Chi phí BOD',
+        "" as attribute_1,
+        "" as attribute_2,
+        "" as attribute_3,
+        "" as attribute_4,
+        "" as attribute_5,
+        "" as attribute_6,
+        "" as attribute_7,
+        total as amount,
+        0 as percent
+    FROM phi_co_dinh_percent
+    where layer1 = "Chi phí quản lý" and layer2 ="Chi phí BOD"
+
+  UNION ALL
+
   SELECT 
     year,
     month,
@@ -1121,7 +1143,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '6. Mặt bằng, vận hành kho',
+    '4. Mặt bằng, vận hành kho',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1143,7 +1165,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '7. Phí ngoại giao',
+    '5. Phí ngoại giao',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1165,7 +1187,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '8. Thuế ',
+    '6. Thuế ',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1176,10 +1198,11 @@ base_data AS (
     total as amount,
     0 as percent
   FROM phi_co_dinh_percent
-  where layer1 = "Chuyển đổi gián tiếp" and layer2 ="Thuế"
+  where layer1 = "Chi phí quản lý" and trim(layer2) ="Thuế"
 
   UNION ALL
 
+ 
   SELECT 
     year,
     month,
@@ -1187,29 +1210,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '9. Chi phí BOD',
-    "" as attribute_1,
-    "" as attribute_2,
-    "" as attribute_3,
-    "" as attribute_4,
-    "" as attribute_5,
-    "" as attribute_6,
-    "" as attribute_7,
-    total as amount,
-    0 as percent
-  FROM phi_co_dinh_percent
-  where layer1 = "Chi phí quản lý" and layer2 ="Chi phí BOD"
-
-  UNION ALL
-
-  SELECT 
-    year,
-    month,
-    brand,
-    company,
-    "" as channel,
-    'Layer 4: Chi Phí Quản Lý',
-    '10. Sửa chữa mặt bằng',
+    '7. Sửa chữa mặt bằng',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1231,7 +1232,7 @@ base_data AS (
     company,
     "" as channel,
     'Layer 4: Chi Phí Quản Lý',
-    '11. Khấu hao',
+    '8.1. Khấu hao',
     "" as attribute_1,
     "" as attribute_2,
     "" as attribute_3,
@@ -1253,7 +1254,7 @@ base_data AS (
       company,
       "" as channel,
       'Layer 4: Chi Phí Quản Lý',
-      '12. Khấu hao cũ',
+      '8.2. Khấu hao cũ',
       "" as attribute_1,
       "" as attribute_2,
       "" as attribute_3,
@@ -1275,7 +1276,7 @@ base_data AS (
       company,
       "" as channel,
       'Layer 4: Chi Phí Quản Lý',
-      '13. Tổng chi phí quản lý',
+      '9. Tổng chi phí quản lý',
       "" as attribute_1,
       "" as attribute_2,
       "" as attribute_3,
